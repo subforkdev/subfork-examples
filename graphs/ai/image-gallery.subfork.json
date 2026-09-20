@@ -1,0 +1,17 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "AI Image Gallery",
+    "description": "Prototype of prompt-to-image-gallery flow with provider credentials kept in a graph-scoped execution profile.",
+    "nodes": [
+      {"node_instance_id":"prompts","node_id":"n_static_value","node_version":"1.0.0","title":"Mock prompts","params":{"value":[{"prompt":"terminal-inspired graph editor UI","style":"product"},{"prompt":"node-based workflow canvas","style":"concept"}]}},
+      {"node_instance_id":"response","node_id":"n_json_response","node_version":"1.0.0","title":"JSON Response"}
+    ],
+    "edges": [
+      {"source_node_id":"prompts","source_output":"value","target_node_id":"response","target_input":"value"}
+    ],
+    "graph_outputs":{"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"ai","status":"mock-only-probe","requires":{"nodes":["generate-image","map"],"panels":["gallery","json"],"capabilities":["network","managed-worker"],"secrets":["ai-provider-api-key"]}},"canvas":{"positions":{"prompts":{"x":120,"y":180},"response":{"x":420,"y":180}}}}
+  }
+}

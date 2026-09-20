@@ -1,0 +1,213 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Geo Situational Brief",
+    "description": "A multi-branch live USGS earthquake workflow that filters, cross-references cities, finds the nearest event, charts magnitude buckets, and renders a markdown brief.",
+    "nodes": [
+      {"node_instance_id": "feed_url", "node_id": "n_url_input", "node_version": "1.0.0", "title": "USGS GeoJSON URL", "params": {"url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson"}},
+      {"node_instance_id": "user_lat", "node_id": "n_profile_variable", "node_version": "1.0.0", "title": "User latitude", "params": {"name": "USER_LAT", "default": 37.7749}},
+      {"node_instance_id": "user_lon", "node_id": "n_profile_variable", "node_version": "1.0.0", "title": "User longitude", "params": {"name": "USER_LON", "default": -122.4194}},
+      {"node_instance_id": "min_magnitude", "node_id": "n_profile_variable", "node_version": "1.0.0", "title": "Min magnitude", "params": {"name": "MIN_MAGNITUDE", "default": 4.5}},
+      {"node_instance_id": "max_events", "node_id": "n_profile_variable", "node_version": "1.0.0", "title": "Max rows", "params": {"name": "MAX_EVENTS", "default": 12}},
+      {
+        "node_instance_id": "cities",
+        "node_id": "n_static_value",
+        "node_version": "1.0.0",
+        "title": "Reference cities",
+        "params": {
+          "value": [
+            {"name": "San Francisco", "lat": 37.7749, "lon": -122.4194},
+            {"name": "Los Angeles", "lat": 34.0522, "lon": -118.2437},
+            {"name": "Seattle", "lat": 47.6062, "lon": -122.3321},
+            {"name": "Anchorage", "lat": 61.2181, "lon": -149.9003},
+            {"name": "Honolulu", "lat": 21.3069, "lon": -157.8583},
+            {"name": "Tokyo", "lat": 35.6762, "lon": 139.6503},
+            {"name": "Mexico City", "lat": 19.4326, "lon": -99.1332},
+            {"name": "Santiago", "lat": -33.4489, "lon": -70.6693},
+            {"name": "Wellington", "lat": -41.2865, "lon": 174.7762},
+            {"name": "Jakarta", "lat": -6.2088, "lon": 106.8456}
+          ]
+        }
+      },
+      {
+        "node_instance_id": "fetch",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch earthquakes",
+        "params": {"method": "GET", "headers": {"Accept": "application/geo+json, application/json"}, "timeout_seconds": 30, "max_response_bytes": 5000000},
+        "exposed_inputs": ["url"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["json", "status"],
+        "outputs_visibility_configured": true
+      },
+      {"node_instance_id": "metadata", "node_id": "n_json_path", "node_version": "1.0.0", "title": "Feed metadata", "params": {"path": "metadata"}},
+      {"node_instance_id": "features", "node_id": "n_json_path", "node_version": "1.0.0", "title": "Earthquake features", "params": {"path": "features"}},
+      {
+        "node_instance_id": "significant_geojson",
+        "node_id": "n_geojson_filter",
+        "node_version": "1.0.0",
+        "title": "Significant GeoJSON",
+        "params": {"field": "properties.mag"},
+        "exposed_inputs": ["value", "min"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["geojson", "features"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "top_event_fields",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Top event fields",
+        "params": {"mapping": {"place": "properties.place", "magnitude": "properties.mag", "time": "properties.time", "url": "properties.url", "lon": "geometry.coordinates.0", "lat": "geometry.coordinates.1"}}
+      },
+      {"node_instance_id": "top_event_sort", "node_id": "n_sort_rows", "node_version": "1.0.0", "title": "Sort by magnitude", "params": {"field": "magnitude", "direction": "desc"}},
+      {"node_instance_id": "top_rows", "node_id": "n_limit", "node_version": "1.0.0", "title": "Top event rows", "params": {"count": 12}, "exposed_inputs": ["items", "count"], "inputs_visibility_configured": true},
+      {
+        "node_instance_id": "nearest_geojson",
+        "node_id": "n_geojson_nearest_point",
+        "node_version": "1.0.0",
+        "title": "Nearest map layer",
+        "params": {"profile_label": "Profile location"},
+        "exposed_inputs": ["features", "lat", "lon", "places"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["nearest", "geojson"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "magnitude_buckets",
+        "node_id": "n_bucket_counts",
+        "node_version": "1.0.0",
+        "title": "Magnitude buckets",
+        "params": {
+          "field": "properties.mag",
+          "buckets": [
+            {"label": "2.5-2.9", "min": 2.5, "max": 3.0},
+            {"label": "3.0-3.9", "min": 3.0, "max": 4.0},
+            {"label": "4.0-4.9", "min": 4.0, "max": 5.0},
+            {"label": "5.0-5.9", "min": 5.0, "max": 6.0},
+            {"label": "6.0+", "min": 6.0}
+          ]
+        }
+      },
+      {"node_instance_id": "region_buckets", "node_id": "n_bucket_counts", "node_version": "1.0.0", "title": "Region buckets", "params": {"field": "properties.place", "split": ",", "part": "last", "limit": 12}},
+      {
+        "node_instance_id": "summary",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Brief summary JSON",
+        "params": {
+          "template": {
+            "user_location": {"lat": "{{ inputs.user_lat }}", "lon": "{{ inputs.user_lon }}"},
+            "metadata": "{{ inputs.metadata }}",
+            "nearest": "{{ inputs.nearest }}",
+            "top_events": "{{ inputs.top_events }}",
+            "magnitude_buckets": "{{ inputs.magnitude_buckets }}",
+            "region_buckets": "{{ inputs.region_buckets }}"
+          }
+        },
+        "custom_inputs": {"user_lat": "float", "user_lon": "float", "metadata": "json", "nearest": "json", "top_events": "json", "magnitude_buckets": "json", "region_buckets": "json"},
+        "exposed_inputs": ["user_lat", "user_lon", "metadata", "nearest", "top_events", "magnitude_buckets", "region_buckets"],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "markdown",
+        "node_id": "n_text_template",
+        "node_version": "1.0.0",
+        "title": "Markdown brief",
+        "params": {"template": "# Geo Situational Brief\n\nSource: {{ inputs.value.metadata.title }}\n\nProfile location: {{ inputs.value.user_location.lat }}, {{ inputs.value.user_location.lon }}\n\n## Nearest Event\n\n{{ inputs.value.nearest.place }}\n\nMagnitude: {{ inputs.value.nearest.magnitude }}\n\nDistance from profile location: {{ inputs.value.nearest.distance_km }} km\n\nURL: {{ inputs.value.nearest.url }}\n"},
+        "exposed_outputs": ["text", "value"],
+        "outputs_visibility_configured": true
+      },
+      {"node_instance_id": "geojson_response", "node_id": "n_json_response", "node_version": "1.0.0", "title": "GeoJSON Response"},
+      {"node_instance_id": "brief_response", "node_id": "n_text_response", "node_version": "1.0.0", "title": "Markdown Response", "params": {"content_type": "text/markdown; charset=utf-8"}},
+      {"node_instance_id": "summary_response", "node_id": "n_json_response", "node_version": "1.0.0", "title": "Summary JSON Response"}
+    ],
+    "edges": [
+      {"source_node_id": "feed_url", "source_output": "url", "target_node_id": "fetch", "target_input": "url"},
+      {"source_node_id": "fetch", "source_output": "json", "target_node_id": "metadata", "target_input": "value"},
+      {"source_node_id": "fetch", "source_output": "json", "target_node_id": "features", "target_input": "value"},
+      {"source_node_id": "features", "source_output": "value", "target_node_id": "significant_geojson", "target_input": "value"},
+      {"source_node_id": "min_magnitude", "source_output": "value", "target_node_id": "significant_geojson", "target_input": "min"},
+      {"source_node_id": "features", "source_output": "value", "target_node_id": "top_event_fields", "target_input": "value"},
+      {"source_node_id": "top_event_fields", "source_output": "items", "target_node_id": "top_event_sort", "target_input": "items"},
+      {"source_node_id": "top_event_sort", "source_output": "items", "target_node_id": "top_rows", "target_input": "items"},
+      {"source_node_id": "max_events", "source_output": "value", "target_node_id": "top_rows", "target_input": "count"},
+      {"source_node_id": "features", "source_output": "value", "target_node_id": "nearest_geojson", "target_input": "features"},
+      {"source_node_id": "user_lat", "source_output": "value", "target_node_id": "nearest_geojson", "target_input": "lat"},
+      {"source_node_id": "user_lon", "source_output": "value", "target_node_id": "nearest_geojson", "target_input": "lon"},
+      {"source_node_id": "cities", "source_output": "value", "target_node_id": "nearest_geojson", "target_input": "places"},
+      {"source_node_id": "features", "source_output": "value", "target_node_id": "magnitude_buckets", "target_input": "items"},
+      {"source_node_id": "features", "source_output": "value", "target_node_id": "region_buckets", "target_input": "items"},
+      {"source_node_id": "user_lat", "source_output": "value", "target_node_id": "summary", "target_input": "user_lat"},
+      {"source_node_id": "user_lon", "source_output": "value", "target_node_id": "summary", "target_input": "user_lon"},
+      {"source_node_id": "metadata", "source_output": "value", "target_node_id": "summary", "target_input": "metadata"},
+      {"source_node_id": "nearest_geojson", "source_output": "nearest", "target_node_id": "summary", "target_input": "nearest"},
+      {"source_node_id": "top_rows", "source_output": "items", "target_node_id": "summary", "target_input": "top_events"},
+      {"source_node_id": "magnitude_buckets", "source_output": "value", "target_node_id": "summary", "target_input": "magnitude_buckets"},
+      {"source_node_id": "region_buckets", "source_output": "value", "target_node_id": "summary", "target_input": "region_buckets"},
+      {"source_node_id": "summary", "source_output": "value", "target_node_id": "markdown", "target_input": "value"},
+      {"source_node_id": "significant_geojson", "source_output": "geojson", "target_node_id": "geojson_response", "target_input": "value"},
+      {"source_node_id": "markdown", "source_output": "text", "target_node_id": "brief_response", "target_input": "text"},
+      {"source_node_id": "summary", "source_output": "value", "target_node_id": "summary_response", "target_input": "value"}
+    ],
+    "graph_outputs": {
+      "significant_geojson": {"node_instance_id": "significant_geojson", "output_name": "geojson"},
+      "nearest_geojson": {"node_instance_id": "nearest_geojson", "output_name": "geojson"},
+      "top_events": {"node_instance_id": "top_rows", "output_name": "items"},
+      "magnitude_buckets": {"node_instance_id": "magnitude_buckets", "output_name": "value"},
+      "region_buckets": {"node_instance_id": "region_buckets", "output_name": "value"},
+      "markdown": {"node_instance_id": "markdown", "output_name": "text"},
+      "response": {"node_instance_id": "brief_response", "output_name": "response"},
+      "summary": {"node_instance_id": "summary_response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "geo",
+        "status": "provider-backed-branching-probe",
+        "summary": "Stress-tests Subfork with remote GeoJSON, cross-referenced static city data, profile variables, fan-out transforms, map/table/chart/markdown outputs, and multiple response branches.",
+        "requires": {
+          "nodes": ["n_url_input", "n_profile_variable", "n_static_value", "n_fetch_url", "n_json_path", "n_geojson_filter", "n_geojson_nearest_point", "n_map_fields", "n_sort_rows", "n_limit", "n_bucket_counts", "n_json_template", "n_text_template", "n_json_response", "n_text_response"],
+          "panels": ["map", "table", "chart", "markdown", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": [],
+          "variables": ["USER_LAT", "USER_LON", "MIN_MAGNITUDE", "MAX_EVENTS"]
+        }
+      },
+      "canvas": {
+        "positions": {
+          "feed_url": {"x": 60, "y": 240},
+          "user_lat": {"x": 60, "y": 40},
+          "user_lon": {"x": 60, "y": 125},
+          "min_magnitude": {"x": 60, "y": 400},
+          "max_events": {"x": 60, "y": 485},
+          "cities": {"x": 280, "y": 65},
+          "fetch": {"x": 280, "y": 240},
+          "metadata": {"x": 500, "y": 145},
+          "features": {"x": 500, "y": 290},
+          "nearest_geojson": {"x": 720, "y": 55},
+          "significant_geojson": {"x": 720, "y": 240},
+          "top_event_fields": {"x": 720, "y": 425},
+          "top_event_sort": {"x": 940, "y": 425},
+          "top_rows": {"x": 1160, "y": 425},
+          "magnitude_buckets": {"x": 940, "y": 240},
+          "region_buckets": {"x": 940, "y": 335},
+          "summary": {"x": 1160, "y": 220},
+          "markdown": {"x": 1380, "y": 140},
+          "geojson_response": {"x": 1380, "y": 315},
+          "summary_response": {"x": 1380, "y": 470},
+          "brief_response": {"x": 1600, "y": 140}
+        },
+        "recommended_panels": [
+          {"kind": "map", "binding": {"nodeInstanceId": "significant_geojson", "outputName": "geojson"}},
+          {"kind": "map", "binding": {"nodeInstanceId": "nearest_geojson", "outputName": "geojson"}},
+          {"kind": "table", "binding": {"nodeInstanceId": "top_rows", "outputName": "items"}},
+          {"kind": "chart", "binding": {"nodeInstanceId": "magnitude_buckets", "outputName": "value"}},
+          {"kind": "markdown", "binding": {"nodeInstanceId": "markdown", "outputName": "text"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "fetch", "outputName": "json"}},
+          {"kind": "logs"}
+        ]
+      }
+    }
+  }
+}

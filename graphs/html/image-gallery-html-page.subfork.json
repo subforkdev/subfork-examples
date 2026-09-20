@@ -1,0 +1,21 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Image Gallery HTML Page",
+    "description": "Mock image-gallery HTML page; later swap static image data for generated media/composite nodes.",
+    "nodes": [
+      {"node_instance_id":"gallery","node_id":"n_static_value","node_version":"1.0.0","title":"Gallery Data","params":{"value":{"title":"Subfork Gallery","images":[{"src":"https://picsum.photos/seed/subfork-a/640/420","caption":"Generated-looking image A"},{"src":"https://picsum.photos/seed/subfork-b/640/420","caption":"Generated-looking image B"},{"src":"https://picsum.photos/seed/subfork-c/640/420","caption":"Generated-looking image C"}]}}},
+      {"node_instance_id":"stringify","node_id":"n_json_stringify","node_version":"1.0.0","title":"Gallery JSON"},
+      {"node_instance_id":"template","node_id":"n_html_template","node_version":"1.0.0","title":"Gallery HTML","params":{"template":"<!doctype html>\n<html>\n<head><meta charset=\"utf-8\"><title>Image Gallery</title><style>body{font-family:ui-sans-serif,system-ui;margin:2rem;background:#111;color:#f5f1e8}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:1rem}img{width:100%;border-radius:.35rem}.card{background:#1f211c;padding:.75rem;border:1px solid #454540}</style></head>\n<body><main><h1 id=\"title\"></h1><section id=\"gallery\" class=\"grid\"></section><script type=\"application/json\" id=\"gallery-json\">{{ inputs.gallery_json }}</script><script>const data=JSON.parse(document.getElementById('gallery-json').textContent);document.getElementById('title').textContent=data.title;document.getElementById('gallery').innerHTML=data.images.map(image=>`<article class=\"card\"><img src=\"${image.src}\" alt=\"\"><p>${image.caption}</p></article>`).join('');</script></main></body>\n</html>"},"custom_inputs":{"gallery_json":"str"},"exposed_inputs":["gallery_json"],"inputs_visibility_configured":true},
+      {"node_instance_id":"response","node_id":"n_html_response","node_version":"1.0.0","title":"HTML Response"}
+    ],
+    "edges": [
+      {"source_node_id":"gallery","source_output":"value","target_node_id":"stringify","target_input":"value"},
+      {"source_node_id":"stringify","source_output":"text","target_node_id":"template","target_input":"gallery_json"},
+      {"source_node_id":"template","source_output":"html","target_node_id":"response","target_input":"html"}
+    ],
+    "graph_outputs":{"html":{"node_instance_id":"template","output_name":"html"},"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"html","status":"runnable-probe","requires":{"nodes":["n_static_value","n_json_stringify","n_html_template","n_html_response"],"panels":["html"],"capabilities":["public-http"],"future":["Replace static image URLs with media/composite image-generation nodes."]}},"canvas":{"positions":{"gallery":{"x":80,"y":180},"stringify":{"x":360,"y":180},"template":{"x":620,"y":180},"response":{"x":920,"y":180}},"recommended_panels":[{"kind":"html","binding":{"nodeInstanceId":"template","outputName":"html"}}]}}
+  }
+}

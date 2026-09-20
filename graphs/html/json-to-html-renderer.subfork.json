@@ -1,0 +1,19 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "JSON To HTML Renderer",
+    "description": "Baseline HTML Template probe: render structured JSON into a simple HTML response.",
+    "nodes": [
+      {"node_instance_id":"data","node_id":"n_static_value","node_version":"1.0.0","title":"Page JSON","params":{"value":{"title":"Hello, Subfork","message":"This page was rendered by an HTML Template node.","status":"runnable"}}},
+      {"node_instance_id":"template","node_id":"n_html_template","node_version":"1.0.0","title":"HTML Template","params":{"template":"<!doctype html>\n<html>\n<head><meta charset=\"utf-8\"><title>{{ inputs.context.title }}</title><style>body{font-family:ui-sans-serif,system-ui;margin:3rem;background:#fffaf0;color:#15211d}main{max-width:48rem}code{background:#e7e1c9;padding:.15rem .35rem}</style></head>\n<body><main><h1>{{ inputs.context.title }}</h1><p>{{ inputs.context.message }}</p><p>Status: <code>{{ inputs.context.status }}</code></p></main></body>\n</html>"}},
+      {"node_instance_id":"response","node_id":"n_html_response","node_version":"1.0.0","title":"HTML Response"}
+    ],
+    "edges": [
+      {"source_node_id":"data","source_output":"value","target_node_id":"template","target_input":"context"},
+      {"source_node_id":"template","source_output":"html","target_node_id":"response","target_input":"html"}
+    ],
+    "graph_outputs":{"html":{"node_instance_id":"template","output_name":"html"},"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"html","status":"runnable-probe","requires":{"nodes":["n_static_value","n_html_template","n_html_response"],"panels":["html","json"],"capabilities":[]}},"canvas":{"positions":{"data":{"x":80,"y":180},"template":{"x":360,"y":180},"response":{"x":660,"y":180}},"recommended_panels":[{"kind":"html","binding":{"nodeInstanceId":"template","outputName":"html"}},{"kind":"json","binding":{"nodeInstanceId":"response","outputName":"response"}}]}}
+  }
+}

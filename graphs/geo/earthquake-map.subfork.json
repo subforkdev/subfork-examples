@@ -1,0 +1,17 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Earthquake Map",
+    "description": "Prototype of public geo data normalized to GeoJSON for map, table, and JSON panels.",
+    "nodes": [
+      {"node_instance_id":"geojson","node_id":"n_static_value","node_version":"1.0.0","title":"Mock GeoJSON","params":{"value":{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"place":"San Francisco Bay Area","magnitude":2.7,"priority":"review"},"geometry":{"type":"Point","coordinates":[-122.4194,37.7749]}},{"type":"Feature","properties":{"place":"Los Angeles Basin","magnitude":3.2,"priority":"review"},"geometry":{"type":"Point","coordinates":[-118.2437,34.0522]}}]}}},
+      {"node_instance_id":"response","node_id":"n_json_response","node_version":"1.0.0","title":"JSON Response"}
+    ],
+    "edges": [
+      {"source_node_id":"geojson","source_output":"value","target_node_id":"response","target_input":"value"}
+    ],
+    "graph_outputs":{"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"geo","status":"runnable-probe","requires":{"nodes":["http-json-fetch","json-path","geojson-normalize"],"panels":["openstreetmap","table","json"],"capabilities":["network"],"secrets":[]}},"canvas":{"positions":{"geojson":{"x":120,"y":180},"response":{"x":420,"y":180}}}}
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Graph Run Status Page",
+    "description": "Mock execution-status HTML page for future admin/debug dashboards.",
+    "nodes": [
+      {"node_instance_id":"execution","node_id":"n_static_value","node_version":"1.0.0","title":"Execution JSON","params":{"value":{"execution_id":"e_demo","status":"completed","nodes":[{"title":"Fetch data","status":"completed","elapsed":"120ms"},{"title":"Render page","status":"completed","elapsed":"15ms"},{"title":"HTML Response","status":"completed","elapsed":"3ms"}]}}},
+      {"node_instance_id":"stringify","node_id":"n_json_stringify","node_version":"1.0.0","title":"Execution JSON String"},
+      {"node_instance_id":"template","node_id":"n_html_template","node_version":"1.0.0","title":"Status HTML","params":{"template":"<!doctype html>\n<html>\n<head><meta charset=\"utf-8\"><title>Execution Status</title><style>body{font-family:ui-sans-serif,system-ui;margin:2rem;background:#171717;color:#e5e2db}.ok{color:#9fcf77}.row{display:grid;grid-template-columns:1fr auto auto;gap:1rem;border-bottom:1px solid #333;padding:.65rem 0}</style></head>\n<body><main><h1>Execution <span id=\"status\"></span></h1><p id=\"id\"></p><section id=\"nodes\"></section><script type=\"application/json\" id=\"execution-json\">{{ inputs.execution_json }}</script><script>const run=JSON.parse(document.getElementById('execution-json').textContent);document.getElementById('status').textContent=run.status;document.getElementById('status').className=run.status==='completed'?'ok':'';document.getElementById('id').textContent=run.execution_id;document.getElementById('nodes').innerHTML=run.nodes.map(n=>`<div class=\"row\"><strong>${n.title}</strong><span>${n.status}</span><code>${n.elapsed}</code></div>`).join('');</script></main></body>\n</html>"},"custom_inputs":{"execution_json":"str"},"exposed_inputs":["execution_json"],"inputs_visibility_configured":true},
+      {"node_instance_id":"response","node_id":"n_html_response","node_version":"1.0.0","title":"HTML Response"}
+    ],
+    "edges": [
+      {"source_node_id":"execution","source_output":"value","target_node_id":"stringify","target_input":"value"},
+      {"source_node_id":"stringify","source_output":"text","target_node_id":"template","target_input":"execution_json"},
+      {"source_node_id":"template","source_output":"html","target_node_id":"response","target_input":"html"}
+    ],
+    "graph_outputs":{"html":{"node_instance_id":"template","output_name":"html"},"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"html","status":"runnable-probe","requires":{"nodes":["n_static_value","n_json_stringify","n_html_template","n_html_response"],"panels":["html","json"],"capabilities":[]},"future":["Replace mock JSON with real execution diagnostics once admin APIs exist."]},"canvas":{"positions":{"execution":{"x":80,"y":180},"stringify":{"x":360,"y":180},"template":{"x":620,"y":180},"response":{"x":920,"y":180}},"recommended_panels":[{"kind":"html","binding":{"nodeInstanceId":"template","outputName":"html"}},{"kind":"json","binding":{"nodeInstanceId":"execution","outputName":"value"}}]}}
+  }
+}

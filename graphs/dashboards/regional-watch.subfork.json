@@ -1,0 +1,2000 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Regional Watch",
+    "description": "Manual-refresh USGS dashboard. Region classification uses only existing graph nodes: explicit priority, one region per event, Other fallback. Linked panels filter completed snapshots.",
+    "nodes": [
+      {
+        "node_instance_id": "feed",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "USGS / M2.5+ past seven days",
+        "params": {
+          "url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson",
+          "method": "GET",
+          "max_response_bytes": 1000000
+        },
+        "exposed_inputs": [],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "json"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "features",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Earthquake features",
+        "params": {
+          "path": "features"
+        },
+        "exposed_inputs": [
+          "value"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "value"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "metadata",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Source snapshot metadata",
+        "params": {
+          "path": "metadata"
+        },
+        "exposed_inputs": [
+          "value"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "value"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "records",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Location, magnitude and provenance",
+        "params": {
+          "mapping": {
+            "id": "id",
+            "place": "properties.place",
+            "magnitude": "properties.mag",
+            "time_ms": "properties.time",
+            "url": "properties.url",
+            "longitude": "geometry.coordinates.0",
+            "latitude": "geometry.coordinates.1",
+            "depth_km": "geometry.coordinates.2"
+          }
+        },
+        "exposed_inputs": [
+          "value"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "valid_longitude_gte",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "longitude >= -180",
+        "params": {
+          "field": "longitude",
+          "operation": "gte",
+          "equals": -180
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "valid_longitude_lte",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "longitude <= 180",
+        "params": {
+          "field": "longitude",
+          "operation": "lte",
+          "equals": 180
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "valid_latitude_gte",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "latitude >= -90",
+        "params": {
+          "field": "latitude",
+          "operation": "gte",
+          "equals": -90
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "valid_latitude_lte",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "latitude <= 90",
+        "params": {
+          "field": "latitude",
+          "operation": "lte",
+          "equals": 90
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "valid_depth_km_gte",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "depth_km >= -10",
+        "params": {
+          "field": "depth_km",
+          "operation": "gte",
+          "equals": -10
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "valid_depth_km_lte",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "depth_km <= 800",
+        "params": {
+          "field": "depth_km",
+          "operation": "lte",
+          "equals": 800
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "valid_magnitude_gte",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "magnitude >= 2.5",
+        "params": {
+          "field": "magnitude",
+          "operation": "gte",
+          "equals": 2.5
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "valid_magnitude_lte",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "magnitude <= 10",
+        "params": {
+          "field": "magnitude",
+          "operation": "lte",
+          "equals": 10
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "latest",
+        "node_id": "n_sort_rows",
+        "node_version": "1.0.0",
+        "title": "Newest first",
+        "params": {
+          "field": "time_ms",
+          "direction": "desc"
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "limited",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most 1000 recent events",
+        "params": {
+          "count": 1000
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_0_south",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "North America: latitude gte 5",
+        "params": {
+          "field": "latitude",
+          "operation": "gte",
+          "equals": 5
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_0_north",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "North America: latitude lte 75",
+        "params": {
+          "field": "latitude",
+          "operation": "lte",
+          "equals": 75
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_0_west",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "North America: longitude gte -170",
+        "params": {
+          "field": "longitude",
+          "operation": "gte",
+          "equals": -170
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_0_east",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "North America: longitude lte -50",
+        "params": {
+          "field": "longitude",
+          "operation": "lte",
+          "equals": -50
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_0_tag",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "1. North America",
+        "params": {
+          "mapping": {
+            "id": "id",
+            "place": "place",
+            "magnitude": "magnitude",
+            "time_ms": "time_ms",
+            "url": "url",
+            "longitude": "longitude",
+            "latitude": "latitude",
+            "depth_km": "depth_km",
+            "regions": [
+              "North America"
+            ]
+          }
+        },
+        "exposed_inputs": [
+          "value"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_1_south",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "South America: latitude gte -60",
+        "params": {
+          "field": "latitude",
+          "operation": "gte",
+          "equals": -60
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_1_north",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "South America: latitude lte 15",
+        "params": {
+          "field": "latitude",
+          "operation": "lte",
+          "equals": 15
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_1_west",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "South America: longitude gte -85",
+        "params": {
+          "field": "longitude",
+          "operation": "gte",
+          "equals": -85
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_1_east",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "South America: longitude lte -30",
+        "params": {
+          "field": "longitude",
+          "operation": "lte",
+          "equals": -30
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_1_tag",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "2. South America",
+        "params": {
+          "mapping": {
+            "id": "id",
+            "place": "place",
+            "magnitude": "magnitude",
+            "time_ms": "time_ms",
+            "url": "url",
+            "longitude": "longitude",
+            "latitude": "latitude",
+            "depth_km": "depth_km",
+            "regions": [
+              "South America"
+            ]
+          }
+        },
+        "exposed_inputs": [
+          "value"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_2_south",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "Europe & Mediterranean: latitude gte 25",
+        "params": {
+          "field": "latitude",
+          "operation": "gte",
+          "equals": 25
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_2_north",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "Europe & Mediterranean: latitude lte 72",
+        "params": {
+          "field": "latitude",
+          "operation": "lte",
+          "equals": 72
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_2_west",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "Europe & Mediterranean: longitude gte -25",
+        "params": {
+          "field": "longitude",
+          "operation": "gte",
+          "equals": -25
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_2_east",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "Europe & Mediterranean: longitude lte 50",
+        "params": {
+          "field": "longitude",
+          "operation": "lte",
+          "equals": 50
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_2_tag",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "3. Europe & Mediterranean",
+        "params": {
+          "mapping": {
+            "id": "id",
+            "place": "place",
+            "magnitude": "magnitude",
+            "time_ms": "time_ms",
+            "url": "url",
+            "longitude": "longitude",
+            "latitude": "latitude",
+            "depth_km": "depth_km",
+            "regions": [
+              "Europe & Mediterranean"
+            ]
+          }
+        },
+        "exposed_inputs": [
+          "value"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_3_south",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "Asia: latitude gte -10",
+        "params": {
+          "field": "latitude",
+          "operation": "gte",
+          "equals": -10
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_3_north",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "Asia: latitude lte 75",
+        "params": {
+          "field": "latitude",
+          "operation": "lte",
+          "equals": 75
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_3_west",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "Asia: longitude gte 50",
+        "params": {
+          "field": "longitude",
+          "operation": "gte",
+          "equals": 50
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_3_east",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "Asia: longitude lte 180",
+        "params": {
+          "field": "longitude",
+          "operation": "lte",
+          "equals": 180
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_3_tag",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "4. Asia",
+        "params": {
+          "mapping": {
+            "id": "id",
+            "place": "place",
+            "magnitude": "magnitude",
+            "time_ms": "time_ms",
+            "url": "url",
+            "longitude": "longitude",
+            "latitude": "latitude",
+            "depth_km": "depth_km",
+            "regions": [
+              "Asia"
+            ]
+          }
+        },
+        "exposed_inputs": [
+          "value"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_4_south",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "Pacific / date line: latitude gte -60",
+        "params": {
+          "field": "latitude",
+          "operation": "gte",
+          "equals": -60
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_4_north",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "Pacific / date line: latitude lte 65",
+        "params": {
+          "field": "latitude",
+          "operation": "lte",
+          "equals": 65
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_4_west",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "Pacific / date line: longitude gte 120",
+        "params": {
+          "field": "longitude",
+          "operation": "gte",
+          "equals": 120
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_4_east",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "Pacific / date line: longitude lte -70",
+        "params": {
+          "field": "longitude",
+          "operation": "lte",
+          "equals": -70
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_4_dateline",
+        "node_id": "n_concat_lists",
+        "node_version": "1.0.0",
+        "title": "Pacific: either side of date line",
+        "params": {},
+        "exposed_inputs": [
+          "left",
+          "right"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_4_tag",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "5. Pacific / date line",
+        "params": {
+          "mapping": {
+            "id": "id",
+            "place": "place",
+            "magnitude": "magnitude",
+            "time_ms": "time_ms",
+            "url": "url",
+            "longitude": "longitude",
+            "latitude": "latitude",
+            "depth_km": "depth_km",
+            "regions": [
+              "Pacific / date line"
+            ]
+          }
+        },
+        "exposed_inputs": [
+          "value"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_other",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "6. Other (fallback)",
+        "params": {
+          "mapping": {
+            "id": "id",
+            "place": "place",
+            "magnitude": "magnitude",
+            "time_ms": "time_ms",
+            "url": "url",
+            "longitude": "longitude",
+            "latitude": "latitude",
+            "depth_km": "depth_km",
+            "regions": [
+              "Other"
+            ]
+          }
+        },
+        "exposed_inputs": [
+          "value"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_concat_0",
+        "node_id": "n_concat_lists",
+        "node_version": "1.0.0",
+        "title": "Region priority: append 2",
+        "params": {},
+        "exposed_inputs": [
+          "left",
+          "right"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_concat_1",
+        "node_id": "n_concat_lists",
+        "node_version": "1.0.0",
+        "title": "Region priority: append 3",
+        "params": {},
+        "exposed_inputs": [
+          "left",
+          "right"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_concat_2",
+        "node_id": "n_concat_lists",
+        "node_version": "1.0.0",
+        "title": "Region priority: append 4",
+        "params": {},
+        "exposed_inputs": [
+          "left",
+          "right"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_concat_3",
+        "node_id": "n_concat_lists",
+        "node_version": "1.0.0",
+        "title": "Region priority: append 5",
+        "params": {},
+        "exposed_inputs": [
+          "left",
+          "right"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_concat_4",
+        "node_id": "n_concat_lists",
+        "node_version": "1.0.0",
+        "title": "Region priority: append 6",
+        "params": {},
+        "exposed_inputs": [
+          "left",
+          "right"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "region_first",
+        "node_id": "n_unique",
+        "node_version": "1.0.0",
+        "title": "First matching region per event",
+        "params": {
+          "field": "id"
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "sample",
+        "node_id": "n_sort_rows",
+        "node_version": "1.0.0",
+        "title": "Region-tagged events / newest first",
+        "params": {
+          "field": "time_ms",
+          "direction": "desc"
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "items"
+        ],
+        "outputs_visibility_configured": true
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "feed",
+        "source_output": "json",
+        "target_node_id": "features",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "feed",
+        "source_output": "json",
+        "target_node_id": "metadata",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "features",
+        "source_output": "value",
+        "target_node_id": "records",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "records",
+        "source_output": "items",
+        "target_node_id": "valid_longitude_gte",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "valid_longitude_gte",
+        "source_output": "items",
+        "target_node_id": "valid_longitude_lte",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "valid_longitude_lte",
+        "source_output": "items",
+        "target_node_id": "valid_latitude_gte",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "valid_latitude_gte",
+        "source_output": "items",
+        "target_node_id": "valid_latitude_lte",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "valid_latitude_lte",
+        "source_output": "items",
+        "target_node_id": "valid_depth_km_gte",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "valid_depth_km_gte",
+        "source_output": "items",
+        "target_node_id": "valid_depth_km_lte",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "valid_depth_km_lte",
+        "source_output": "items",
+        "target_node_id": "valid_magnitude_gte",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "valid_magnitude_gte",
+        "source_output": "items",
+        "target_node_id": "valid_magnitude_lte",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "valid_magnitude_lte",
+        "source_output": "items",
+        "target_node_id": "latest",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "latest",
+        "source_output": "items",
+        "target_node_id": "limited",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "limited",
+        "source_output": "items",
+        "target_node_id": "region_0_south",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_0_south",
+        "source_output": "items",
+        "target_node_id": "region_0_north",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_0_north",
+        "source_output": "items",
+        "target_node_id": "region_0_west",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_0_west",
+        "source_output": "items",
+        "target_node_id": "region_0_east",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_0_east",
+        "source_output": "items",
+        "target_node_id": "region_0_tag",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "limited",
+        "source_output": "items",
+        "target_node_id": "region_1_south",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_1_south",
+        "source_output": "items",
+        "target_node_id": "region_1_north",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_1_north",
+        "source_output": "items",
+        "target_node_id": "region_1_west",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_1_west",
+        "source_output": "items",
+        "target_node_id": "region_1_east",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_1_east",
+        "source_output": "items",
+        "target_node_id": "region_1_tag",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "limited",
+        "source_output": "items",
+        "target_node_id": "region_2_south",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_2_south",
+        "source_output": "items",
+        "target_node_id": "region_2_north",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_2_north",
+        "source_output": "items",
+        "target_node_id": "region_2_west",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_2_west",
+        "source_output": "items",
+        "target_node_id": "region_2_east",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_2_east",
+        "source_output": "items",
+        "target_node_id": "region_2_tag",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "limited",
+        "source_output": "items",
+        "target_node_id": "region_3_south",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_3_south",
+        "source_output": "items",
+        "target_node_id": "region_3_north",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_3_north",
+        "source_output": "items",
+        "target_node_id": "region_3_west",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_3_west",
+        "source_output": "items",
+        "target_node_id": "region_3_east",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_3_east",
+        "source_output": "items",
+        "target_node_id": "region_3_tag",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "limited",
+        "source_output": "items",
+        "target_node_id": "region_4_south",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_4_south",
+        "source_output": "items",
+        "target_node_id": "region_4_north",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_4_north",
+        "source_output": "items",
+        "target_node_id": "region_4_west",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_4_north",
+        "source_output": "items",
+        "target_node_id": "region_4_east",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_4_west",
+        "source_output": "items",
+        "target_node_id": "region_4_dateline",
+        "target_input": "left"
+      },
+      {
+        "source_node_id": "region_4_east",
+        "source_output": "items",
+        "target_node_id": "region_4_dateline",
+        "target_input": "right"
+      },
+      {
+        "source_node_id": "region_4_dateline",
+        "source_output": "items",
+        "target_node_id": "region_4_tag",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "limited",
+        "source_output": "items",
+        "target_node_id": "region_other",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "region_0_tag",
+        "source_output": "items",
+        "target_node_id": "region_concat_0",
+        "target_input": "left"
+      },
+      {
+        "source_node_id": "region_1_tag",
+        "source_output": "items",
+        "target_node_id": "region_concat_0",
+        "target_input": "right"
+      },
+      {
+        "source_node_id": "region_concat_0",
+        "source_output": "items",
+        "target_node_id": "region_concat_1",
+        "target_input": "left"
+      },
+      {
+        "source_node_id": "region_2_tag",
+        "source_output": "items",
+        "target_node_id": "region_concat_1",
+        "target_input": "right"
+      },
+      {
+        "source_node_id": "region_concat_1",
+        "source_output": "items",
+        "target_node_id": "region_concat_2",
+        "target_input": "left"
+      },
+      {
+        "source_node_id": "region_3_tag",
+        "source_output": "items",
+        "target_node_id": "region_concat_2",
+        "target_input": "right"
+      },
+      {
+        "source_node_id": "region_concat_2",
+        "source_output": "items",
+        "target_node_id": "region_concat_3",
+        "target_input": "left"
+      },
+      {
+        "source_node_id": "region_4_tag",
+        "source_output": "items",
+        "target_node_id": "region_concat_3",
+        "target_input": "right"
+      },
+      {
+        "source_node_id": "region_concat_3",
+        "source_output": "items",
+        "target_node_id": "region_concat_4",
+        "target_input": "left"
+      },
+      {
+        "source_node_id": "region_other",
+        "source_output": "items",
+        "target_node_id": "region_concat_4",
+        "target_input": "right"
+      },
+      {
+        "source_node_id": "region_concat_4",
+        "source_output": "items",
+        "target_node_id": "region_first",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "region_first",
+        "source_output": "items",
+        "target_node_id": "sample",
+        "target_input": "items"
+      }
+    ],
+    "graph_outputs": {
+      "events": {
+        "node_instance_id": "sample",
+        "output_name": "items"
+      },
+      "metadata": {
+        "node_instance_id": "metadata",
+        "output_name": "value"
+      }
+    },
+    "metadata": {
+      "category": "dashboards",
+      "canvas": {
+        "positions": {
+          "feed": {
+            "x": 0,
+            "y": 0
+          },
+          "features": {
+            "x": 260,
+            "y": 0
+          },
+          "metadata": {
+            "x": 260,
+            "y": -230
+          },
+          "records": {
+            "x": 520,
+            "y": 0
+          },
+          "valid_longitude_gte": {
+            "x": 780,
+            "y": 0
+          },
+          "valid_longitude_lte": {
+            "x": 780,
+            "y": 150
+          },
+          "valid_latitude_gte": {
+            "x": 1040,
+            "y": 0
+          },
+          "valid_latitude_lte": {
+            "x": 1040,
+            "y": 150
+          },
+          "valid_depth_km_gte": {
+            "x": 1300,
+            "y": 0
+          },
+          "valid_depth_km_lte": {
+            "x": 1300,
+            "y": 150
+          },
+          "valid_magnitude_gte": {
+            "x": 1560,
+            "y": 0
+          },
+          "valid_magnitude_lte": {
+            "x": 1560,
+            "y": 150
+          },
+          "latest": {
+            "x": 1820,
+            "y": 0
+          },
+          "limited": {
+            "x": 2080,
+            "y": 0
+          },
+          "region_0_south": {
+            "x": 2400,
+            "y": 0
+          },
+          "region_0_north": {
+            "x": 2660,
+            "y": 0
+          },
+          "region_0_west": {
+            "x": 2920,
+            "y": 0
+          },
+          "region_0_east": {
+            "x": 3180,
+            "y": 0
+          },
+          "region_0_tag": {
+            "x": 3440,
+            "y": 0
+          },
+          "region_1_south": {
+            "x": 2400,
+            "y": 250
+          },
+          "region_1_north": {
+            "x": 2660,
+            "y": 250
+          },
+          "region_1_west": {
+            "x": 2920,
+            "y": 250
+          },
+          "region_1_east": {
+            "x": 3180,
+            "y": 250
+          },
+          "region_1_tag": {
+            "x": 3440,
+            "y": 250
+          },
+          "region_2_south": {
+            "x": 2400,
+            "y": 500
+          },
+          "region_2_north": {
+            "x": 2660,
+            "y": 500
+          },
+          "region_2_west": {
+            "x": 2920,
+            "y": 500
+          },
+          "region_2_east": {
+            "x": 3180,
+            "y": 500
+          },
+          "region_2_tag": {
+            "x": 3440,
+            "y": 500
+          },
+          "region_3_south": {
+            "x": 2400,
+            "y": 750
+          },
+          "region_3_north": {
+            "x": 2660,
+            "y": 750
+          },
+          "region_3_west": {
+            "x": 2920,
+            "y": 750
+          },
+          "region_3_east": {
+            "x": 3180,
+            "y": 750
+          },
+          "region_3_tag": {
+            "x": 3440,
+            "y": 750
+          },
+          "region_4_south": {
+            "x": 2400,
+            "y": 1000
+          },
+          "region_4_north": {
+            "x": 2660,
+            "y": 1000
+          },
+          "region_4_west": {
+            "x": 2920,
+            "y": 1000
+          },
+          "region_4_east": {
+            "x": 3180,
+            "y": 1000
+          },
+          "region_4_dateline": {
+            "x": 3440,
+            "y": 1000
+          },
+          "region_4_tag": {
+            "x": 3700,
+            "y": 1000
+          },
+          "region_other": {
+            "x": 3700,
+            "y": 1250
+          },
+          "region_concat_0": {
+            "x": 4100,
+            "y": 300
+          },
+          "region_concat_1": {
+            "x": 4360,
+            "y": 300
+          },
+          "region_concat_2": {
+            "x": 4620,
+            "y": 300
+          },
+          "region_concat_3": {
+            "x": 4880,
+            "y": 300
+          },
+          "region_concat_4": {
+            "x": 5140,
+            "y": 300
+          },
+          "region_first": {
+            "x": 5500,
+            "y": 300
+          },
+          "sample": {
+            "x": 5760,
+            "y": 300
+          }
+        },
+        "recommended_layout": {
+          "kind": "split",
+          "direction": "vertical",
+          "first": {
+            "kind": "panel",
+            "panel": {
+              "id": "filters",
+              "kind": "filters",
+              "title": "Filters",
+              "binding": {
+                "nodeInstanceId": "sample",
+                "outputName": "items"
+              },
+              "settings": {
+                "dataMapping": {
+                  "id": "id",
+                  "label": "place",
+                  "latitude": "latitude",
+                  "longitude": "longitude",
+                  "time": "time_ms",
+                  "value": "magnitude"
+                },
+                "recordView": {
+                  "columns": [
+                    {
+                      "field": "place",
+                      "label": "Location"
+                    },
+                    {
+                      "field": "regions",
+                      "label": "Regions"
+                    },
+                    {
+                      "field": "magnitude",
+                      "label": "Magnitude"
+                    },
+                    {
+                      "field": "depth_km",
+                      "label": "Depth (km)"
+                    },
+                    {
+                      "field": "time_ms",
+                      "label": "Event time"
+                    },
+                    {
+                      "field": "latitude",
+                      "label": "Latitude"
+                    },
+                    {
+                      "field": "longitude",
+                      "label": "Longitude"
+                    },
+                    {
+                      "field": "id",
+                      "label": "Event ID"
+                    }
+                  ],
+                  "timestamp": {
+                    "nodeInstanceId": "metadata",
+                    "outputName": "value",
+                    "path": "generated"
+                  },
+                  "sourceName": "USGS / M2.5+ past 7 days",
+                  "sourceUrl": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php"
+                },
+                "facetFields": [
+                  {
+                    "field": "regions",
+                    "kind": "values"
+                  },
+                  {
+                    "field": "place",
+                    "kind": "values"
+                  },
+                  {
+                    "field": "magnitude",
+                    "kind": "number"
+                  },
+                  {
+                    "field": "depth_km",
+                    "kind": "number"
+                  },
+                  {
+                    "field": "time_ms",
+                    "kind": "date"
+                  }
+                ]
+              }
+            }
+          },
+          "second": {
+            "kind": "split",
+            "direction": "vertical",
+            "first": {
+              "kind": "panel",
+              "panel": {
+                "id": "metrics",
+                "kind": "metrics",
+                "title": "Metrics",
+                "binding": {
+                  "nodeInstanceId": "sample",
+                  "outputName": "items"
+                },
+                "settings": {
+                  "dataMapping": {
+                    "id": "id",
+                    "time": "time_ms",
+                    "value": "magnitude"
+                  },
+                  "recordView": {
+                    "timestamp": {
+                      "nodeInstanceId": "metadata",
+                      "outputName": "value",
+                      "path": "generated"
+                    }
+                  }
+                }
+              }
+            },
+            "second": {
+              "kind": "split",
+              "direction": "horizontal",
+              "first": {
+                "kind": "panel",
+                "panel": {
+                  "id": "map",
+                  "kind": "map",
+                  "title": "Map Preview",
+                  "binding": {
+                    "nodeInstanceId": "sample",
+                    "outputName": "items"
+                  },
+                  "settings": {
+                    "dataMapping": {
+                      "id": "id",
+                      "label": "place",
+                      "latitude": "latitude",
+                      "longitude": "longitude",
+                      "value": "magnitude"
+                    },
+                    "recordView": {
+                      "timestamp": {
+                        "nodeInstanceId": "metadata",
+                        "outputName": "value",
+                        "path": "generated"
+                      }
+                    }
+                  }
+                }
+              },
+              "second": {
+                "kind": "split",
+                "direction": "vertical",
+                "first": {
+                  "kind": "panel",
+                  "panel": {
+                    "id": "details",
+                    "kind": "details",
+                    "title": "Details",
+                    "binding": {
+                      "nodeInstanceId": "sample",
+                      "outputName": "items"
+                    },
+                    "settings": {
+                      "dataMapping": {
+                        "id": "id",
+                        "label": "place",
+                        "time": "time_ms",
+                        "url": "url"
+                      },
+                      "recordView": {
+                        "columns": [
+                          {
+                            "field": "place",
+                            "label": "Location"
+                          },
+                          {
+                            "field": "regions",
+                            "label": "Regions"
+                          },
+                          {
+                            "field": "magnitude",
+                            "label": "Magnitude"
+                          },
+                          {
+                            "field": "depth_km",
+                            "label": "Depth (km)"
+                          },
+                          {
+                            "field": "time_ms",
+                            "label": "Event time"
+                          },
+                          {
+                            "field": "latitude",
+                            "label": "Latitude"
+                          },
+                          {
+                            "field": "longitude",
+                            "label": "Longitude"
+                          },
+                          {
+                            "field": "id",
+                            "label": "Event ID"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "second": {
+                  "kind": "split",
+                  "direction": "vertical",
+                  "first": {
+                    "kind": "panel",
+                    "panel": {
+                      "id": "table",
+                      "kind": "table",
+                      "title": "Data Table",
+                      "binding": {
+                        "nodeInstanceId": "sample",
+                        "outputName": "items"
+                      },
+                      "settings": {
+                        "dataMapping": {
+                          "id": "id",
+                          "time": "time_ms"
+                        },
+                        "recordView": {
+                          "columns": [
+                            {
+                              "field": "place",
+                              "label": "Location"
+                            },
+                            {
+                              "field": "regions",
+                              "label": "Regions"
+                            },
+                            {
+                              "field": "magnitude",
+                              "label": "Magnitude"
+                            },
+                            {
+                              "field": "depth_km",
+                              "label": "Depth (km)"
+                            },
+                            {
+                              "field": "time_ms",
+                              "label": "Event time"
+                            },
+                            {
+                              "field": "latitude",
+                              "label": "Latitude"
+                            },
+                            {
+                              "field": "longitude",
+                              "label": "Longitude"
+                            },
+                            {
+                              "field": "id",
+                              "label": "Event ID"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "second": {
+                    "kind": "panel",
+                    "panel": {
+                      "id": "graph",
+                      "kind": "graph",
+                      "title": "Graph"
+                    }
+                  },
+                  "firstPercent": 75
+                },
+                "firstPercent": 35
+              },
+              "firstPercent": 58
+            },
+            "firstPercent": 22
+          },
+          "firstPercent": 25
+        },
+        "recommended_panels": [
+          {
+            "kind": "filters",
+            "binding": {
+              "nodeInstanceId": "sample",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "label": "place",
+                "latitude": "latitude",
+                "longitude": "longitude",
+                "time": "time_ms",
+                "value": "magnitude"
+              },
+              "recordView": {
+                "columns": [
+                  {
+                    "field": "place",
+                    "label": "Location"
+                  },
+                  {
+                    "field": "regions",
+                    "label": "Regions"
+                  },
+                  {
+                    "field": "magnitude",
+                    "label": "Magnitude"
+                  },
+                  {
+                    "field": "depth_km",
+                    "label": "Depth (km)"
+                  },
+                  {
+                    "field": "time_ms",
+                    "label": "Event time"
+                  },
+                  {
+                    "field": "latitude",
+                    "label": "Latitude"
+                  },
+                  {
+                    "field": "longitude",
+                    "label": "Longitude"
+                  },
+                  {
+                    "field": "id",
+                    "label": "Event ID"
+                  }
+                ],
+                "timestamp": {
+                  "nodeInstanceId": "metadata",
+                  "outputName": "value",
+                  "path": "generated"
+                },
+                "sourceName": "USGS / M2.5+ past 7 days",
+                "sourceUrl": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php"
+              },
+              "facetFields": [
+                {
+                  "field": "regions",
+                  "kind": "values"
+                },
+                {
+                  "field": "place",
+                  "kind": "values"
+                },
+                {
+                  "field": "magnitude",
+                  "kind": "number"
+                },
+                {
+                  "field": "depth_km",
+                  "kind": "number"
+                },
+                {
+                  "field": "time_ms",
+                  "kind": "date"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "metrics",
+            "binding": {
+              "nodeInstanceId": "sample",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "time": "time_ms",
+                "value": "magnitude"
+              },
+              "recordView": {
+                "timestamp": {
+                  "nodeInstanceId": "metadata",
+                  "outputName": "value",
+                  "path": "generated"
+                }
+              }
+            }
+          },
+          {
+            "kind": "map",
+            "binding": {
+              "nodeInstanceId": "sample",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "label": "place",
+                "latitude": "latitude",
+                "longitude": "longitude",
+                "value": "magnitude"
+              },
+              "recordView": {
+                "timestamp": {
+                  "nodeInstanceId": "metadata",
+                  "outputName": "value",
+                  "path": "generated"
+                }
+              }
+            }
+          },
+          {
+            "kind": "table",
+            "binding": {
+              "nodeInstanceId": "sample",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "time": "time_ms"
+              },
+              "recordView": {
+                "columns": [
+                  {
+                    "field": "place",
+                    "label": "Location"
+                  },
+                  {
+                    "field": "regions",
+                    "label": "Regions"
+                  },
+                  {
+                    "field": "magnitude",
+                    "label": "Magnitude"
+                  },
+                  {
+                    "field": "depth_km",
+                    "label": "Depth (km)"
+                  },
+                  {
+                    "field": "time_ms",
+                    "label": "Event time"
+                  },
+                  {
+                    "field": "latitude",
+                    "label": "Latitude"
+                  },
+                  {
+                    "field": "longitude",
+                    "label": "Longitude"
+                  },
+                  {
+                    "field": "id",
+                    "label": "Event ID"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "kind": "details",
+            "binding": {
+              "nodeInstanceId": "sample",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "label": "place",
+                "time": "time_ms",
+                "url": "url"
+              },
+              "recordView": {
+                "columns": [
+                  {
+                    "field": "place",
+                    "label": "Location"
+                  },
+                  {
+                    "field": "regions",
+                    "label": "Regions"
+                  },
+                  {
+                    "field": "magnitude",
+                    "label": "Magnitude"
+                  },
+                  {
+                    "field": "depth_km",
+                    "label": "Depth (km)"
+                  },
+                  {
+                    "field": "time_ms",
+                    "label": "Event time"
+                  },
+                  {
+                    "field": "latitude",
+                    "label": "Latitude"
+                  },
+                  {
+                    "field": "longitude",
+                    "label": "Longitude"
+                  },
+                  {
+                    "field": "id",
+                    "label": "Event ID"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

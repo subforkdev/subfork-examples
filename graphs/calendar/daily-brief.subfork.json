@@ -1,0 +1,29 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Daily Calendar Brief",
+    "description": "Parses two iCalendar feeds, merges their events, filters a day, and sorts by start time.",
+    "nodes": [
+      {"node_instance_id":"work_ics","node_id":"n_static_value","node_version":"1.0.0","title":"Work ICS","params":{"value":"BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nUID:work-1\nSUMMARY:Planning review\nDTSTART:20260901T090000Z\nDTEND:20260901T093000Z\nLOCATION:Studio\nEND:VEVENT\nBEGIN:VEVENT\nUID:work-2\nSUMMARY:Design critique\nDTSTART:20260901T133000Z\nDTEND:20260901T143000Z\nEND:VEVENT\nEND:VCALENDAR"}},
+      {"node_instance_id":"personal_ics","node_id":"n_static_value","node_version":"1.0.0","title":"Personal ICS","params":{"value":"BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nUID:personal-1\nSUMMARY:Dinner\nDTSTART:20260901T190000Z\nDTEND:20260901T203000Z\nLOCATION:Cafe\nEND:VEVENT\nBEGIN:VEVENT\nUID:personal-2\nSUMMARY:Weekend errand\nDTSTART:20260905T110000Z\nDTEND:20260905T120000Z\nEND:VEVENT\nEND:VCALENDAR"}},
+      {"node_instance_id":"parse_work","node_id":"n_ics_parse","node_version":"1.0.0","title":"Parse work"},
+      {"node_instance_id":"parse_personal","node_id":"n_ics_parse","node_version":"1.0.0","title":"Parse personal"},
+      {"node_instance_id":"merge","node_id":"n_concat_lists","node_version":"1.0.0","title":"Merge calendars"},
+      {"node_instance_id":"date","node_id":"n_date_filter","node_version":"1.0.0","title":"Sept 1 only","params":{"field":"date","from":"2026-09-01","to":"2026-09-01"}},
+      {"node_instance_id":"sort","node_id":"n_sort_rows","node_version":"1.0.0","title":"Sort by start","params":{"field":"start","direction":"asc"}},
+      {"node_instance_id":"response","node_id":"n_json_response","node_version":"1.0.0","title":"JSON Response"}
+    ],
+    "edges": [
+      {"source_node_id":"work_ics","source_output":"value","target_node_id":"parse_work","target_input":"text"},
+      {"source_node_id":"personal_ics","source_output":"value","target_node_id":"parse_personal","target_input":"text"},
+      {"source_node_id":"parse_work","source_output":"events","target_node_id":"merge","target_input":"left"},
+      {"source_node_id":"parse_personal","source_output":"events","target_node_id":"merge","target_input":"right"},
+      {"source_node_id":"merge","source_output":"items","target_node_id":"date","target_input":"items"},
+      {"source_node_id":"date","source_output":"items","target_node_id":"sort","target_input":"items"},
+      {"source_node_id":"sort","source_output":"items","target_node_id":"response","target_input":"value"}
+    ],
+    "graph_outputs":{"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"calendar","status":"runnable-probe","requires":{"nodes":["http-request","ics-parse","concat-lists","date-filter","sort-rows"],"panels":["json","table"],"future_panels":["calendar","gantt"],"capabilities":["network-for-live-feeds"],"secrets":["calendar-provider-token-for-private-feeds"]}},"canvas":{"positions":{"work_ics":{"x":80,"y":100},"personal_ics":{"x":80,"y":300},"parse_work":{"x":320,"y":100},"parse_personal":{"x":320,"y":300},"merge":{"x":560,"y":200},"date":{"x":800,"y":200},"sort":{"x":1040,"y":200},"response":{"x":1280,"y":200}}}}
+  }
+}

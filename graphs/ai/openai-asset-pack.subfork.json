@@ -1,0 +1,280 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "OpenAI Asset Pack",
+    "description": "Generates a coordinated image, speech clip, metadata JSON, and markdown campaign brief from one prompt.",
+    "nodes": [
+      {
+        "node_instance_id": "prompt",
+        "node_id": "n_text_value",
+        "node_version": "1.0.0",
+        "title": "Creative prompt",
+        "params": {
+          "text": "a tiny green terminal rover exploring an abandoned lunar datacenter"
+        }
+      },
+      {
+        "node_instance_id": "voice_script",
+        "node_id": "n_text_value",
+        "node_version": "1.0.0",
+        "title": "Voice script",
+        "params": {
+          "text": "A tiny terminal rover wakes up in a forgotten lunar datacenter, searching for the last blinking cursor."
+        }
+      },
+      {
+        "node_instance_id": "image_body",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Image body",
+        "params": {
+          "template": {
+            "model": "gpt-image-1",
+            "prompt": "{{ inputs.prompt }}",
+            "size": "1024x1024",
+            "quality": "low",
+            "output_format": "jpeg",
+            "output_compression": 70
+          }
+        },
+        "custom_inputs": {
+          "prompt": "str"
+        },
+        "exposed_inputs": ["prompt"],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "speech_body",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Speech body",
+        "params": {
+          "template": {
+            "model": "gpt-4o-mini-tts",
+            "voice": "alloy",
+            "input": "{{ inputs.script }}",
+            "response_format": "mp3"
+          }
+        },
+        "custom_inputs": {
+          "script": "str"
+        },
+        "exposed_inputs": ["script"],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "image_request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Image request",
+        "params": {
+          "url": "https://api.openai.com/v1/images/generations",
+          "method": "POST",
+          "headers": {
+            "Authorization": "Bearer {{ secrets.OPENAI_API_KEY }}",
+            "Content-Type": "application/json"
+          },
+          "timeout_seconds": 90,
+          "max_response_bytes": 20000000
+        },
+        "exposed_inputs": ["body"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["json"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "speech_request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Speech request",
+        "params": {
+          "url": "https://api.openai.com/v1/audio/speech",
+          "method": "POST",
+          "headers": {
+            "Authorization": "Bearer {{ secrets.OPENAI_API_KEY }}",
+            "Content-Type": "application/json",
+            "Accept": "audio/mpeg"
+          },
+          "timeout_seconds": 120,
+          "max_response_bytes": 25000000
+        },
+        "exposed_inputs": ["body"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["media", "status", "headers"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "image_b64",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Image base64",
+        "params": {
+          "path": "data.0.b64_json"
+        }
+      },
+      {
+        "node_instance_id": "image_media",
+        "node_id": "n_base64_image_to_media",
+        "node_version": "1.0.0",
+        "title": "Image media",
+        "params": {
+          "content_type": "image/jpeg",
+          "filename": "asset-pack-image.jpg"
+        },
+        "exposed_outputs": ["media", "url"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "metadata",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Asset metadata",
+        "params": {
+          "template": {
+            "prompt": "{{ inputs.prompt }}",
+            "voice_script": "{{ inputs.script }}",
+            "image": "{{ inputs.image }}",
+            "audio": "{{ inputs.audio }}",
+            "usage": {
+              "image_status": "{{ inputs.image_status }}",
+              "speech_status": "{{ inputs.speech_status }}"
+            }
+          }
+        },
+        "custom_inputs": {
+          "prompt": "str",
+          "script": "str",
+          "image": "media",
+          "audio": "media",
+          "image_status": "int",
+          "speech_status": "int"
+        },
+        "exposed_inputs": ["prompt", "script", "image", "audio", "image_status", "speech_status"],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "campaign_brief",
+        "node_id": "n_text_template",
+        "node_version": "1.0.0",
+        "title": "Campaign brief",
+        "params": {
+          "template": "# AI Asset Pack\n\n## Prompt\n{{ inputs.value.prompt }}\n\n## Voiceover\n{{ inputs.value.voice_script }}\n\n## Outputs\n- Image: {{ inputs.value.image.filename }}\n- Audio content type: {{ inputs.value.audio.content_type }}\n- Image request status: {{ inputs.value.usage.image_status }}\n- Speech request status: {{ inputs.value.usage.speech_status }}\n"
+        }
+      },
+      {
+        "node_instance_id": "image_response",
+        "node_id": "n_media_response",
+        "node_version": "1.0.0",
+        "title": "Image Response",
+        "params": {
+          "content_type": "image/jpeg",
+          "filename": "asset-pack-image.jpg"
+        }
+      },
+      {
+        "node_instance_id": "audio_response",
+        "node_id": "n_media_response",
+        "node_version": "1.0.0",
+        "title": "Audio Response",
+        "params": {
+          "content_type": "audio/mpeg",
+          "filename": "asset-pack-voiceover.mp3"
+        }
+      },
+      {
+        "node_instance_id": "brief_response",
+        "node_id": "n_text_response",
+        "node_version": "1.0.0",
+        "title": "Brief Response",
+        "params": {
+          "content_type": "text/markdown; charset=utf-8"
+        }
+      },
+      {
+        "node_instance_id": "metadata_response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Metadata Response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "prompt", "source_output": "text", "target_node_id": "image_body", "target_input": "prompt"},
+      {"source_node_id": "voice_script", "source_output": "text", "target_node_id": "speech_body", "target_input": "script"},
+      {"source_node_id": "image_body", "source_output": "value", "target_node_id": "image_request", "target_input": "body"},
+      {"source_node_id": "speech_body", "source_output": "value", "target_node_id": "speech_request", "target_input": "body"},
+      {"source_node_id": "image_request", "source_output": "json", "target_node_id": "image_b64", "target_input": "value"},
+      {"source_node_id": "image_b64", "source_output": "value", "target_node_id": "image_media", "target_input": "b64_json"},
+      {"source_node_id": "prompt", "source_output": "text", "target_node_id": "metadata", "target_input": "prompt"},
+      {"source_node_id": "voice_script", "source_output": "text", "target_node_id": "metadata", "target_input": "script"},
+      {"source_node_id": "image_media", "source_output": "media", "target_node_id": "metadata", "target_input": "image"},
+      {"source_node_id": "speech_request", "source_output": "media", "target_node_id": "metadata", "target_input": "audio"},
+      {"source_node_id": "image_request", "source_output": "status", "target_node_id": "metadata", "target_input": "image_status"},
+      {"source_node_id": "speech_request", "source_output": "status", "target_node_id": "metadata", "target_input": "speech_status"},
+      {"source_node_id": "metadata", "source_output": "value", "target_node_id": "campaign_brief", "target_input": "value"},
+      {"source_node_id": "image_media", "source_output": "media", "target_node_id": "image_response", "target_input": "media"},
+      {"source_node_id": "speech_request", "source_output": "media", "target_node_id": "audio_response", "target_input": "media"},
+      {"source_node_id": "campaign_brief", "source_output": "value", "target_node_id": "brief_response", "target_input": "text"},
+      {"source_node_id": "metadata", "source_output": "value", "target_node_id": "metadata_response", "target_input": "value"}
+    ],
+    "graph_outputs": {
+      "image": {
+        "node_instance_id": "image_media",
+        "output_name": "media"
+      },
+      "audio": {
+        "node_instance_id": "speech_request",
+        "output_name": "media"
+      },
+      "brief": {
+        "node_instance_id": "campaign_brief",
+        "output_name": "value"
+      },
+      "metadata": {
+        "node_instance_id": "metadata",
+        "output_name": "value"
+      },
+      "response": {
+        "node_instance_id": "brief_response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "ai",
+        "status": "provider-backed-branching-probe",
+        "summary": "One prompt fans out into image generation, speech generation, metadata assembly, and markdown reporting.",
+        "requires": {
+          "nodes": ["n_text_value", "n_json_template", "n_fetch_url", "n_json_path", "n_base64_image_to_media", "n_text_template", "n_media_response", "n_text_response", "n_json_response"],
+          "panels": ["image", "audio", "markdown", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": ["OPENAI_API_KEY"]
+        }
+      },
+      "canvas": {
+        "positions": {
+          "prompt": {"x": 60, "y": 120},
+          "voice_script": {"x": 60, "y": 360},
+          "image_body": {"x": 340, "y": 100},
+          "speech_body": {"x": 340, "y": 360},
+          "image_request": {"x": 620, "y": 100},
+          "speech_request": {"x": 620, "y": 360},
+          "image_b64": {"x": 900, "y": 100},
+          "image_media": {"x": 1160, "y": 100},
+          "metadata": {"x": 1160, "y": 340},
+          "campaign_brief": {"x": 1440, "y": 340},
+          "image_response": {"x": 1440, "y": 80},
+          "audio_response": {"x": 900, "y": 500},
+          "brief_response": {"x": 1720, "y": 320},
+          "metadata_response": {"x": 1440, "y": 520}
+        },
+        "recommended_panels": [
+          {"kind": "image", "binding": {"nodeInstanceId": "image_media", "outputName": "media"}},
+          {"kind": "audio", "binding": {"nodeInstanceId": "speech_request", "outputName": "media"}},
+          {"kind": "markdown", "binding": {"nodeInstanceId": "campaign_brief", "outputName": "value"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "metadata", "outputName": "value"}}
+        ]
+      }
+    }
+  }
+}

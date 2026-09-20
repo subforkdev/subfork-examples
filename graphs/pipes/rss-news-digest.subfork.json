@@ -1,0 +1,23 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "RSS News Digest",
+    "description": "Prototype of a Yahoo Pipes-style news digest: source items, filter by topic, sort by score, limit, and return JSON.",
+    "nodes": [
+      {"node_instance_id":"items","node_id":"n_static_value","node_version":"1.0.0","title":"Mock feed items","params":{"value":[{"title":"Subfork adds graph templates","topic":"subfork","score":9,"url":"https://subfork.dev/blog/templates"},{"title":"Database launch notes","topic":"database","score":6,"url":"https://example.com/database"},{"title":"Subfork execution profiles","topic":"subfork","score":8,"url":"https://subfork.dev/blog/execution-profiles"},{"title":"Weather API changes","topic":"api","score":4,"url":"https://example.com/weather"}]}},
+      {"node_instance_id":"topic","node_id":"n_filter_rows","node_version":"1.0.0","title":"Topic is subfork","params":{"field":"topic","equals":"subfork"}},
+      {"node_instance_id":"ranked","node_id":"n_sort_rows","node_version":"1.0.0","title":"Highest score first","params":{"field":"score","direction":"desc"}},
+      {"node_instance_id":"limit","node_id":"n_limit","node_version":"1.0.0","title":"Top stories","params":{"count":3}},
+      {"node_instance_id":"response","node_id":"n_json_response","node_version":"1.0.0","title":"JSON Response"}
+    ],
+    "edges": [
+      {"source_node_id":"items","source_output":"value","target_node_id":"topic","target_input":"items"},
+      {"source_node_id":"topic","source_output":"items","target_node_id":"ranked","target_input":"items"},
+      {"source_node_id":"ranked","source_output":"items","target_node_id":"limit","target_input":"items"},
+      {"source_node_id":"limit","source_output":"items","target_node_id":"response","target_input":"value"}
+    ],
+    "graph_outputs":{"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"pipes","status":"runnable-probe","requires":{"nodes":["rss-fetch","feed-parse","template-render"],"panels":["table","html"],"capabilities":["network"],"secrets":[]}},"canvas":{"positions":{"items":{"x":80,"y":180},"topic":{"x":320,"y":180},"ranked":{"x":560,"y":180},"limit":{"x":800,"y":180},"response":{"x":1040,"y":180}}}}
+  }
+}

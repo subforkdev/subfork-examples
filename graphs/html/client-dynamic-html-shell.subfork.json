@@ -1,0 +1,17 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Client Dynamic HTML Shell",
+    "description": "Returns a static-looking HTML shell whose JavaScript can call graph endpoints later.",
+    "nodes": [
+      {"node_instance_id":"template","node_id":"n_html_template","node_version":"1.0.0","title":"HTML Shell","params":{"template":"<!doctype html>\n<html>\n<head><meta charset=\"utf-8\"><title>Graph-backed shell</title><style>body{font-family:ui-sans-serif,system-ui;margin:3rem;background:#10130f;color:#e9f1e8}.card{max-width:48rem;border:1px solid #526a3f;padding:1.25rem;background:#1c2219}button{padding:.65rem .9rem;background:#f6af3b;border:0}</style></head>\n<body><main class=\"card\"><h1>Client dynamic shell</h1><p>This HTML is returned by one graph. The button is a placeholder for calling another graph endpoint.</p><button id=\"load\">Load graph data</button><pre id=\"out\">No endpoint configured yet.</pre></main><script>document.getElementById('load').addEventListener('click',async()=>{document.getElementById('out').textContent='Later: fetch a graph endpoint such as /api/.../response';});</script></body>\n</html>"}},
+      {"node_instance_id":"response","node_id":"n_html_response","node_version":"1.0.0","title":"HTML Response"}
+    ],
+    "edges": [
+      {"source_node_id":"template","source_output":"html","target_node_id":"response","target_input":"html"}
+    ],
+    "graph_outputs":{"html":{"node_instance_id":"template","output_name":"html"},"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"html","status":"runnable-probe","requires":{"nodes":["n_html_template","n_html_response"],"panels":["html"],"capabilities":[]}},"canvas":{"positions":{"template":{"x":160,"y":180},"response":{"x":460,"y":180}},"recommended_panels":[{"kind":"html","binding":{"nodeInstanceId":"template","outputName":"html"}}]}}
+  }
+}

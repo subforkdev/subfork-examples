@@ -1,0 +1,102 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Live USGS Earthquake Map",
+    "description": "Fetches recent public USGS earthquake GeoJSON and displays it with Map, Table, and JSON panels.",
+    "nodes": [
+      {
+        "node_instance_id": "feed_url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "USGS GeoJSON URL",
+        "params": {
+          "url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson"
+        }
+      },
+      {
+        "node_instance_id": "fetch",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch earthquakes",
+        "params": {
+          "method": "GET",
+          "headers": {
+            "Accept": "application/geo+json, application/json"
+          },
+          "timeout_seconds": 30,
+          "max_response_bytes": 5000000
+        },
+        "exposed_inputs": [
+          "url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "json",
+          "status"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "features",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Feature rows",
+        "params": {
+          "path": "features"
+        }
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "GeoJSON Response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "feed_url", "source_output": "url", "target_node_id": "fetch", "target_input": "url"},
+      {"source_node_id": "fetch", "source_output": "json", "target_node_id": "features", "target_input": "value"},
+      {"source_node_id": "fetch", "source_output": "json", "target_node_id": "response", "target_input": "value"}
+    ],
+    "graph_outputs": {
+      "geojson": {
+        "node_instance_id": "fetch",
+        "output_name": "json"
+      },
+      "features": {
+        "node_instance_id": "features",
+        "output_name": "value"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "geo",
+        "status": "provider-backed-probe",
+        "summary": "Remote public GeoJSON fetch that can be bound directly to Map Preview, Table, and JSON panels.",
+        "requires": {
+          "nodes": ["n_url_input", "n_fetch_url", "n_json_path", "n_json_response"],
+          "panels": ["map", "table", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "feed_url": {"x": 80, "y": 180},
+          "fetch": {"x": 360, "y": 180},
+          "features": {"x": 640, "y": 90},
+          "response": {"x": 640, "y": 250}
+        },
+        "recommended_panels": [
+          {"kind": "map", "binding": {"nodeInstanceId": "fetch", "outputName": "json"}},
+          {"kind": "table", "binding": {"nodeInstanceId": "features", "outputName": "value"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+        ]
+      }
+    }
+  }
+}

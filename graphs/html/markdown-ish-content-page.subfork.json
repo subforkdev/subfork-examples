@@ -1,0 +1,19 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Markdown-ish Content Page",
+    "description": "Uses Text Value as static multiline content and wraps it in an HTML page.",
+    "nodes": [
+      {"node_instance_id":"content","node_id":"n_text_value","node_version":"1.0.0","title":"Page Content","params":{"text":"# Notes\n\nThis is static text content for now.\n\n- Later this can become Markdown Parse.\n- Today it proves multiline text into HTML."}},
+      {"node_instance_id":"template","node_id":"n_html_template","node_version":"1.0.0","title":"HTML Wrapper","params":{"template":"<!doctype html>\n<html>\n<head><meta charset=\"utf-8\"><title>Markdown-ish Content</title><style>body{font-family:ui-sans-serif,system-ui;margin:3rem;background:#fffaf0;color:#15211d}pre{white-space:pre-wrap;line-height:1.55;border-left:4px solid #9fcf77;padding:1rem;background:#f0ead5}</style></head>\n<body><main><h1>Markdown-ish Content</h1><pre>{{ inputs.content }}</pre></main></body>\n</html>"},"custom_inputs":{"content":"str"},"exposed_inputs":["content"],"inputs_visibility_configured":true},
+      {"node_instance_id":"response","node_id":"n_html_response","node_version":"1.0.0","title":"HTML Response"}
+    ],
+    "edges": [
+      {"source_node_id":"content","source_output":"text","target_node_id":"template","target_input":"content"},
+      {"source_node_id":"template","source_output":"html","target_node_id":"response","target_input":"html"}
+    ],
+    "graph_outputs":{"html":{"node_instance_id":"template","output_name":"html"},"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"html","status":"runnable-probe","requires":{"nodes":["n_text_value","n_html_template","n_html_response"],"panels":["html"],"capabilities":[]}},"canvas":{"positions":{"content":{"x":80,"y":180},"template":{"x":360,"y":180},"response":{"x":660,"y":180}},"recommended_panels":[{"kind":"html","binding":{"nodeInstanceId":"template","outputName":"html"}}]}}
+  }
+}

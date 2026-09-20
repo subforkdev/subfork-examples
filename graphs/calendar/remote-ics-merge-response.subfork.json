@@ -1,0 +1,31 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Remote ICS Merge Response",
+    "description": "Fetches two public iCalendar URLs, merges events, sorts chronologically, and returns a new iCalendar response.",
+    "nodes": [
+      {"node_instance_id":"us_holidays_url","node_id":"n_url_input","node_version":"1.0.0","title":"US holidays URL","params":{"url":"https://www.calendarlabs.com/ical-calendar/ics/76/US_Holidays.ics"}},
+      {"node_instance_id":"nyse_holidays_url","node_id":"n_url_input","node_version":"1.0.0","title":"NYSE holidays URL","params":{"url":"https://www.calendarlabs.com/ical-calendar/ics/577/NYSE_Market_Holidays.ics"}},
+      {"node_instance_id":"fetch_us","node_id":"n_fetch_url","node_version":"1.0.0","title":"Fetch US holidays","params":{"method":"GET"}},
+      {"node_instance_id":"fetch_nyse","node_id":"n_fetch_url","node_version":"1.0.0","title":"Fetch NYSE holidays","params":{"method":"GET"}},
+      {"node_instance_id":"parse_us","node_id":"n_ics_parse","node_version":"1.0.0","title":"Parse US holidays"},
+      {"node_instance_id":"parse_nyse","node_id":"n_ics_parse","node_version":"1.0.0","title":"Parse NYSE holidays"},
+      {"node_instance_id":"merge","node_id":"n_concat_lists","node_version":"1.0.0","title":"Merge events"},
+      {"node_instance_id":"sort","node_id":"n_sort_rows","node_version":"1.0.0","title":"Chronological","params":{"field":"start","direction":"asc"}},
+      {"node_instance_id":"response","node_id":"n_ics_response","node_version":"1.0.0","title":"ICS Response","params":{"name":"Merged Subfork Calendar"}}
+    ],
+    "edges": [
+      {"source_node_id":"us_holidays_url","source_output":"url","target_node_id":"fetch_us","target_input":"url"},
+      {"source_node_id":"nyse_holidays_url","source_output":"url","target_node_id":"fetch_nyse","target_input":"url"},
+      {"source_node_id":"fetch_us","source_output":"body","target_node_id":"parse_us","target_input":"text"},
+      {"source_node_id":"fetch_nyse","source_output":"body","target_node_id":"parse_nyse","target_input":"text"},
+      {"source_node_id":"parse_us","source_output":"events","target_node_id":"merge","target_input":"left"},
+      {"source_node_id":"parse_nyse","source_output":"events","target_node_id":"merge","target_input":"right"},
+      {"source_node_id":"merge","source_output":"items","target_node_id":"sort","target_input":"items"},
+      {"source_node_id":"sort","source_output":"items","target_node_id":"response","target_input":"events"}
+    ],
+    "graph_outputs":{"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"calendar","status":"network-probe","requires":{"nodes":["url-input","http-request","ics-parse","concat-lists","sort-rows","ics-response"],"panels":["json"],"capabilities":["network"],"future_panels":["calendar","table"]}},"canvas":{"positions":{"us_holidays_url":{"x":80,"y":80},"nyse_holidays_url":{"x":80,"y":280},"fetch_us":{"x":320,"y":80},"fetch_nyse":{"x":320,"y":280},"parse_us":{"x":560,"y":80},"parse_nyse":{"x":560,"y":280},"merge":{"x":800,"y":180},"sort":{"x":1040,"y":180},"response":{"x":1280,"y":180}}}}
+  }
+}

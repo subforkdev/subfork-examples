@@ -1,0 +1,524 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "News Constellation",
+    "description": "Hacker News, Ars Technica, and GitHub Blog headlines arranged into source constellations. Search, filter, inspect dates, and copy source URLs. Manual refresh; no AI topic clustering.",
+    "nodes": [
+      {
+        "node_instance_id": "hn_url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "Hacker News / feed URL",
+        "params": {
+          "url": "https://news.ycombinator.com/rss"
+        }
+      },
+      {
+        "node_instance_id": "hn_fetch",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch Hacker News",
+        "params": {
+          "method": "GET",
+          "timeout_seconds": 30,
+          "max_response_bytes": 2000000
+        },
+        "exposed_inputs": [
+          "url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "body",
+          "headers",
+          "status"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "hn_parse",
+        "node_id": "n_rss_parse",
+        "node_version": "1.0.0",
+        "title": "Parse Hacker News",
+        "params": {}
+      },
+      {
+        "node_instance_id": "hn_items",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Headlines and links / Hacker News",
+        "params": {
+          "mapping": {
+            "title": "title",
+            "url": "url",
+            "published": "published",
+            "id": "id"
+          }
+        }
+      },
+      {
+        "node_instance_id": "ars_url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "Ars Technica / feed URL",
+        "params": {
+          "url": "https://feeds.arstechnica.com/arstechnica/index"
+        }
+      },
+      {
+        "node_instance_id": "ars_fetch",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch Ars Technica",
+        "params": {
+          "method": "GET",
+          "timeout_seconds": 30,
+          "max_response_bytes": 2000000
+        },
+        "exposed_inputs": [
+          "url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "body",
+          "headers",
+          "status"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "ars_parse",
+        "node_id": "n_rss_parse",
+        "node_version": "1.0.0",
+        "title": "Parse Ars Technica",
+        "params": {}
+      },
+      {
+        "node_instance_id": "ars_items",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Headlines and links / Ars Technica",
+        "params": {
+          "mapping": {
+            "title": "title",
+            "url": "url",
+            "published": "published",
+            "id": "id"
+          }
+        }
+      },
+      {
+        "node_instance_id": "github_url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "GitHub Blog / feed URL",
+        "params": {
+          "url": "https://github.blog/feed/"
+        }
+      },
+      {
+        "node_instance_id": "github_fetch",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch GitHub Blog",
+        "params": {
+          "method": "GET",
+          "timeout_seconds": 30,
+          "max_response_bytes": 2000000
+        },
+        "exposed_inputs": [
+          "url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "body",
+          "headers",
+          "status"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "github_parse",
+        "node_id": "n_rss_parse",
+        "node_version": "1.0.0",
+        "title": "Parse GitHub Blog",
+        "params": {}
+      },
+      {
+        "node_instance_id": "github_items",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Headlines and links / GitHub Blog",
+        "params": {
+          "mapping": {
+            "title": "title",
+            "url": "url",
+            "published": "published",
+            "id": "id"
+          }
+        }
+      },
+      {
+        "node_instance_id": "dataset",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Three-feed snapshot",
+        "params": {
+          "template": {
+            "schema_version": "news-constellation/1",
+            "feeds": [
+              {
+                "name": "Hacker News",
+                "url": "{{ inputs.hn_url }}",
+                "items": "{{ inputs.hn }}",
+                "headers": "{{ inputs.hn_headers }}"
+              },
+              {
+                "name": "Ars Technica",
+                "url": "{{ inputs.ars_url }}",
+                "items": "{{ inputs.ars }}",
+                "headers": "{{ inputs.ars_headers }}"
+              },
+              {
+                "name": "GitHub Blog",
+                "url": "{{ inputs.github_url }}",
+                "items": "{{ inputs.github }}",
+                "headers": "{{ inputs.github_headers }}"
+              }
+            ]
+          }
+        },
+        "custom_inputs": {
+          "hn": "json",
+          "hn_url": "str",
+          "hn_headers": "json",
+          "ars": "json",
+          "ars_url": "str",
+          "ars_headers": "json",
+          "github": "json",
+          "github_url": "str",
+          "github_headers": "json"
+        },
+        "exposed_inputs": [
+          "hn",
+          "hn_url",
+          "hn_headers",
+          "ars",
+          "ars_url",
+          "ars_headers",
+          "github",
+          "github_url",
+          "github_headers"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "encode",
+        "node_id": "n_json_stringify",
+        "node_version": "1.0.0",
+        "title": "HTML-safe feed data",
+        "params": {
+          "html_safe": true
+        }
+      },
+      {
+        "node_instance_id": "view",
+        "node_id": "n_html_template",
+        "node_version": "1.0.0",
+        "title": "News Constellation / star atlas",
+        "params": {
+          "template": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" />\n    <title>News Constellation</title>\n    <style>\n      :root {\n        color-scheme: dark;\n        --bg: #080f19;\n        --ink: #dfebef;\n        --muted: #9eafbe;\n        --line: #2b3a4c;\n        --gold: #eab66d;\n      }\n      * {\n        box-sizing: border-box;\n      }\n      body {\n        margin: 0;\n        color: var(--ink);\n        background:\n          radial-gradient(ellipse at 25% 45%, #19313c88, transparent 55%),\n          radial-gradient(ellipse at 80% 60%, #27304c66, transparent 60%),\n          var(--bg);\n        font:\n          15px/1.5 Georgia,\n          serif;\n      }\n      main {\n        max-width: 1500px;\n        margin: auto;\n        padding: 32px;\n      }\n      header {\n        display: flex;\n        justify-content: space-between;\n        gap: 28px;\n        align-items: end;\n      }\n      .eyebrow,\n      label,\n      button,\n      input,\n      select,\n      .small,\n      footer {\n        font-family: monospace;\n      }\n      .eyebrow {\n        font-size: 11px;\n        letter-spacing: 0.2em;\n        color: var(--gold);\n      }\n      h1 {\n        font-size: clamp(38px, 5vw, 68px);\n        font-weight: 400;\n        letter-spacing: -0.035em;\n        margin: 10px 0;\n      }\n      h1 em {\n        color: var(--gold);\n      }\n      p {\n        margin: 8px 0;\n      }\n      .small {\n        font-size: 11px;\n        color: var(--muted);\n        line-height: 1.7;\n      }\n      .controls {\n        display: flex;\n        flex-wrap: wrap;\n        gap: 18px;\n        align-items: end;\n        border-block: 1px solid var(--line);\n        padding: 16px 0;\n        margin-top: 24px;\n      }\n      label {\n        display: grid;\n        gap: 5px;\n        color: var(--muted);\n        font-size: 11px;\n      }\n      input,\n      select,\n      button {\n        padding: 9px 12px;\n        background: #112030;\n        color: var(--ink);\n        border: 1px solid #3b5063;\n        border-radius: 3px;\n        font-size: 12px;\n      }\n      input[type=\"search\"] {\n        width: min(310px, 75vw);\n      }\n      button {\n        cursor: pointer;\n      }\n      button:hover {\n        background: #25394b;\n      }\n      :focus-visible {\n        outline: 2px solid var(--gold);\n        outline-offset: 3px;\n      }\n      .layout {\n        display: grid;\n        grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr);\n        gap: 32px;\n        margin-top: 20px;\n      }\n      svg {\n        display: block;\n        width: 100%;\n        height: auto;\n        min-width: 650px;\n      }\n      .sky-scroll {\n        overflow: auto;\n      }\n      svg text {\n        fill: var(--muted);\n        font: 12px monospace;\n        letter-spacing: 0.1em;\n      }\n      .star {\n        cursor: pointer;\n        outline: none;\n      }\n      .halo {\n        opacity: 0;\n      }\n      .star:hover .halo,\n      .star:focus .halo,\n      .star[aria-pressed=\"true\"] .halo {\n        opacity: 1;\n      }\n      .source-legend {\n        display: flex;\n        gap: 20px;\n        flex-wrap: wrap;\n        margin-top: 14px;\n      }\n      .source-legend i {\n        display: inline-block;\n        width: 7px;\n        height: 7px;\n        border-radius: 50%;\n        margin-right: 7px;\n      }\n      aside {\n        padding-top: 16px;\n      }\n      h2 {\n        font-weight: 400;\n        font-size: 24px;\n        margin: 0 0 12px;\n      }\n      #detail {\n        min-height: 230px;\n        padding: 18px;\n        background: #142534;\n        border-left: 2px solid var(--gold);\n        overflow-wrap: anywhere;\n      }\n      #detail h3 {\n        font-size: 22px;\n        font-weight: 400;\n        margin: 0 0 12px;\n      }\n      #detail input {\n        width: 100%;\n        margin-top: 8px;\n      }\n      #articles {\n        display: grid;\n        gap: 6px;\n        max-height: 340px;\n        overflow: auto;\n        margin-top: 18px;\n      }\n      #articles button {\n        text-align: left;\n        line-height: 1.5;\n      }\n      #articles button small {\n        display: block;\n        color: var(--muted);\n      }\n      #articles button[aria-pressed=\"true\"] {\n        border-color: var(--gold);\n      }\n      #error {\n        color: #ffab8d;\n      }\n      #status {\n        margin-top: 12px;\n      }\n      footer {\n        font-size: 11px;\n        color: var(--muted);\n        padding-top: 18px;\n        margin-top: 24px;\n        border-top: 1px solid var(--line);\n      }\n      @media (max-width: 760px) {\n        main {\n          padding: 20px 14px;\n        }\n        header {\n          display: block;\n        }\n        .layout {\n          grid-template-columns: 1fr;\n          gap: 10px;\n        }\n      }\n    </style>\n  </head>\n  <body>\n    <main>\n      <header>\n        <div>\n          <div class=\"eyebrow\">SUBFORK / SIGNAL ATLAS / 05</div>\n          <h1>News <em>Constellation.</em></h1>\n          <p>A small sky of technology. Follow a star back to its source.</p>\n        </div>\n        <div class=\"small\">\n          THREE FEEDS / ONE SNAPSHOT<br />Grouped by source, not inferred\n          topic.<br />Run the graph to refresh.\n        </div>\n      </header>\n      <div class=\"controls\">\n        <label\n          >Search headlines<input\n            id=\"search\"\n            type=\"search\"\n            placeholder=\"AI, hardware, open source...\" /></label\n        ><label\n          >Source<select id=\"source\">\n            <option value=\"all\">All sources</option>\n          </select></label\n        ><label\n          >List order<select id=\"order\">\n            <option value=\"feed\">Feed order</option>\n            <option value=\"date\">Newest dated first</option>\n          </select></label\n        ><label\n          >Constellation lines<select id=\"lines\">\n            <option value=\"on\">On</option>\n            <option value=\"off\">Off</option>\n          </select></label\n        >\n      </div>\n      <p id=\"error\" role=\"alert\" hidden></p>\n      <p id=\"status\" class=\"small\" aria-live=\"polite\"></p>\n      <div class=\"layout\">\n        <section>\n          <div\n            class=\"sky-scroll\"\n            tabindex=\"0\"\n            aria-label=\"Constellation canvas. Scroll horizontally on small screens.\"\n          >\n            <svg\n              id=\"sky\"\n              viewBox=\"0 0 960 680\"\n              role=\"group\"\n              aria-label=\"Article stars grouped by feed. Select a star or use the headline list.\"\n            >\n              <g id=\"background\"></g>\n              <g id=\"connections\"></g>\n              <g id=\"labels\"></g>\n              <g id=\"stars\"></g>\n            </svg>\n          </div>\n          <div id=\"legend\" class=\"source-legend small\"></div>\n          <div id=\"dates\" class=\"small\"></div>\n        </section>\n        <aside>\n          <h2>Signal detail</h2>\n          <div id=\"detail\" aria-live=\"polite\">\n            Select an article star to inspect its headline, feed date, and\n            destination.\n          </div>\n          <div id=\"articles\" aria-label=\"Headline index\"></div>\n        </aside>\n      </div>\n      <footer>\n        Headlines and links from Hacker News, Ars Technica, and GitHub Blog. No\n        full articles or images are republished. Lines and position are\n        decorative connections within a feed, not evidence of semantic\n        similarity. All article stars have equal size; this does not encode\n        votes, popularity, or importance. Undated items stay undated. Feed\n        publication dates are displayed in UTC. Public RSS availability does not\n        itself grant unrestricted republication rights.\n      </footer>\n    </main>\n    <!-- prettier-ignore -->\n    <script id=\"dataset\" type=\"application/json\">{{ inputs.dataset_json }}</script>\n    <script>\n      \"use strict\";\n      const $ = (id) => document.getElementById(id),\n        colors = [\"#edb767\", \"#77cad1\", \"#db9890\"],\n        centers = [\n          [235, 230],\n          [720, 230],\n          [475, 495],\n        ];\n      function safeUrl(value) {\n        try {\n          const u = new URL(value);\n          if (\n            ![\"http:\", \"https:\"].includes(u.protocol) ||\n            u.username ||\n            u.password\n          )\n            return null;\n          u.hash = \"\";\n          return u.href;\n        } catch {\n          return null;\n        }\n      }\n      function prepare(data) {\n        if (!Array.isArray(data.feeds) || data.feeds.length !== 3)\n          throw new Error(\"Expected three feed groups.\");\n        let invalid = 0,\n          duplicates = 0,\n          truncated = 0;\n        const feeds = data.feeds.map((feed, index) => {\n          if (!Array.isArray(feed.items))\n            throw new Error(\"A feed has no parsed item list.\");\n          const seen = new Set(),\n            items = [];\n          for (const item of feed.items) {\n            const url = safeUrl(item?.url);\n            if (!url || typeof item.title !== \"string\" || !item.title.trim()) {\n              invalid++;\n              continue;\n            }\n            if (seen.has(url)) {\n              duplicates++;\n              continue;\n            }\n            seen.add(url);\n            const parsed = Date.parse(item.published),\n              time = Number.isFinite(parsed) ? parsed : null;\n            items.push({\n              title: item.title.trim(),\n              url,\n              time,\n              rawDate: typeof item.published === \"string\" ? item.published : \"\",\n              rank: items.length + 1,\n              source: index,\n              key: index + \":\" + url,\n            });\n          }\n          truncated += Math.max(0, items.length - 24);\n          return {\n            name: String(feed.name || \"Feed \" + (index + 1)),\n            url: safeUrl(feed.url),\n            headers: feed.headers || {},\n            items: items.slice(0, 24),\n          };\n        });\n        return { feeds, invalid, duplicates, truncated };\n      }\n      function svg(tag, attrs = {}) {\n        const el = document.createElementNS(\"http://www.w3.org/2000/svg\", tag);\n        for (const [k, v] of Object.entries(attrs))\n          el.setAttribute(k, String(v));\n        return el;\n      }\n      function timestamp(time) {\n        return time === null\n          ? \"No usable feed date\"\n          : new Date(time)\n              .toISOString()\n              .replace(\"T\", \" \")\n              .replace(/\\.\\d{3}Z$/, \" UTC\");\n      }\n      try {\n        const data = prepare(JSON.parse($(\"dataset\").textContent));\n        let selected = null;\n        const pairs = new Map();\n        data.feeds.forEach((feed, index) => {\n          const option = document.createElement(\"option\");\n          option.value = String(index);\n          option.textContent = feed.name;\n          $(\"source\").append(option);\n          const label = document.createElement(\"span\"),\n            dot = document.createElement(\"i\");\n          dot.style.background = colors[index];\n          label.append(dot, document.createTextNode(feed.name));\n          $(\"legend\").append(label);\n          const date = document.createElement(\"div\");\n          date.textContent =\n            feed.name +\n            \" / HTTP response date: \" +\n            String(feed.headers.date || feed.headers.Date || \"not supplied\");\n          $(\"dates\").append(date);\n        });\n        // Fixed decorative dust does not count as article stars and receives no interaction.\n        for (let i = 0; i < 95; i++)\n          $(\"background\").append(\n            svg(\"circle\", {\n              cx: ((i * 137.51) % 950) + 5,\n              cy: ((i * 89.17) % 665) + 5,\n              r: i % 4 === 0 ? 1 : 0.6,\n              fill: \"#8499ae\",\n              opacity: 0.2,\n            }),\n          );\n        const positioned = data.feeds.flatMap((feed, source) =>\n          feed.items.map((row, index) => {\n            const angle = index * 2.399963,\n              radius = 25 + Math.sqrt(index) * 29,\n              [cx, cy] = centers[source];\n            return {\n              ...row,\n              x: cx + Math.cos(angle) * radius,\n              y: cy + Math.sin(angle) * radius,\n            };\n          }),\n        );\n        function inspect(row) {\n          selected = row;\n          $(\"detail\").replaceChildren();\n          const title = document.createElement(\"h3\");\n          title.textContent = row.title;\n          const feed = document.createElement(\"p\");\n          feed.className = \"small\";\n          feed.textContent =\n            data.feeds[row.source].name +\n            \" / position \" +\n            row.rank +\n            \" in feed\";\n          const date = document.createElement(\"p\");\n          date.className = \"small\";\n          date.textContent = timestamp(row.time);\n          const label = document.createElement(\"label\");\n          label.textContent = \"Article URL\";\n          const input = document.createElement(\"input\");\n          input.type = \"text\";\n          input.readOnly = true;\n          input.value = row.url;\n          input.addEventListener(\"focus\", () => input.select());\n          label.append(input);\n          const note = document.createElement(\"p\");\n          note.className = \"small\";\n          note.textContent =\n            \"Select the URL to copy it. The current preview sandbox blocks new tabs.\";\n          $(\"detail\").append(title, feed, date, label, note);\n          for (const [key, nodes] of pairs)\n            for (const node of nodes)\n              node.setAttribute(\"aria-pressed\", String(key === row.key));\n        }\n        function draw() {\n          const search = $(\"search\").value.trim().toLowerCase(),\n            source = $(\"source\").value;\n          const visible = positioned.filter(\n            (row) =>\n              (source === \"all\" || String(row.source) === source) &&\n              row.title.toLowerCase().includes(search),\n          );\n          if (selected && !visible.some((row) => row.key === selected.key)) {\n            selected = null;\n            $(\"detail\").textContent =\n              \"Select an article from the filtered result.\";\n          }\n          $(\"status\").textContent =\n            visible.length +\n            \" of \" +\n            positioned.length +\n            \" article stars shown. Up to 24 per feed. \" +\n            (data.truncated\n              ? data.truncated +\n                \" additional items outside the snapshot display. \"\n              : \"\") +\n            (data.duplicates\n              ? data.duplicates + \" duplicate URLs within feeds removed. \"\n              : \"\") +\n            (data.invalid\n              ? data.invalid + \" invalid titles/URLs omitted. \"\n              : \"\") +\n            (!visible.length ? \"No matching headlines.\" : \"\");\n          $(\"stars\").replaceChildren();\n          $(\"connections\").replaceChildren();\n          $(\"labels\").replaceChildren();\n          $(\"articles\").replaceChildren();\n          pairs.clear();\n          data.feeds.forEach((feed, index) => {\n            if (source !== \"all\" && source !== String(index)) return;\n            const [cx, cy] = centers[index],\n              label = svg(\"text\", {\n                x: cx,\n                y: cy - 170,\n                \"text-anchor\": \"middle\",\n                style: \"fill:\" + colors[index],\n              });\n            label.textContent = feed.name.toUpperCase();\n            $(\"labels\").append(label);\n            if ($(\"lines\").value === \"on\") {\n              const members = visible.filter((row) => row.source === index);\n              members.forEach((row, i) => {\n                if (!i) return;\n                const neighbors = members\n                  .slice(0, i)\n                  .sort(\n                    (a, b) =>\n                      Math.hypot(a.x - row.x, a.y - row.y) -\n                      Math.hypot(b.x - row.x, b.y - row.y),\n                  );\n                const other = neighbors[0];\n                $(\"connections\").append(\n                  svg(\"path\", {\n                    d:\n                      \"M\" + row.x + \",\" + row.y + \"L\" + other.x + \",\" + other.y,\n                    fill: \"none\",\n                    stroke: colors[index],\n                    \"stroke-width\": 0.8,\n                    opacity: 0.3,\n                  }),\n                );\n              });\n            }\n          });\n          for (const row of visible) {\n            const group = svg(\"g\", {\n              class: \"star\",\n              role: \"button\",\n              tabindex: 0,\n              \"aria-label\": data.feeds[row.source].name + \": \" + row.title,\n              \"aria-pressed\": String(selected?.key === row.key),\n            });\n            group.append(\n              svg(\"circle\", {\n                class: \"halo\",\n                cx: row.x,\n                cy: row.y,\n                r: 14,\n                fill: \"none\",\n                stroke: colors[row.source],\n                \"stroke-width\": 1.5,\n              }),\n              svg(\"circle\", {\n                cx: row.x,\n                cy: row.y,\n                r: 10,\n                fill: colors[row.source],\n                opacity: 0.12,\n              }),\n              svg(\"circle\", {\n                cx: row.x,\n                cy: row.y,\n                r: 4,\n                fill: colors[row.source],\n              }),\n            );\n            const title = svg(\"title\");\n            title.textContent = row.title;\n            group.append(title);\n            group.addEventListener(\"click\", () => inspect(row));\n            group.addEventListener(\"focus\", () => inspect(row));\n            group.addEventListener(\"keydown\", (e) => {\n              if (e.key === \"Enter\" || e.key === \" \") {\n                e.preventDefault();\n                inspect(row);\n              }\n            });\n            $(\"stars\").append(group);\n            pairs.set(row.key, [group]);\n          }\n          const ordered =\n            $(\"order\").value === \"date\"\n              ? [...visible].sort(\n                  (a, b) =>\n                    (b.time ?? -Infinity) - (a.time ?? -Infinity) ||\n                    a.source - b.source ||\n                    a.rank - b.rank,\n                )\n              : visible;\n          ordered.forEach((row) => {\n            const button = document.createElement(\"button\");\n            button.type = \"button\";\n            button.textContent = row.title;\n            button.setAttribute(\n              \"aria-pressed\",\n              String(selected?.key === row.key),\n            );\n            const small = document.createElement(\"small\");\n            small.textContent =\n              data.feeds[row.source].name + \" / \" + timestamp(row.time);\n            button.append(small);\n            button.addEventListener(\"click\", () => inspect(row));\n            $(\"articles\").append(button);\n            pairs.get(row.key).push(button);\n          });\n        }\n        $(\"search\").addEventListener(\"input\", draw);\n        for (const id of [\"source\", \"order\", \"lines\"])\n          $(id).addEventListener(\"change\", draw);\n        draw();\n      } catch (error) {\n        $(\"error\").hidden = false;\n        $(\"error\").textContent =\n          error instanceof Error ? error.message : \"Unable to render feeds.\";\n      }\n    </script>\n  </body>\n</html>\n"
+        },
+        "custom_inputs": {
+          "dataset_json": "str"
+        },
+        "exposed_inputs": [
+          "dataset_json"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_html_response",
+        "node_version": "1.0.0",
+        "title": "Constellation page",
+        "params": {}
+      },
+      {
+        "node_instance_id": "data_response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Headline dataset response",
+        "params": {}
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "hn_url",
+        "source_output": "url",
+        "target_node_id": "hn_fetch",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "hn_fetch",
+        "source_output": "body",
+        "target_node_id": "hn_parse",
+        "target_input": "text"
+      },
+      {
+        "source_node_id": "hn_parse",
+        "source_output": "items",
+        "target_node_id": "hn_items",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "hn_items",
+        "source_output": "items",
+        "target_node_id": "dataset",
+        "target_input": "hn"
+      },
+      {
+        "source_node_id": "hn_url",
+        "source_output": "url",
+        "target_node_id": "dataset",
+        "target_input": "hn_url"
+      },
+      {
+        "source_node_id": "hn_fetch",
+        "source_output": "headers",
+        "target_node_id": "dataset",
+        "target_input": "hn_headers"
+      },
+      {
+        "source_node_id": "ars_url",
+        "source_output": "url",
+        "target_node_id": "ars_fetch",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "ars_fetch",
+        "source_output": "body",
+        "target_node_id": "ars_parse",
+        "target_input": "text"
+      },
+      {
+        "source_node_id": "ars_parse",
+        "source_output": "items",
+        "target_node_id": "ars_items",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "ars_items",
+        "source_output": "items",
+        "target_node_id": "dataset",
+        "target_input": "ars"
+      },
+      {
+        "source_node_id": "ars_url",
+        "source_output": "url",
+        "target_node_id": "dataset",
+        "target_input": "ars_url"
+      },
+      {
+        "source_node_id": "ars_fetch",
+        "source_output": "headers",
+        "target_node_id": "dataset",
+        "target_input": "ars_headers"
+      },
+      {
+        "source_node_id": "github_url",
+        "source_output": "url",
+        "target_node_id": "github_fetch",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "github_fetch",
+        "source_output": "body",
+        "target_node_id": "github_parse",
+        "target_input": "text"
+      },
+      {
+        "source_node_id": "github_parse",
+        "source_output": "items",
+        "target_node_id": "github_items",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "github_items",
+        "source_output": "items",
+        "target_node_id": "dataset",
+        "target_input": "github"
+      },
+      {
+        "source_node_id": "github_url",
+        "source_output": "url",
+        "target_node_id": "dataset",
+        "target_input": "github_url"
+      },
+      {
+        "source_node_id": "github_fetch",
+        "source_output": "headers",
+        "target_node_id": "dataset",
+        "target_input": "github_headers"
+      },
+      {
+        "source_node_id": "dataset",
+        "source_output": "value",
+        "target_node_id": "encode",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "encode",
+        "source_output": "text",
+        "target_node_id": "view",
+        "target_input": "dataset_json"
+      },
+      {
+        "source_node_id": "view",
+        "source_output": "html",
+        "target_node_id": "response",
+        "target_input": "html"
+      },
+      {
+        "source_node_id": "dataset",
+        "source_output": "value",
+        "target_node_id": "data_response",
+        "target_input": "value"
+      }
+    ],
+    "graph_outputs": {
+      "html": {
+        "node_instance_id": "view",
+        "output_name": "html"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      },
+      "dataset": {
+        "node_instance_id": "dataset",
+        "output_name": "value"
+      },
+      "data_response": {
+        "node_instance_id": "data_response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "html",
+        "status": "provider-backed-probe",
+        "summary": "Three bounded tech RSS reads turned into a selectable SVG star atlas.",
+        "requires": {
+          "nodes": [
+            "n_url_input",
+            "n_fetch_url",
+            "n_rss_parse",
+            "n_map_fields",
+            "n_json_template",
+            "n_json_stringify",
+            "n_html_template",
+            "n_html_response",
+            "n_json_response"
+          ],
+          "panels": [
+            "html",
+            "json"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "hn_url": {
+            "x": 60,
+            "y": 80
+          },
+          "hn_fetch": {
+            "x": 340,
+            "y": 80
+          },
+          "hn_parse": {
+            "x": 620,
+            "y": 80
+          },
+          "hn_items": {
+            "x": 900,
+            "y": 80
+          },
+          "ars_url": {
+            "x": 60,
+            "y": 310
+          },
+          "ars_fetch": {
+            "x": 340,
+            "y": 310
+          },
+          "ars_parse": {
+            "x": 620,
+            "y": 310
+          },
+          "ars_items": {
+            "x": 900,
+            "y": 310
+          },
+          "github_url": {
+            "x": 60,
+            "y": 540
+          },
+          "github_fetch": {
+            "x": 340,
+            "y": 540
+          },
+          "github_parse": {
+            "x": 620,
+            "y": 540
+          },
+          "github_items": {
+            "x": 900,
+            "y": 540
+          },
+          "dataset": {
+            "x": 1180,
+            "y": 280
+          },
+          "encode": {
+            "x": 1460,
+            "y": 280
+          },
+          "view": {
+            "x": 1740,
+            "y": 280
+          },
+          "response": {
+            "x": 2020,
+            "y": 280
+          },
+          "data_response": {
+            "x": 1460,
+            "y": 510
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "html",
+            "binding": {
+              "nodeInstanceId": "view",
+              "outputName": "html"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "dataset",
+              "outputName": "value"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

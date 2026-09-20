@@ -1,0 +1,21 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "URL Extract Pipe",
+    "description": "Extracts URLs from text with the Text Match regex node.",
+    "nodes": [
+      {"node_instance_id":"source","node_id":"n_static_value","node_version":"1.0.0","title":"Source text","params":{"value":"Read https://subfork.dev and then visit https://example.com/docs."}},
+      {"node_instance_id":"stringify","node_id":"n_json_stringify","node_version":"1.0.0","title":"JSON Stringify"},
+      {"node_instance_id":"match","node_id":"n_text_match","node_version":"1.0.0","title":"Extract URLs","params":{"pattern":"https?://[^\\s\\\"]+","flags":"","operation":"extract","replacement":""},"exposed_outputs":["matches"]},
+      {"node_instance_id":"response","node_id":"n_json_response","node_version":"1.0.0","title":"JSON Response"}
+    ],
+    "edges": [
+      {"source_node_id":"source","source_output":"value","target_node_id":"stringify","target_input":"value"},
+      {"source_node_id":"stringify","source_output":"text","target_node_id":"match","target_input":"text"},
+      {"source_node_id":"match","source_output":"matches","target_node_id":"response","target_input":"value"}
+    ],
+    "graph_outputs":{"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"canvas":{"positions":{"source":{"x":80,"y":180},"stringify":{"x":300,"y":180},"match":{"x":520,"y":180},"response":{"x":740,"y":180}}}}
+  }
+}

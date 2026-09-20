@@ -1,0 +1,27 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Merge Calendars",
+    "description": "Parses two iCalendar sources and returns a single chronological event list.",
+    "nodes": [
+      {"node_instance_id":"calendar_a","node_id":"n_static_value","node_version":"1.0.0","title":"Calendar A ICS","params":{"value":"BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nUID:a-1\nSUMMARY:Standup\nDTSTART:20260901T100000Z\nDTEND:20260901T101500Z\nEND:VEVENT\nBEGIN:VEVENT\nUID:a-2\nSUMMARY:Roadmap review\nDTSTART:20260902T150000Z\nDTEND:20260902T160000Z\nEND:VEVENT\nEND:VCALENDAR"}},
+      {"node_instance_id":"calendar_b","node_id":"n_static_value","node_version":"1.0.0","title":"Calendar B ICS","params":{"value":"BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nUID:b-1\nSUMMARY:Coffee\nDTSTART:20260901T083000Z\nDTEND:20260901T090000Z\nLOCATION:Lobby\nEND:VEVENT\nBEGIN:VEVENT\nUID:b-2\nSUMMARY:Demo night\nDTSTART:20260903T180000Z\nDTEND:20260903T200000Z\nURL:https://example.com/demo\nEND:VEVENT\nEND:VCALENDAR"}},
+      {"node_instance_id":"parse_a","node_id":"n_ics_parse","node_version":"1.0.0","title":"Parse A"},
+      {"node_instance_id":"parse_b","node_id":"n_ics_parse","node_version":"1.0.0","title":"Parse B"},
+      {"node_instance_id":"merge","node_id":"n_concat_lists","node_version":"1.0.0","title":"Concat events"},
+      {"node_instance_id":"sort","node_id":"n_sort_rows","node_version":"1.0.0","title":"Chronological","params":{"field":"start","direction":"asc"}},
+      {"node_instance_id":"response","node_id":"n_json_response","node_version":"1.0.0","title":"JSON Response"}
+    ],
+    "edges": [
+      {"source_node_id":"calendar_a","source_output":"value","target_node_id":"parse_a","target_input":"text"},
+      {"source_node_id":"calendar_b","source_output":"value","target_node_id":"parse_b","target_input":"text"},
+      {"source_node_id":"parse_a","source_output":"events","target_node_id":"merge","target_input":"left"},
+      {"source_node_id":"parse_b","source_output":"events","target_node_id":"merge","target_input":"right"},
+      {"source_node_id":"merge","source_output":"items","target_node_id":"sort","target_input":"items"},
+      {"source_node_id":"sort","source_output":"items","target_node_id":"response","target_input":"value"}
+    ],
+    "graph_outputs":{"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"calendar","status":"runnable-probe","requires":{"nodes":["ics-parse","concat-lists","sort-rows"],"panels":["json","table"],"future_panels":["calendar","gantt"]}},"canvas":{"positions":{"calendar_a":{"x":80,"y":100},"calendar_b":{"x":80,"y":300},"parse_a":{"x":320,"y":100},"parse_b":{"x":320,"y":300},"merge":{"x":560,"y":200},"sort":{"x":800,"y":200},"response":{"x":1040,"y":200}}}}
+  }
+}

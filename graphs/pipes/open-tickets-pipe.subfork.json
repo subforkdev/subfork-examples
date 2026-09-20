@@ -1,0 +1,23 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Open Tickets Pipe",
+    "description": "Filters, sorts, and limits JSON rows in a Yahoo Pipes-style flow.",
+    "nodes": [
+      {"node_instance_id":"tickets","node_id":"n_static_value","node_version":"1.0.0","title":"Tickets","params":{"value":[{"id":1,"state":"open","priority":2},{"id":2,"state":"closed","priority":3},{"id":3,"state":"open","priority":1}]}},
+      {"node_instance_id":"open","node_id":"n_filter_rows","node_version":"1.0.0","title":"Open only","params":{"field":"state","equals":"open"}},
+      {"node_instance_id":"sorted","node_id":"n_sort_rows","node_version":"1.0.0","title":"Priority descending","params":{"field":"priority","direction":"desc"}},
+      {"node_instance_id":"limit","node_id":"n_limit","node_version":"1.0.0","title":"Top two","params":{"count":2}},
+      {"node_instance_id":"response","node_id":"n_json_response","node_version":"1.0.0","title":"JSON Response"}
+    ],
+    "edges": [
+      {"source_node_id":"tickets","source_output":"value","target_node_id":"open","target_input":"items"},
+      {"source_node_id":"open","source_output":"items","target_node_id":"sorted","target_input":"items"},
+      {"source_node_id":"sorted","source_output":"items","target_node_id":"limit","target_input":"items"},
+      {"source_node_id":"limit","source_output":"items","target_node_id":"response","target_input":"value"}
+    ],
+    "graph_outputs":{"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"canvas":{"positions":{"tickets":{"x":80,"y":180},"open":{"x":300,"y":180},"sorted":{"x":520,"y":180},"limit":{"x":740,"y":180},"response":{"x":960,"y":180}}}}
+  }
+}

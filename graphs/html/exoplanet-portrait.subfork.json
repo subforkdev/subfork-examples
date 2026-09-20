@@ -1,0 +1,353 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Other Worlds / Exoplanet Portrait",
+    "description": "A radial portrait of 96 nearby exoplanets from NASA. Remap period, radius, temperature, and discovery data; inspect missing measurements and source records. No API key required.",
+    "nodes": [
+      {
+        "node_instance_id": "url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "NASA Exoplanet Archive",
+        "params": {
+          "url": "https://exoplanetarchive.ipac.caltech.edu/TAP/sync"
+        }
+      },
+      {
+        "node_instance_id": "fetch",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Nearest 96 planets",
+        "params": {
+          "method": "GET",
+          "query": {
+            "query": "select pl_name,hostname,discoverymethod,disc_year,pl_rade,pl_radelim,pl_orbper,pl_orbperlim,pl_eqt,pl_eqtlim,sy_dist from ps where default_flag=1 and pl_controv_flag=0 and sy_dist>0 and sy_dist<20 order by sy_dist,pl_name",
+            "format": "json"
+          },
+          "timeout_seconds": 45,
+          "max_response_bytes": 2000000
+        },
+        "exposed_inputs": [
+          "url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "body",
+          "headers",
+          "status"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "parse",
+        "node_id": "n_json_parse",
+        "node_version": "1.0.0",
+        "title": "Parse archive records",
+        "params": {}
+      },
+      {
+        "node_instance_id": "sort",
+        "node_id": "n_sort_rows",
+        "node_version": "1.0.0",
+        "title": "Nearest first",
+        "params": {
+          "field": "sy_dist",
+          "direction": "asc"
+        }
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "Keep nearest 96",
+        "params": {
+          "count": 96
+        }
+      },
+      {
+        "node_instance_id": "rows",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Normalize planet measurements",
+        "params": {
+          "mapping": {
+            "name": "pl_name",
+            "host": "hostname",
+            "method": "discoverymethod",
+            "discovery_year": "disc_year",
+            "radius_earth": "pl_rade",
+            "radius_limit": "pl_radelim",
+            "period_days": "pl_orbper",
+            "period_limit": "pl_orbperlim",
+            "temperature_k": "pl_eqt",
+            "temperature_limit": "pl_eqtlim",
+            "distance_pc": "sy_dist"
+          }
+        }
+      },
+      {
+        "node_instance_id": "dataset",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Exoplanet dataset",
+        "params": {
+          "template": {
+            "schema_version": "exoplanet-portrait/1",
+            "source": "NASA Exoplanet Archive / ps",
+            "source_url": "https://exoplanetarchive.ipac.caltech.edu/",
+            "selection": "select pl_name,hostname,discoverymethod,disc_year,pl_rade,pl_radelim,pl_orbper,pl_orbperlim,pl_eqt,pl_eqtlim,sy_dist from ps where default_flag=1 and pl_controv_flag=0 and sy_dist>0 and sy_dist<20 order by sy_dist,pl_name",
+            "rows": "{{ inputs.rows }}",
+            "response_headers": "{{ inputs.headers }}",
+            "units": {
+              "radius_earth": "Earth radii",
+              "period_days": "days",
+              "temperature_k": "K",
+              "distance_pc": "parsecs"
+            }
+          }
+        },
+        "custom_inputs": {
+          "rows": "json",
+          "headers": "json"
+        },
+        "exposed_inputs": [
+          "rows",
+          "headers"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "encode",
+        "node_id": "n_json_stringify",
+        "node_version": "1.0.0",
+        "title": "HTML-safe dataset",
+        "params": {
+          "html_safe": true
+        }
+      },
+      {
+        "node_instance_id": "view",
+        "node_id": "n_html_template",
+        "node_version": "1.0.0",
+        "title": "Other Worlds / radial portrait",
+        "params": {
+          "template": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" />\n    <title>Other Worlds / Dataset Portrait</title>\n    <style>\n      :root {\n        color-scheme: dark;\n        --bg: #08121d;\n        --ink: #e0e9ed;\n        --muted: #a2b4c2;\n        --line: #2b4051;\n        --accent: #efc67c;\n      }\n      * {\n        box-sizing: border-box;\n      }\n      body {\n        margin: 0;\n        color: var(--ink);\n        background:\n          radial-gradient(ellipse at 35% 45%, #173347, transparent 65%),\n          var(--bg);\n        font:\n          15px/1.5 Georgia,\n          serif;\n      }\n      main {\n        max-width: 1450px;\n        margin: auto;\n        padding: 32px;\n      }\n      header {\n        display: flex;\n        justify-content: space-between;\n        align-items: end;\n        gap: 30px;\n      }\n      .eyebrow,\n      label,\n      select,\n      button,\n      .small,\n      footer,\n      dt {\n        font-family: monospace;\n      }\n      .eyebrow {\n        font-size: 11px;\n        letter-spacing: 0.2em;\n        color: var(--accent);\n      }\n      h1 {\n        font-size: clamp(42px, 6vw, 76px);\n        font-weight: 400;\n        letter-spacing: -0.035em;\n        margin: 10px 0;\n      }\n      h1 em {\n        color: var(--accent);\n      }\n      p {\n        margin: 8px 0;\n      }\n      .small {\n        font-size: 11px;\n        color: var(--muted);\n        line-height: 1.7;\n      }\n      .controls {\n        display: flex;\n        gap: 18px;\n        flex-wrap: wrap;\n        border-block: 1px solid var(--line);\n        margin: 24px 0 12px;\n        padding: 16px 0;\n      }\n      label {\n        display: grid;\n        gap: 5px;\n        font-size: 11px;\n        color: var(--muted);\n      }\n      select,\n      button {\n        background: #122331;\n        color: var(--ink);\n        border: 1px solid #40586a;\n        padding: 8px 10px;\n        border-radius: 3px;\n        font-size: 12px;\n      }\n      button {\n        cursor: pointer;\n      }\n      button:hover {\n        background: #254356;\n      }\n      :focus-visible {\n        outline: 2px solid var(--accent);\n        outline-offset: 3px;\n      }\n      .layout {\n        display: grid;\n        grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);\n        gap: 32px;\n        align-items: start;\n      }\n      svg {\n        display: block;\n        width: 100%;\n        height: auto;\n      }\n      svg text {\n        fill: var(--muted);\n        font: 12px monospace;\n      }\n      .planet {\n        cursor: pointer;\n        outline: none;\n      }\n      .halo {\n        opacity: 0;\n      }\n      .planet:hover .halo,\n      .planet:focus .halo,\n      .planet[aria-pressed=\"true\"] .halo {\n        opacity: 1;\n      }\n      .planet:hover .spoke,\n      .planet:focus .spoke {\n        stroke-opacity: 1;\n      }\n      aside {\n        padding-top: 24px;\n      }\n      h2 {\n        font-size: 25px;\n        font-weight: 400;\n        margin: 0 0 12px;\n      }\n      #detail {\n        padding: 18px;\n        background: #152b39;\n        border-left: 2px solid var(--accent);\n        min-height: 230px;\n        overflow-wrap: anywhere;\n      }\n      #detail h3 {\n        font-size: 23px;\n        font-weight: 400;\n        margin: 0 0 12px;\n      }\n      dl {\n        display: grid;\n        grid-template-columns: 120px 1fr;\n        gap: 7px 12px;\n        margin: 0;\n      }\n      dt {\n        font-size: 11px;\n        color: var(--muted);\n      }\n      dd {\n        margin: 0;\n      }\n      #index {\n        max-height: 230px;\n        overflow: auto;\n        display: grid;\n        gap: 6px;\n        margin-top: 18px;\n      }\n      #index button {\n        text-align: left;\n      }\n      #index button[aria-pressed=\"true\"] {\n        border-color: var(--accent);\n      }\n      #legend {\n        display: grid;\n        gap: 5px;\n      }\n      #error {\n        color: #ffa694;\n      }\n      footer {\n        margin-top: 24px;\n        padding-top: 18px;\n        border-top: 1px solid var(--line);\n        font-size: 11px;\n        color: var(--muted);\n      }\n      @media (max-width: 750px) {\n        main {\n          padding: 20px 14px;\n        }\n        header {\n          display: block;\n        }\n        .layout {\n          grid-template-columns: 1fr;\n          gap: 0;\n        }\n        aside {\n          padding-top: 12px;\n        }\n      }\n    </style>\n  </head>\n  <body>\n    <main>\n      <header>\n        <div>\n          <div class=\"eyebrow\">SUBFORK / DATASET PORTRAITS / 03</div>\n          <h1>Other <em>Worlds.</em></h1>\n          <p>A radial atlas of our planetary neighbors.</p>\n        </div>\n        <div class=\"small\">\n          NASA Exoplanet Archive / Planetary Systems<br />Up to 96 nearest planets\n          within 20 parsecs<br />One default parameter set per planet\n        </div>\n      </header>\n      <div class=\"controls\">\n        <label\n          >Spoke length<select id=\"length\">\n            <option value=\"period_days\">Orbital period</option>\n            <option value=\"distance_pc\">Distance from Earth</option>\n            <option value=\"radius_earth\">Planet radius</option>\n          </select></label\n        >\n        <label\n          >Mark size<select id=\"size\">\n            <option value=\"radius_earth\">Planet radius</option>\n            <option value=\"period_days\">Orbital period</option>\n            <option value=\"distance_pc\">Distance from Earth</option>\n          </select></label\n        >\n        <label\n          >Color<select id=\"color\">\n            <option value=\"temperature_k\">Equilibrium temperature</option>\n            <option value=\"discovery_year\">Discovery year</option>\n            <option value=\"method\">Discovery method</option>\n          </select></label\n        >\n        <label\n          >Order, clockwise<select id=\"sort\">\n            <option value=\"distance_pc\">Distance, nearest first</option>\n            <option value=\"discovery_year\">\n              Discovery year, earliest first\n            </option>\n            <option value=\"radius_earth\">Radius, smallest first</option>\n            <option value=\"name\">Planet name</option>\n          </select></label\n        >\n        <label\n          >Palette<select id=\"palette\">\n            <option value=\"starlight\">Starlight</option>\n            <option value=\"ember\">Ember</option>\n            <option value=\"ocean\">Ocean</option>\n          </select></label\n        >\n      </div>\n      <p id=\"error\" role=\"alert\" hidden></p>\n      <p id=\"summary\" class=\"small\"></p>\n      <div class=\"layout\">\n        <section>\n          <svg\n            id=\"portrait\"\n            viewBox=\"0 0 800 800\"\n            role=\"group\"\n            aria-label=\"Radial exoplanet portrait. Select a mark or use the planet index.\"\n          >\n            <g fill=\"none\" stroke=\"#2c4557\" stroke-width=\"1\">\n              <circle cx=\"400\" cy=\"400\" r=\"110\" />\n              <circle cx=\"400\" cy=\"400\" r=\"220\" stroke-dasharray=\"2 7\" />\n              <circle cx=\"400\" cy=\"400\" r=\"345\" />\n            </g>\n            <path d=\"M400 44V65\" stroke=\"#efc67c\" />\n            <text x=\"400\" y=\"30\" text-anchor=\"middle\">\n              ORDER START / CLOCKWISE\n            </text>\n            <g id=\"marks\"></g>\n            <circle cx=\"400\" cy=\"400\" r=\"89\" fill=\"#0d202d\" stroke=\"#405b69\" />\n            <text\n              id=\"count\"\n              x=\"400\"\n              y=\"402\"\n              text-anchor=\"middle\"\n              style=\"font-size: 38px; fill: #efc67c\"\n            >\n              --\n            </text>\n            <text x=\"400\" y=\"427\" text-anchor=\"middle\">OTHER WORLDS</text>\n          </svg>\n          <div id=\"legend\" class=\"small\"></div>\n        </section>\n        <aside>\n          <h2>Planet dossier</h2>\n          <div id=\"detail\" aria-live=\"polite\">\n            Select a planet to inspect its reported measurements.\n          </div>\n          <div id=\"index\" aria-label=\"Planet index\"></div>\n        </aside>\n      </div>\n      <footer>\n        Source: NASA Exoplanet Archive, operated by Caltech/IPAC for NASA. A\n        bounded nearby sample, not the complete census. This artwork is not a\n        sky map or an orbital simulation. Spoke length and mark radius use log(1\n        + value) scaling over this sample. Color is a data mapping, not the\n        planet's visible color. Equilibrium temperature is an estimate, not\n        surface temperature or evidence of habitability. Uncertainties are not\n        plotted. Run the graph to refresh.\n      </footer>\n    </main>\n    <!-- prettier-ignore -->\n    <script id=\"dataset\" type=\"application/json\">{{ inputs.dataset_json }}</script>\n    <script>\n      \"use strict\";\n      const $ = (id) => document.getElementById(id);\n      const fields = {\n        period_days: [\"Orbital period\", \"days\"],\n        radius_earth: [\"Radius\", \"Earth radii\"],\n        distance_pc: [\"Distance\", \"parsecs\"],\n        temperature_k: [\"Equilibrium temp.\", \"K\"],\n        discovery_year: [\"Discovery year\", \"\"],\n      };\n      const palettes = {\n        starlight: [\"#83c8dd\", \"#e9cd87\", \"#ed8668\"],\n        ember: [\"#ffe2a3\", \"#e99c69\", \"#c66873\"],\n        ocean: [\"#b4ded0\", \"#6fbbb8\", \"#7b9dc7\"],\n      };\n      const fmt = (value) =>\n        Number.isFinite(value)\n          ? Number(value.toFixed(2)).toLocaleString()\n          : \"Not reported\";\n      function measurement(row, key) {\n        const limitKey = {\n          radius_earth: \"radius_limit\",\n          period_days: \"period_limit\",\n          temperature_k: \"temperature_limit\",\n        }[key];\n        if (limitKey && row[limitKey] !== 0) return null;\n        return Number.isFinite(row[key]) && row[key] > 0 ? row[key] : null;\n      }\n      function range(rows, key) {\n        const values = rows\n          .map((r) => measurement(r, key))\n          .filter((v) => v !== null);\n        return values.length\n          ? [Math.min(...values), Math.max(...values)]\n          : null;\n      }\n      function scale(value, bounds, log = false) {\n        if (value === null || !bounds) return null;\n        const f = log ? Math.log1p : (v) => v;\n        const low = f(bounds[0]),\n          high = f(bounds[1]);\n        return high === low\n          ? 0.5\n          : Math.max(0, Math.min(1, (f(value) - low) / (high - low)));\n      }\n      function svg(tag, attrs = {}) {\n        const node = document.createElementNS(\n          \"http://www.w3.org/2000/svg\",\n          tag,\n        );\n        for (const [k, v] of Object.entries(attrs))\n          node.setAttribute(k, String(v));\n        return node;\n      }\n      try {\n        const data = JSON.parse($(\"dataset\").textContent);\n        if (!Array.isArray(data.rows))\n          throw new Error(\"Expected a dataset containing planet rows.\");\n        const valid = data.rows.filter(\n          (r) => r && typeof r.name === \"string\" && r.name.trim(),\n        );\n        const rows = valid\n          .slice(0, 96)\n          .map((row, index) => ({ ...row, _key: index }));\n        const excluded = data.rows.length - valid.length;\n        $(\"count\").textContent = String(rows.length);\n        const date = data.response_headers?.date || data.response_headers?.Date;\n        $(\"summary\").textContent =\n          rows.length +\n          \" planets returned. \" +\n          (excluded ? excluded + \" invalid records omitted. \" : \"\") +\n          (valid.length > 96 ? \"Display capped at 96. \" : \"\") +\n          (date ? \"HTTP response date: \" + date + \". \" : \"\") +\n          \"Hollow marks: missing or limit-only size. Dashed spokes: missing or limit-only length. Gray: missing color value.\";\n        if (!rows.length)\n          $(\"detail\").textContent =\n            \"No planets returned. Check the query or run again.\";\n        let selected = null;\n        const controls = [\"length\", \"size\", \"color\", \"sort\", \"palette\"];\n        const pairs = new Map();\n        function inspect(row) {\n          selected = row;\n          $(\"detail\").replaceChildren();\n          const heading = document.createElement(\"h3\");\n          heading.textContent = row.name;\n          const list = document.createElement(\"dl\");\n          for (const [key, title] of [\n            [\"host\", \"Host star\"],\n            [\"method\", \"Discovery method\"],\n            ...Object.entries(fields).map(([k, v]) => [k, v[0]]),\n          ]) {\n            const dt = document.createElement(\"dt\"),\n              dd = document.createElement(\"dd\");\n            dt.textContent = title;\n            if (fields[key]) {\n              const v = measurement(row, key);\n              dd.textContent =\n                v === null\n                  ? row[key] == null\n                    ? \"Not reported\"\n                    : \"Limit-only or unusable value (not plotted)\"\n                  : fmt(v) + \" \" + fields[key][1];\n            } else dd.textContent = String(row[key] ?? \"Not reported\");\n            list.append(dt, dd);\n          }\n          $(\"detail\").append(heading, list);\n          for (const [id, nodes] of pairs)\n            for (const n of nodes)\n              n.setAttribute(\"aria-pressed\", String(id === row._key));\n        }\n        function draw() {\n          const lengthKey = $(\"length\").value,\n            sizeKey = $(\"size\").value,\n            colorKey = $(\"color\").value,\n            sortKey = $(\"sort\").value;\n          const ordered = [...rows].sort((a, b) =>\n            sortKey === \"name\"\n              ? a.name.localeCompare(b.name)\n              : (measurement(a, sortKey) ?? Infinity) -\n                  (measurement(b, sortKey) ?? Infinity) ||\n                a.name.localeCompare(b.name),\n          );\n          const lr = range(rows, lengthKey),\n            sr = range(rows, sizeKey),\n            cr = range(rows, colorKey),\n            colors = palettes[$(\"palette\").value];\n          const methods = [\n            ...new Set(\n              rows.map((r) => r.method).filter((v) => typeof v === \"string\"),\n            ),\n          ].sort();\n          $(\"marks\").replaceChildren();\n          $(\"index\").replaceChildren();\n          $(\"legend\").replaceChildren();\n          pairs.clear();\n          function legend(text, color) {\n            const p = document.createElement(\"div\");\n            p.textContent = text;\n            if (color) p.style.color = color;\n            $(\"legend\").append(p);\n          }\n          function boundsText(key, bounds) {\n            return bounds\n              ? fmt(bounds[0]) + \" to \" + fmt(bounds[1]) + \" \" + fields[key][1]\n              : \"no usable values\";\n          }\n          legend(\n            \"Spoke / \" +\n              fields[lengthKey][0] +\n              \": \" +\n              boundsText(lengthKey, lr) +\n              \" (log scale)\",\n          );\n          legend(\n            \"Mark / \" +\n              fields[sizeKey][0] +\n              \": \" +\n              boundsText(sizeKey, sr) +\n              \" (log scale; not physical scale)\",\n          );\n          if (colorKey === \"method\")\n            methods.forEach((method, i) =>\n              legend(method + \" / color \" + ((i % 3) + 1), colors[i % 3]),\n            );\n          else {\n            legend(\n              \"Color / \" +\n                fields[colorKey][0] +\n                \": \" +\n                boundsText(colorKey, cr) +\n                \" (three equal-width bins)\",\n            );\n            colors.forEach((c, i) => legend([\"Low\", \"Middle\", \"High\"][i], c));\n          }\n          ordered.forEach((row, index) => {\n            const angle =\n              (index / Math.max(1, ordered.length)) * Math.PI * 2 - Math.PI / 2;\n            const l = scale(measurement(row, lengthKey), lr, true),\n              s = scale(measurement(row, sizeKey), sr, true),\n              c = scale(measurement(row, colorKey), cr);\n            const radial = 140 + (l ?? 0) * 180,\n              x = 400 + Math.cos(angle) * radial,\n              y = 400 + Math.sin(angle) * radial,\n              radius = s === null ? 4 : 3 + s * 10;\n            const color =\n              colorKey === \"method\"\n                ? typeof row.method === \"string\"\n                  ? colors[methods.indexOf(row.method) % 3]\n                  : \"#83909b\"\n                : c === null\n                  ? \"#83909b\"\n                  : colors[Math.min(2, Math.floor(c * 3))];\n            const group = svg(\"g\", {\n              class: \"planet\",\n              role: \"button\",\n              tabindex: 0,\n              \"aria-label\": row.name,\n              \"aria-pressed\": String(selected?._key === row._key),\n            });\n            group.append(\n              svg(\"path\", {\n                class: \"spoke\",\n                d:\n                  \"M\" +\n                  (400 + Math.cos(angle) * 110) +\n                  \",\" +\n                  (400 + Math.sin(angle) * 110) +\n                  \" L\" +\n                  x +\n                  \",\" +\n                  y,\n                stroke: color,\n                \"stroke-opacity\": 0.5,\n                \"stroke-width\": 1,\n                \"stroke-dasharray\": l === null ? \"3 4\" : \"none\",\n              }),\n              svg(\"circle\", {\n                class: \"halo\",\n                cx: x,\n                cy: y,\n                r: radius + 5,\n                fill: \"none\",\n                stroke: \"#fff\",\n                \"stroke-width\": 1.5,\n              }),\n              svg(\"circle\", {\n                cx: x,\n                cy: y,\n                r: radius,\n                fill: s === null ? \"#08121d\" : color,\n                stroke: color,\n                \"stroke-width\": 1.5,\n              }),\n            );\n            const title = svg(\"title\");\n            title.textContent = row.name;\n            group.append(title);\n            $(\"marks\").append(group);\n            group.addEventListener(\"click\", () => inspect(row));\n            group.addEventListener(\"focus\", () => inspect(row));\n            group.addEventListener(\"keydown\", (e) => {\n              if (e.key === \"Enter\" || e.key === \" \") {\n                e.preventDefault();\n                inspect(row);\n              }\n            });\n            const button = document.createElement(\"button\");\n            button.type = \"button\";\n            button.textContent =\n              String(index + 1).padStart(2, \"0\") + \" / \" + row.name;\n            button.setAttribute(\n              \"aria-pressed\",\n              String(selected?._key === row._key),\n            );\n            button.addEventListener(\"click\", () => inspect(row));\n            $(\"index\").append(button);\n            pairs.set(row._key, [group, button]);\n          });\n        }\n        controls.forEach((id) => $(id).addEventListener(\"change\", draw));\n        draw();\n      } catch (error) {\n        $(\"error\").hidden = false;\n        $(\"error\").textContent =\n          error instanceof Error ? error.message : \"Unable to render dataset.\";\n      }\n    </script>\n  </body>\n</html>\n"
+        },
+        "custom_inputs": {
+          "dataset_json": "str"
+        },
+        "exposed_inputs": [
+          "dataset_json"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_html_response",
+        "node_version": "1.0.0",
+        "title": "Portrait page",
+        "params": {}
+      },
+      {
+        "node_instance_id": "data_response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Dataset response",
+        "params": {}
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "url",
+        "source_output": "url",
+        "target_node_id": "fetch",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "fetch",
+        "source_output": "body",
+        "target_node_id": "parse",
+        "target_input": "text"
+      },
+      {
+        "source_node_id": "parse",
+        "source_output": "value",
+        "target_node_id": "sort",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "sort",
+        "source_output": "items",
+        "target_node_id": "limit",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "limit",
+        "source_output": "items",
+        "target_node_id": "rows",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "rows",
+        "source_output": "items",
+        "target_node_id": "dataset",
+        "target_input": "rows"
+      },
+      {
+        "source_node_id": "fetch",
+        "source_output": "headers",
+        "target_node_id": "dataset",
+        "target_input": "headers"
+      },
+      {
+        "source_node_id": "dataset",
+        "source_output": "value",
+        "target_node_id": "encode",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "encode",
+        "source_output": "text",
+        "target_node_id": "view",
+        "target_input": "dataset_json"
+      },
+      {
+        "source_node_id": "view",
+        "source_output": "html",
+        "target_node_id": "response",
+        "target_input": "html"
+      },
+      {
+        "source_node_id": "dataset",
+        "source_output": "value",
+        "target_node_id": "data_response",
+        "target_input": "value"
+      }
+    ],
+    "graph_outputs": {
+      "html": {
+        "node_instance_id": "view",
+        "output_name": "html"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      },
+      "dataset": {
+        "node_instance_id": "dataset",
+        "output_name": "value"
+      },
+      "rows": {
+        "node_instance_id": "rows",
+        "output_name": "items"
+      },
+      "data_response": {
+        "node_instance_id": "data_response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "html",
+        "status": "provider-backed-probe",
+        "summary": "A bounded NASA dataset rendered as a remappable SVG portrait.",
+        "requires": {
+          "nodes": [
+            "n_url_input",
+            "n_fetch_url",
+            "n_json_parse",
+            "n_sort_rows",
+            "n_limit",
+            "n_map_fields",
+            "n_json_template",
+            "n_json_stringify",
+            "n_html_template",
+            "n_html_response",
+            "n_json_response"
+          ],
+          "panels": [
+            "html",
+            "table",
+            "json"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "url": {
+            "x": 60,
+            "y": 180
+          },
+          "fetch": {
+            "x": 340,
+            "y": 180
+          },
+          "parse": {
+            "x": 620,
+            "y": 180
+          },
+          "sort": {
+            "x": 900,
+            "y": 180
+          },
+          "limit": {
+            "x": 1180,
+            "y": 180
+          },
+          "rows": {
+            "x": 1460,
+            "y": 180
+          },
+          "dataset": {
+            "x": 1740,
+            "y": 180
+          },
+          "encode": {
+            "x": 2020,
+            "y": 180
+          },
+          "view": {
+            "x": 2300,
+            "y": 180
+          },
+          "response": {
+            "x": 2580,
+            "y": 180
+          },
+          "data_response": {
+            "x": 2860,
+            "y": 400
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "html",
+            "binding": {
+              "nodeInstanceId": "view",
+              "outputName": "html"
+            }
+          },
+          {
+            "kind": "table",
+            "binding": {
+              "nodeInstanceId": "rows",
+              "outputName": "items"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "dataset",
+              "outputName": "value"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

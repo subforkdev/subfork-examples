@@ -1,0 +1,23 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Earthquake Situation Page",
+    "description": "Fetches USGS GeoJSON and returns an HTML dashboard that renders the feed client-side.",
+    "nodes": [
+      {"node_instance_id":"feed_url","node_id":"n_url_input","node_version":"1.0.0","title":"USGS GeoJSON URL","params":{"url":"https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson"}},
+      {"node_instance_id":"fetch","node_id":"n_fetch_url","node_version":"1.0.0","title":"Fetch earthquakes","params":{"method":"GET","headers":{"Accept":"application/geo+json, application/json"},"timeout_seconds":30,"max_response_bytes":5000000},"exposed_inputs":["url"],"inputs_visibility_configured":true,"exposed_outputs":["json"],"outputs_visibility_configured":true},
+      {"node_instance_id":"stringify","node_id":"n_json_stringify","node_version":"1.0.0","title":"GeoJSON String"},
+      {"node_instance_id":"template","node_id":"n_html_template","node_version":"1.0.0","title":"Situation HTML","params":{"template":"<!doctype html>\n<html>\n<head><meta charset=\"utf-8\"><title>Earthquake Situation Page</title><style>body{font-family:ui-sans-serif,system-ui;margin:2rem;background:#10130f;color:#e9f1e8}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:.75rem}.quake{border:1px solid #526a3f;padding:.75rem;background:#1c2219}.mag{color:#f6af3b;font-weight:800}</style></head>\n<body><main><h1>Earthquake Situation Page</h1><p id=\"summary\">Loading feed...</p><section id=\"quakes\" class=\"grid\"></section><script type=\"application/json\" id=\"feed\">{{ inputs.data_json }}</script><script>const feed=JSON.parse(document.getElementById('feed').textContent);const items=(feed.features||[]).slice(0,12);document.getElementById('summary').textContent=`${feed.metadata?.title||'USGS feed'} - ${items.length} shown`;document.getElementById('quakes').innerHTML=items.map(f=>`<article class=\"quake\"><div class=\"mag\">M ${f.properties?.mag??'?'}</div><strong>${f.properties?.place||'Unknown place'}</strong><p>${new Date(f.properties?.time||Date.now()).toLocaleString()}</p></article>`).join('');</script></main></body>\n</html>"},"custom_inputs":{"data_json":"str"},"exposed_inputs":["data_json"],"inputs_visibility_configured":true},
+      {"node_instance_id":"response","node_id":"n_html_response","node_version":"1.0.0","title":"HTML Response"}
+    ],
+    "edges": [
+      {"source_node_id":"feed_url","source_output":"url","target_node_id":"fetch","target_input":"url"},
+      {"source_node_id":"fetch","source_output":"json","target_node_id":"stringify","target_input":"value"},
+      {"source_node_id":"stringify","source_output":"text","target_node_id":"template","target_input":"data_json"},
+      {"source_node_id":"template","source_output":"html","target_node_id":"response","target_input":"html"}
+    ],
+    "graph_outputs":{"geojson":{"node_instance_id":"fetch","output_name":"json"},"html":{"node_instance_id":"template","output_name":"html"},"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"html","status":"network-probe","requires":{"nodes":["n_url_input","n_fetch_url","n_json_stringify","n_html_template","n_html_response"],"panels":["html","json","logs"],"capabilities":["public-http"]}},"canvas":{"positions":{"feed_url":{"x":80,"y":180},"fetch":{"x":340,"y":180},"stringify":{"x":600,"y":180},"template":{"x":860,"y":180},"response":{"x":1160,"y":180}},"recommended_panels":[{"kind":"html","binding":{"nodeInstanceId":"template","outputName":"html"}},{"kind":"json","binding":{"nodeInstanceId":"fetch","outputName":"json"}}]}}
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "USD Pyramid",
+    "description": "Graph-authored reusable scene data for 3D Preview. No network calls, scripts, or simulation-specific renderer.",
+    "nodes": [
+      {
+        "node_instance_id": "usd_text",
+        "node_id": "n_text_value",
+        "node_version": "1.0.0",
+        "title": "usd text",
+        "params": {
+          "text": "#usda 1.0\n(\n    upAxis = \"Y\"\n    metersPerUnit = 1\n)\ndef Xform \"Root\"\n{\n    def Mesh \"Pyramid\"\n    {\n        point3f[] points = [(-1, 0, -1), (1, 0, -1), (1, 0, 1), (-1, 0, 1), (0, 2, 0)]\n        int[] faceVertexCounts = [3, 3, 3, 3, 4]\n        int[] faceVertexIndices = [0, 4, 1, 1, 4, 2, 2, 4, 3, 3, 4, 0, 3, 2, 1, 0]\n        color3f[] primvars:displayColor = [(0.2, 0.7, 0.6)]\n        uniform token subdivisionScheme = \"none\"\n    }\n}\n"
+        }
+      },
+      {
+        "node_instance_id": "asset",
+        "node_id": "n_scene_usda",
+        "node_version": "1.0.0",
+        "title": "asset",
+        "params": {}
+      },
+      {
+        "node_instance_id": "motion",
+        "node_id": "n_scene_transform",
+        "node_version": "1.0.0",
+        "title": "motion",
+        "params": {
+          "spin": [
+            0,
+            0.25,
+            0
+          ]
+        }
+      },
+      {
+        "node_instance_id": "camera",
+        "node_id": "n_scene_camera",
+        "node_version": "1.0.0",
+        "title": "camera",
+        "params": {
+          "position": [
+            5,
+            3,
+            6
+          ],
+          "target": [
+            0,
+            1,
+            0
+          ]
+        }
+      },
+      {
+        "node_instance_id": "compose",
+        "node_id": "n_scene_compose",
+        "node_version": "1.0.0",
+        "title": "compose",
+        "params": {
+          "duration": 25
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "usd_text",
+        "source_output": "text",
+        "target_node_id": "asset",
+        "target_input": "text"
+      },
+      {
+        "source_node_id": "asset",
+        "source_output": "object",
+        "target_node_id": "motion",
+        "target_input": "object"
+      },
+      {
+        "source_node_id": "motion",
+        "source_output": "object",
+        "target_node_id": "compose",
+        "target_input": "object"
+      },
+      {
+        "source_node_id": "camera",
+        "source_output": "camera",
+        "target_node_id": "compose",
+        "target_input": "camera"
+      }
+    ],
+    "graph_outputs": {
+      "scene": {
+        "node_instance_id": "compose",
+        "output_name": "scene"
+      }
+    },
+    "metadata": {
+      "category": "3d",
+      "canvas": {
+        "positions": {
+          "usd_text": {
+            "x": 60,
+            "y": 120
+          },
+          "asset": {
+            "x": 360,
+            "y": 120
+          },
+          "motion": {
+            "x": 650,
+            "y": 120
+          },
+          "camera": {
+            "x": 650,
+            "y": 400
+          },
+          "compose": {
+            "x": 950,
+            "y": 180
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "scene3d",
+            "binding": {
+              "nodeInstanceId": "compose",
+              "outputName": "scene"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "compose",
+              "outputName": "scene"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "OpenAI Speech Generation",
+    "description": "Composite-ready text-to-speech graph: edit the script, add OPENAI_API_KEY as a graph secret, then run to produce previewable audio media.",
+    "nodes": [
+      {
+        "node_instance_id": "script",
+        "node_id": "n_text_value",
+        "node_version": "1.0.0",
+        "title": "Editable script",
+        "params": {
+          "text": "Subfork generated this audio from a tiny graph."
+        }
+      },
+      {
+        "node_instance_id": "body",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "OpenAI speech body",
+        "params": {
+          "template": {
+            "model": "gpt-4o-mini-tts",
+            "voice": "alloy",
+            "input": "{{ inputs.script }}",
+            "response_format": "mp3"
+          }
+        },
+        "custom_inputs": {
+          "script": "str"
+        },
+        "exposed_inputs": [
+          "script"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "OpenAI speech request",
+        "params": {
+          "url": "https://api.openai.com/v1/audio/speech",
+          "method": "POST",
+          "headers": {
+            "Authorization": "Bearer {{ secrets.OPENAI_API_KEY }}",
+            "Content-Type": "application/json",
+            "Accept": "audio/mpeg"
+          },
+          "timeout_seconds": 120,
+          "max_response_bytes": 25000000
+        },
+        "exposed_inputs": [
+          "body"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "media",
+          "status",
+          "headers"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_media_response",
+        "node_version": "1.0.0",
+        "title": "Audio Response",
+        "params": {
+          "content_type": "audio/mpeg",
+          "filename": "openai-speech.mp3"
+        }
+      }
+    ],
+    "edges": [
+      {"source_node_id": "script", "source_output": "text", "target_node_id": "body", "target_input": "script"},
+      {"source_node_id": "body", "source_output": "value", "target_node_id": "request", "target_input": "body"},
+      {"source_node_id": "request", "source_output": "media", "target_node_id": "response", "target_input": "media"}
+    ],
+    "graph_outputs": {
+      "audio": {
+        "node_instance_id": "request",
+        "output_name": "media"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "ai",
+        "status": "provider-backed-probe",
+        "summary": "Text-to-speech graph built from generic primitives; import it directly or publish it as a composite node with script in and audio out.",
+        "composite_interface": {
+          "inputs": {
+            "script": {
+              "type": "str",
+              "default_node": "script",
+              "default_param": "text"
+            }
+          },
+          "outputs": {
+            "audio": {
+              "type": "media",
+              "node_instance_id": "request",
+              "output_name": "media"
+            },
+            "response": {
+              "type": "object",
+              "node_instance_id": "response",
+              "output_name": "response"
+            }
+          }
+        },
+        "requires": {
+          "nodes": ["n_text_value", "n_json_template", "n_fetch_url", "n_media_response"],
+          "panels": ["audio", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": ["OPENAI_API_KEY"]
+        }
+      },
+      "canvas": {
+        "positions": {
+          "script": {"x": 80, "y": 160},
+          "body": {"x": 340, "y": 160},
+          "request": {"x": 620, "y": 160},
+          "response": {"x": 900, "y": 160}
+        }
+      }
+    }
+  }
+}

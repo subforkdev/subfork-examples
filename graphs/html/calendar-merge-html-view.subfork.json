@@ -1,0 +1,35 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Calendar Merge HTML View",
+    "description": "Fetches two public ICS feeds, merges events, and renders a browser agenda page.",
+    "nodes": [
+      {"node_instance_id":"us_url","node_id":"n_url_input","node_version":"1.0.0","title":"US holidays URL","params":{"url":"https://www.calendarlabs.com/ical-calendar/ics/76/US_Holidays.ics"}},
+      {"node_instance_id":"nyse_url","node_id":"n_url_input","node_version":"1.0.0","title":"NYSE holidays URL","params":{"url":"https://www.calendarlabs.com/ical-calendar/ics/577/NYSE_Market_Holidays.ics"}},
+      {"node_instance_id":"fetch_us","node_id":"n_fetch_url","node_version":"1.0.0","title":"Fetch US","params":{"method":"GET"}},
+      {"node_instance_id":"fetch_nyse","node_id":"n_fetch_url","node_version":"1.0.0","title":"Fetch NYSE","params":{"method":"GET"}},
+      {"node_instance_id":"parse_us","node_id":"n_ics_parse","node_version":"1.0.0","title":"Parse US"},
+      {"node_instance_id":"parse_nyse","node_id":"n_ics_parse","node_version":"1.0.0","title":"Parse NYSE"},
+      {"node_instance_id":"merge","node_id":"n_concat_lists","node_version":"1.0.0","title":"Merge events"},
+      {"node_instance_id":"sort","node_id":"n_sort_rows","node_version":"1.0.0","title":"Chronological","params":{"field":"start","direction":"asc"}},
+      {"node_instance_id":"stringify","node_id":"n_json_stringify","node_version":"1.0.0","title":"Events JSON"},
+      {"node_instance_id":"template","node_id":"n_html_template","node_version":"1.0.0","title":"Agenda HTML","params":{"template":"<!doctype html>\n<html>\n<head><meta charset=\"utf-8\"><title>Merged Calendar</title><script src=\"https://cdn.jsdelivr.net/npm/fullcalendar@6.1.21/index.global.min.js\"></script><style>body{font-family:ui-sans-serif,system-ui;margin:0;background:#fffaf0;color:#15211d}main{min-height:100vh;padding:1.25rem}.shell{display:grid;grid-template-rows:auto minmax(0,1fr);gap:1rem;min-height:calc(100vh - 2.5rem)}header{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;border-bottom:1px solid #d8d0b8;padding-bottom:.8rem}h1{margin:0;font-size:1.5rem}.meta{color:#5f6e56;font-size:.85rem}#calendar{min-height:34rem;background:#fff;border:1px solid #d8d0b8;padding:.75rem}.fc{font-size:.86rem}.fc .fc-toolbar-title{font-size:1.1rem}.fc-event{border-color:#0f5d47;background:#0f5d47}.fallback{border:1px solid #d8d0b8;background:#fff;padding:1rem}</style></head>\n<body><main><section class=\"shell\"><header><div><h1>Merged Calendar</h1><div id=\"summary\" class=\"meta\">Loading merged ICS events...</div></div></header><div id=\"calendar\"></div></section><script type=\"application/json\" id=\"events-json\">{{ inputs.events_json }}</script><script>function parseEvents(){try{return JSON.parse(document.getElementById('events-json').textContent)||[]}catch(error){return[]}}function eventDate(value){if(!value)return undefined;return String(value)}function toCalendarEvent(event,index){const start=eventDate(event.start||event.date||event.dtstart);const end=eventDate(event.end||event.dtend);return {id:String(event.uid||event.id||index),title:String(event.title||event.summary||'Untitled event'),start:start,end:end,allDay:start?!start.includes('T'):true,extendedProps:{description:event.description||'',source:event.source||''}}}const rawEvents=parseEvents();const calendarEvents=rawEvents.map(toCalendarEvent).filter(event=>event.start).slice(0,200);document.getElementById('summary').textContent=`${calendarEvents.length} merged events`;document.addEventListener('DOMContentLoaded',()=>{const calendarEl=document.getElementById('calendar');if(!window.FullCalendar){calendarEl.className='fallback';calendarEl.textContent='FullCalendar could not be loaded from the CDN.';return}const calendar=new FullCalendar.Calendar(calendarEl,{initialView:'dayGridMonth',height:'auto',events:calendarEvents,headerToolbar:{left:'prev,next today',center:'title',right:'dayGridMonth,timeGridWeek,listMonth'},eventDidMount(info){const description=info.event.extendedProps.description;if(description)info.el.title=description}});calendar.render()});</script></main></body>\n</html>"},"custom_inputs":{"events_json":"str"},"exposed_inputs":["events_json"],"inputs_visibility_configured":true},
+      {"node_instance_id":"response","node_id":"n_html_response","node_version":"1.0.0","title":"HTML Response"}
+    ],
+    "edges": [
+      {"source_node_id":"us_url","source_output":"url","target_node_id":"fetch_us","target_input":"url"},
+      {"source_node_id":"nyse_url","source_output":"url","target_node_id":"fetch_nyse","target_input":"url"},
+      {"source_node_id":"fetch_us","source_output":"body","target_node_id":"parse_us","target_input":"text"},
+      {"source_node_id":"fetch_nyse","source_output":"body","target_node_id":"parse_nyse","target_input":"text"},
+      {"source_node_id":"parse_us","source_output":"events","target_node_id":"merge","target_input":"left"},
+      {"source_node_id":"parse_nyse","source_output":"events","target_node_id":"merge","target_input":"right"},
+      {"source_node_id":"merge","source_output":"items","target_node_id":"sort","target_input":"items"},
+      {"source_node_id":"sort","source_output":"items","target_node_id":"stringify","target_input":"value"},
+      {"source_node_id":"stringify","source_output":"text","target_node_id":"template","target_input":"events_json"},
+      {"source_node_id":"template","source_output":"html","target_node_id":"response","target_input":"html"}
+    ],
+    "graph_outputs":{"events":{"node_instance_id":"sort","output_name":"items"},"html":{"node_instance_id":"template","output_name":"html"},"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"html","status":"network-probe","requires":{"nodes":["n_url_input","n_fetch_url","n_ics_parse","n_concat_lists","n_sort_rows","n_json_stringify","n_html_template","n_html_response"],"panels":["html","table","json","logs"],"capabilities":["public-http"]}},"canvas":{"positions":{"us_url":{"x":80,"y":80},"nyse_url":{"x":80,"y":280},"fetch_us":{"x":320,"y":80},"fetch_nyse":{"x":320,"y":280},"parse_us":{"x":560,"y":80},"parse_nyse":{"x":560,"y":280},"merge":{"x":800,"y":180},"sort":{"x":1040,"y":180},"stringify":{"x":1280,"y":180},"template":{"x":1540,"y":180},"response":{"x":1840,"y":180}},"recommended_panels":[{"kind":"html","binding":{"nodeInstanceId":"template","outputName":"html"}},{"kind":"table","binding":{"nodeInstanceId":"sort","outputName":"items"}}]}}
+  }
+}

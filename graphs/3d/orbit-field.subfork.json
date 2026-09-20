@@ -1,0 +1,339 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Orbit Field",
+    "description": "Graph-authored reusable scene data for 3D Preview. No network calls, scripts, or simulation-specific renderer.",
+    "nodes": [
+      {
+        "node_instance_id": "x",
+        "node_id": "n_seeded_random_integers",
+        "node_version": "1.0.0",
+        "title": "x",
+        "params": {
+          "seed": 7,
+          "count": 1200,
+          "minimum": -100,
+          "maximum": 100
+        }
+      },
+      {
+        "node_instance_id": "y",
+        "node_id": "n_seeded_random_integers",
+        "node_version": "1.0.0",
+        "title": "y",
+        "params": {
+          "seed": 144,
+          "count": 1200,
+          "minimum": -100,
+          "maximum": 100
+        }
+      },
+      {
+        "node_instance_id": "z",
+        "node_id": "n_seeded_random_integers",
+        "node_version": "1.0.0",
+        "title": "z",
+        "params": {
+          "seed": 281,
+          "count": 1200,
+          "minimum": -100,
+          "maximum": 100
+        }
+      },
+      {
+        "node_instance_id": "positions",
+        "node_id": "n_zip_lists",
+        "node_version": "1.0.0",
+        "title": "positions",
+        "params": {},
+        "custom_inputs": {
+          "x": "json",
+          "y": "json",
+          "z": "json"
+        },
+        "exposed_inputs": [
+          "x",
+          "y",
+          "z"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "points",
+        "node_id": "n_scene_geometry",
+        "node_version": "1.0.0",
+        "title": "points",
+        "params": {
+          "kind": "points"
+        }
+      },
+      {
+        "node_instance_id": "teal_material",
+        "node_id": "n_scene_material",
+        "node_version": "1.0.0",
+        "title": "teal material",
+        "params": {
+          "color": "#7bd6c6",
+          "size": 0.065
+        }
+      },
+      {
+        "node_instance_id": "point_cloud",
+        "node_id": "n_scene_object",
+        "node_version": "1.0.0",
+        "title": "point cloud",
+        "params": {}
+      },
+      {
+        "node_instance_id": "orbit_motion",
+        "node_id": "n_scene_transform",
+        "node_version": "1.0.0",
+        "title": "orbit motion",
+        "params": {
+          "scale": [
+            0.04,
+            0.04,
+            0.04
+          ],
+          "spin": [
+            0.03,
+            0.18,
+            0.04
+          ]
+        }
+      },
+      {
+        "node_instance_id": "sphere",
+        "node_id": "n_scene_geometry",
+        "node_version": "1.0.0",
+        "title": "sphere",
+        "params": {
+          "kind": "sphere"
+        }
+      },
+      {
+        "node_instance_id": "gold_material",
+        "node_id": "n_scene_material",
+        "node_version": "1.0.0",
+        "title": "gold material",
+        "params": {
+          "color": "#dab566",
+          "roughness": 0.35,
+          "metalness": 0.3
+        }
+      },
+      {
+        "node_instance_id": "core",
+        "node_id": "n_scene_object",
+        "node_version": "1.0.0",
+        "title": "core",
+        "params": {}
+      },
+      {
+        "node_instance_id": "group",
+        "node_id": "n_scene_group",
+        "node_version": "1.0.0",
+        "title": "group",
+        "params": {},
+        "custom_inputs": {
+          "field": "json",
+          "core": "json"
+        },
+        "exposed_inputs": [
+          "field",
+          "core"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "camera",
+        "node_id": "n_scene_camera",
+        "node_version": "1.0.0",
+        "title": "camera",
+        "params": {
+          "position": [
+            9,
+            6,
+            11
+          ]
+        }
+      },
+      {
+        "node_instance_id": "compose",
+        "node_id": "n_scene_compose",
+        "node_version": "1.0.0",
+        "title": "compose",
+        "params": {
+          "background": "#080f18",
+          "duration": 40
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "x",
+        "source_output": "items",
+        "target_node_id": "positions",
+        "target_input": "x"
+      },
+      {
+        "source_node_id": "y",
+        "source_output": "items",
+        "target_node_id": "positions",
+        "target_input": "y"
+      },
+      {
+        "source_node_id": "z",
+        "source_output": "items",
+        "target_node_id": "positions",
+        "target_input": "z"
+      },
+      {
+        "source_node_id": "positions",
+        "source_output": "items",
+        "target_node_id": "points",
+        "target_input": "positions"
+      },
+      {
+        "source_node_id": "points",
+        "source_output": "geometry",
+        "target_node_id": "point_cloud",
+        "target_input": "geometry"
+      },
+      {
+        "source_node_id": "teal_material",
+        "source_output": "material",
+        "target_node_id": "point_cloud",
+        "target_input": "material"
+      },
+      {
+        "source_node_id": "point_cloud",
+        "source_output": "object",
+        "target_node_id": "orbit_motion",
+        "target_input": "object"
+      },
+      {
+        "source_node_id": "sphere",
+        "source_output": "geometry",
+        "target_node_id": "core",
+        "target_input": "geometry"
+      },
+      {
+        "source_node_id": "gold_material",
+        "source_output": "material",
+        "target_node_id": "core",
+        "target_input": "material"
+      },
+      {
+        "source_node_id": "orbit_motion",
+        "source_output": "object",
+        "target_node_id": "group",
+        "target_input": "field"
+      },
+      {
+        "source_node_id": "core",
+        "source_output": "object",
+        "target_node_id": "group",
+        "target_input": "core"
+      },
+      {
+        "source_node_id": "group",
+        "source_output": "object",
+        "target_node_id": "compose",
+        "target_input": "object"
+      },
+      {
+        "source_node_id": "camera",
+        "source_output": "camera",
+        "target_node_id": "compose",
+        "target_input": "camera"
+      }
+    ],
+    "graph_outputs": {
+      "scene": {
+        "node_instance_id": "compose",
+        "output_name": "scene"
+      }
+    },
+    "metadata": {
+      "category": "3d",
+      "canvas": {
+        "positions": {
+          "x": {
+            "x": 60,
+            "y": 60
+          },
+          "y": {
+            "x": 60,
+            "y": 260
+          },
+          "z": {
+            "x": 60,
+            "y": 460
+          },
+          "positions": {
+            "x": 340,
+            "y": 240
+          },
+          "points": {
+            "x": 620,
+            "y": 120
+          },
+          "teal_material": {
+            "x": 620,
+            "y": 360
+          },
+          "point_cloud": {
+            "x": 900,
+            "y": 200
+          },
+          "orbit_motion": {
+            "x": 1160,
+            "y": 200
+          },
+          "sphere": {
+            "x": 620,
+            "y": 620
+          },
+          "gold_material": {
+            "x": 620,
+            "y": 840
+          },
+          "core": {
+            "x": 900,
+            "y": 650
+          },
+          "group": {
+            "x": 1450,
+            "y": 300
+          },
+          "camera": {
+            "x": 1450,
+            "y": 700
+          },
+          "compose": {
+            "x": 1730,
+            "y": 300
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "scene3d",
+            "binding": {
+              "nodeInstanceId": "compose",
+              "outputName": "scene"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "compose",
+              "outputName": "scene"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

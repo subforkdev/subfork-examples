@@ -1,0 +1,492 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Signal Runner",
+    "description": "A local Canvas courier game assembled from graph-owned seeded courses and difficulty rules. Dodge barriers, collect signals, and reach the uplink. No services, credentials, or paid calls.",
+    "nodes": [
+      {
+        "node_instance_id": "seed",
+        "node_id": "n_static_value",
+        "node_version": "1.0.0",
+        "title": "World seed / unsigned integer",
+        "params": {
+          "value": 7
+        }
+      },
+      {
+        "node_instance_id": "length",
+        "node_id": "n_static_value",
+        "node_version": "1.0.0",
+        "title": "Course length / 5–60 gates",
+        "params": {
+          "value": 30
+        }
+      },
+      {
+        "node_instance_id": "indices",
+        "node_id": "n_number_sequence",
+        "node_version": "1.0.0",
+        "title": "Gate indices",
+        "params": {
+          "start": 0,
+          "step": 1
+        },
+        "exposed_inputs": [
+          "count"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "lanes",
+        "node_id": "n_seeded_random_integers",
+        "node_version": "1.0.0",
+        "title": "Seeded safe lanes",
+        "params": {
+          "minimum": 0,
+          "maximum": 2
+        },
+        "exposed_inputs": [
+          "seed",
+          "count"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "zip",
+        "node_id": "n_zip_lists",
+        "node_version": "1.0.0",
+        "title": "Pair gate index and lane",
+        "params": {},
+        "custom_inputs": {
+          "index": "json",
+          "signal": "json"
+        },
+        "exposed_inputs": [
+          "index",
+          "signal"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "positions",
+        "node_id": "n_compute_field",
+        "node_version": "1.0.0",
+        "title": "Gate distance = index * 180 + 650",
+        "params": {
+          "source_field": "index",
+          "destination_field": "distance",
+          "operation": "multiply_add",
+          "operand": 180,
+          "offset": 650
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "obstacles",
+        "node_id": "n_list_difference",
+        "node_version": "1.0.0",
+        "title": "Block the other two lanes",
+        "params": {
+          "mode": "records",
+          "source": [
+            0,
+            1,
+            2
+          ],
+          "exclude_field": "signal",
+          "destination_field": "blocks"
+        },
+        "exposed_inputs": [
+          "items"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "rules",
+        "node_id": "n_static_value",
+        "node_version": "1.0.0",
+        "title": "Difficulty rules",
+        "params": {
+          "value": {
+            "easy": {
+              "speed": 150,
+              "lives": 3,
+              "time_limit": 90,
+              "required_fraction": 0.5
+            },
+            "normal": {
+              "speed": 210,
+              "lives": 3,
+              "time_limit": 70,
+              "required_fraction": 0.65
+            },
+            "hard": {
+              "speed": 290,
+              "lives": 2,
+              "time_limit": 50,
+              "required_fraction": 0.8
+            }
+          }
+        }
+      },
+      {
+        "node_instance_id": "difficulty",
+        "node_id": "n_text_value",
+        "node_version": "1.0.0",
+        "title": "Difficulty / easy, normal, hard",
+        "params": {
+          "text": "normal"
+        }
+      },
+      {
+        "node_instance_id": "select_rules",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Select game rules",
+        "params": {},
+        "exposed_inputs": [
+          "value",
+          "path"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "theme",
+        "node_id": "n_text_value",
+        "node_version": "1.0.0",
+        "title": "Theme / amber, ice, rose",
+        "params": {
+          "text": "amber"
+        }
+      },
+      {
+        "node_instance_id": "manifest",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Playable level manifest",
+        "params": {
+          "template": {
+            "schema_version": "signal-runner/1",
+            "seed": "{{ inputs.seed }}",
+            "difficulty": "{{ inputs.difficulty }}",
+            "theme": "{{ inputs.theme }}",
+            "rows": "{{ inputs.rows }}",
+            "rules": "{{ inputs.rules }}"
+          }
+        },
+        "custom_inputs": {
+          "seed": "json",
+          "difficulty": "str",
+          "theme": "str",
+          "rows": "json",
+          "rules": "json"
+        },
+        "exposed_inputs": [
+          "seed",
+          "difficulty",
+          "theme",
+          "rows",
+          "rules"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "encode",
+        "node_id": "n_json_stringify",
+        "node_version": "1.0.0",
+        "title": "HTML-safe level data",
+        "params": {
+          "html_safe": true
+        },
+        "exposed_inputs": [
+          "value"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "view",
+        "node_id": "n_html_template",
+        "node_version": "1.0.0",
+        "title": "Signal Runner / Canvas game",
+        "params": {
+          "template": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" />\n    <title>Signal Runner</title>\n    <style>\n      :root {\n        color-scheme: dark;\n        --bg: #131521;\n        --ink: #f5e6c8;\n        --accent: #ffc365;\n        --line: #495060;\n      }\n      * {\n        box-sizing: border-box;\n      }\n      body {\n        margin: 0;\n        background:\n          radial-gradient(ellipse at top left, #31374c, transparent 70%),\n          var(--bg);\n        color: var(--ink);\n        font:\n          16px Georgia,\n          serif;\n      }\n      main {\n        max-width: 1100px;\n        margin: auto;\n        padding: 24px;\n      }\n      header {\n        display: flex;\n        align-items: end;\n        justify-content: space-between;\n        gap: 20px;\n        margin-bottom: 22px;\n      }\n      h1 {\n        font-weight: normal;\n        font-size: clamp(40px, 7vw, 72px);\n        letter-spacing: -0.05em;\n        margin: 10px 0;\n      }\n      h1 em {\n        color: var(--accent);\n      }\n      .eyebrow,\n      .mono,\n      button,\n      .hud,\n      footer {\n        font:\n          12px/1.6 \"Courier New\",\n          monospace;\n      }\n      .eyebrow {\n        letter-spacing: 0.18em;\n        color: var(--accent);\n      }\n      p {\n        line-height: 1.6;\n      }\n      .layout {\n        display: grid;\n        grid-template-columns: minmax(0, 650px) minmax(240px, 1fr);\n        gap: 26px;\n      }\n      .stage {\n        border: 1px solid var(--line);\n        background: #0b101b;\n        position: relative;\n      }\n      canvas {\n        display: block;\n        width: 100%;\n        height: auto;\n        aspect-ratio: 650/700;\n      }\n      .hud {\n        display: flex;\n        justify-content: space-between;\n        gap: 12px;\n        padding: 12px 16px;\n        border-bottom: 1px solid var(--line);\n        flex-wrap: wrap;\n      }\n      .hud strong {\n        color: var(--accent);\n      }\n      button {\n        border: 1px solid var(--line);\n        background: #252e40;\n        color: var(--ink);\n        padding: 12px 18px;\n        border-radius: 3px;\n        cursor: pointer;\n      }\n      button.primary {\n        background: var(--accent);\n        color: #131521;\n        border-color: var(--accent);\n      }\n      button:disabled {\n        opacity: 0.5;\n        cursor: default;\n      }\n      :focus-visible {\n        outline: 2px solid var(--accent);\n        outline-offset: 3px;\n      }\n      .buttons {\n        display: flex;\n        gap: 10px;\n        flex-wrap: wrap;\n        margin: 18px 0;\n      }\n      .steering {\n        display: flex;\n        justify-content: space-between;\n        gap: 12px;\n        padding: 12px;\n      }\n      .steering button {\n        flex: 1;\n        touch-action: manipulation;\n        user-select: none;\n      }\n      h2 {\n        font-size: 25px;\n        font-weight: normal;\n      }\n      aside {\n        padding: 0 4px;\n      }\n      #status {\n        min-height: 72px;\n        color: var(--accent);\n      }\n      #course {\n        color: #c0c5cb;\n        overflow-wrap: anywhere;\n      }\n      footer {\n        margin-top: 24px;\n        border-top: 1px solid var(--line);\n        padding-top: 16px;\n        color: #bfc3c9;\n      }\n      #error {\n        border: 1px solid #dc927b;\n        padding: 15px;\n        color: #ffc9ab;\n      }\n      @media (max-width: 750px) {\n        main {\n          padding: 16px;\n        }\n        header {\n          display: block;\n        }\n        .layout {\n          grid-template-columns: 1fr;\n        }\n        canvas {\n          max-height: 65vh;\n        }\n        aside {\n          padding: 0;\n        }\n        .stage {\n          max-width: 650px;\n        }\n      }\n    </style>\n  </head>\n  <body>\n    <main>\n      <header>\n        <div>\n          <div class=\"eyebrow\">Subfork / graph arcade / 01</div>\n          <h1>Signal <em>Runner.</em></h1>\n        </div>\n        <div class=\"mono\">CARRY THE SIGNAL.<br />FIND THE OPEN LANE.</div>\n      </header>\n      <p id=\"error\" role=\"alert\" hidden></p>\n      <div class=\"layout\">\n        <section class=\"stage\" aria-label=\"Game\">\n          <div class=\"hud\">\n            <span>SIGNALS <strong id=\"score\">0</strong></span\n            ><span>HULL <strong id=\"lives\">3</strong></span\n            ><span>TIME <strong id=\"clock\">0</strong></span\n            ><span>BEST <strong id=\"best\">0</strong></span>\n          </div>\n          <canvas\n            id=\"game\"\n            width=\"650\"\n            height=\"700\"\n            tabindex=\"0\"\n            aria-label=\"Signal Runner. Use left and right arrows or A and D to steer; Space to pause. Visual reaction game; equivalent nonvisual gameplay is not provided.\"\n            >This game requires Canvas. Use the buttons below to steer.</canvas\n          >\n          <div class=\"steering\">\n            <button id=\"left\" aria-label=\"Steer left\">← LEFT</button\n            ><button id=\"right\" aria-label=\"Steer right\">RIGHT →</button>\n          </div>\n        </section>\n        <aside>\n          <div class=\"eyebrow\">Courier briefing</div>\n          <h2>Bring the packets home.</h2>\n          <p>\n            Dodge the red barriers. Collect the diamond signals. Reach the\n            finish with the required signal count before time runs out.\n          </p>\n          <div class=\"buttons\">\n            <button id=\"start\" class=\"primary\">Start run</button\n            ><button id=\"pause\" disabled>Pause</button>\n          </div>\n          <p id=\"status\" role=\"status\" aria-live=\"polite\">Ready to connect.</p>\n          <p class=\"mono\">\n            STEER / ← → or A D<br />PAUSE / Space or button<br />TOUCH / left\n            and right buttons\n          </p>\n          <h2>Built by the graph.</h2>\n          <p id=\"course\" class=\"mono\"></p>\n          <p class=\"mono\">\n            The manifest contains every barrier, signal, and rule. Restart\n            replays the same course; changing it requires editing the graph and\n            rerunning.\n          </p>\n        </aside>\n      </div>\n      <footer>\n        No accounts, APIs, sound, or network requests. Best score lasts only\n        while this page is open. This is a visual reaction game; reduced motion\n        removes decorative streaks but not essential scrolling.\n      </footer>\n    </main>\n    <script id=\"manifest\" type=\"application/json\">\n      {{ inputs.manifest_json }}\n    </script>\n    <script>\n      (() => {\n        \"use strict\";\n        const $ = (id) => document.getElementById(id),\n          canvas = $(\"game\"),\n          ctx = canvas.getContext(\"2d\");\n        let frame = 0;\n        try {\n          const m = JSON.parse($(\"manifest\").textContent);\n          if (!ctx) throw new Error(\"Canvas is unavailable in this browser.\");\n          const r = m.rules,\n            rows = m.rows;\n          if (\n            m.schema_version !== \"signal-runner/1\" ||\n            !Array.isArray(rows) ||\n            rows.length < 5 ||\n            rows.length > 60 ||\n            !r\n          )\n            throw new Error(\n              \"Expected a signal-runner/1 manifest with 5–60 course rows.\",\n            );\n          const finite = (n, min, max) =>\n            typeof n === \"number\" && Number.isFinite(n) && n >= min && n <= max;\n          if (\n            !finite(r.speed, 80, 400) ||\n            !Number.isInteger(r.lives) ||\n            !finite(r.lives, 1, 5) ||\n            !finite(r.time_limit, 10, 180) ||\n            !finite(r.required_fraction, 0.1, 1)\n          )\n            throw new Error(\"Invalid game rules.\");\n          let previous = 0;\n          for (const row of rows) {\n            if (\n              !finite(row.distance, 400, 20000) ||\n              row.distance - previous < 150 ||\n              !Array.isArray(row.blocks) ||\n              row.blocks.length > 2 ||\n              !row.blocks.every(\n                (l) => Number.isInteger(l) && l >= 0 && l < 3,\n              ) ||\n              new Set(row.blocks).size !== row.blocks.length ||\n              !Number.isInteger(row.signal) ||\n              row.signal < 0 ||\n              row.signal > 2 ||\n              row.blocks.includes(row.signal)\n            )\n              throw new Error(\n                \"Invalid course row: distances must increase, and signals must have an open lane.\",\n              );\n            previous = row.distance;\n          }\n          const themes = {\n            amber: { signal: \"#ffd078\", lane: \"#303e52\", ship: \"#9edcd2\" },\n            ice: { signal: \"#99e9f2\", lane: \"#283f56\", ship: \"#e7daae\" },\n            rose: { signal: \"#f7c5cf\", lane: \"#4a334b\", ship: \"#bbdc9f\" },\n          };\n          if (!themes[m.theme])\n            throw new Error(\n              \"Unknown visual theme. Choose amber, ice, or rose in the graph.\",\n            );\n          const theme = themes[m.theme],\n            finish = rows.at(-1).distance + 300,\n            goal = Math.ceil(rows.length * r.required_fraction);\n          if (finish / r.speed > r.time_limit)\n            throw new Error(\n              \"The course cannot finish within this time limit. Shorten the course or increase the limit.\",\n            );\n          const reduced = matchMedia(\n            \"(prefers-reduced-motion: reduce)\",\n          ).matches;\n          let mode = \"ready\",\n            lane = 1,\n            distance = 0,\n            elapsed = 0,\n            score = 0,\n            lives = r.lives,\n            next = 0,\n            best = 0,\n            last = 0,\n            flash = 0;\n          const lanes = [165, 325, 485],\n            shipY = 580;\n          $(\"course\").textContent =\n            \"COURSE \" +\n            String(m.seed) +\n            \" / \" +\n            String(m.difficulty) +\n            \"\\n\" +\n            rows.length +\n            \" gates · \" +\n            goal +\n            \" signals required · \" +\n            r.time_limit +\n            \"s limit\";\n          function hud() {\n            $(\"score\").textContent = score + \" / \" + goal;\n            $(\"lives\").textContent = String(lives);\n            $(\"clock\").textContent =\n              Math.max(0, r.time_limit - elapsed).toFixed(1) + \"s\";\n            $(\"best\").textContent = String(best);\n          }\n          function end(won, message) {\n            mode = won ? \"won\" : \"lost\";\n            best = Math.max(best, score);\n            $(\"pause\").disabled = true;\n            $(\"start\").textContent = \"Restart run\";\n            $(\"status\").textContent = message;\n            hud();\n          }\n          function draw() {\n            ctx.fillStyle = \"#0b101b\";\n            ctx.fillRect(0, 0, 650, 700);\n            const bg = ctx.createLinearGradient(0, 0, 0, 700);\n            bg.addColorStop(0, \"#172b3b\");\n            bg.addColorStop(1, \"#111522\");\n            ctx.fillStyle = bg;\n            ctx.fillRect(80, 0, 490, 700);\n            ctx.strokeStyle = theme.lane;\n            ctx.lineWidth = 1;\n            for (const x of [85, 245, 405, 565]) {\n              ctx.beginPath();\n              ctx.moveTo(x, 0);\n              ctx.lineTo(x, 700);\n              ctx.stroke();\n            }\n            if (!reduced) {\n              ctx.fillStyle = theme.lane;\n              for (let i = 0; i < 20; i++) {\n                const y = (i * 70 + distance * 0.7) % 740;\n                ctx.fillRect(64, y, 3, 20);\n                ctx.fillRect(583, y, 3, 20);\n              }\n            }\n            ctx.strokeStyle = \"#46596b\";\n            ctx.setLineDash([4, 8]);\n            ctx.beginPath();\n            ctx.moveTo(85, shipY);\n            ctx.lineTo(565, shipY);\n            ctx.stroke();\n            ctx.setLineDash([]);\n            for (let i = next; i < rows.length; i++) {\n              const row = rows[i],\n                y = shipY - (row.distance - distance);\n              if (y < -60) break;\n              if (y > 740) continue;\n              for (const blocked of row.blocks) {\n                const x = lanes[blocked];\n                ctx.fillStyle = \"#b85350\";\n                ctx.fillRect(x - 57, y - 20, 114, 40);\n                ctx.strokeStyle = \"#f1a293\";\n                ctx.strokeRect(x - 57, y - 20, 114, 40);\n                ctx.beginPath();\n                ctx.moveTo(x - 43, y - 12);\n                ctx.lineTo(x - 20, y + 12);\n                ctx.moveTo(x + 20, y - 12);\n                ctx.lineTo(x + 43, y + 12);\n                ctx.stroke();\n              }\n              const x = lanes[row.signal];\n              ctx.fillStyle = theme.signal;\n              ctx.beginPath();\n              ctx.moveTo(x, y - 17);\n              ctx.lineTo(x + 13, y);\n              ctx.lineTo(x, y + 17);\n              ctx.lineTo(x - 13, y);\n              ctx.closePath();\n              ctx.fill();\n            }\n            const fy = shipY - (finish - distance);\n            if (fy >= 0 && fy <= 700) {\n              ctx.fillStyle = theme.signal;\n              ctx.fillRect(85, fy, 480, 4);\n              ctx.font = \"18px monospace\";\n              ctx.textAlign = \"center\";\n              ctx.fillText(\"UPLINK / FINISH\", 325, fy - 15);\n            }\n            ctx.fillStyle = flash > 0 ? \"#f19181\" : theme.ship;\n            const x = lanes[lane];\n            ctx.beginPath();\n            ctx.moveTo(x, shipY - 24);\n            ctx.lineTo(x + 20, shipY + 20);\n            ctx.lineTo(x, shipY + 10);\n            ctx.lineTo(x - 20, shipY + 20);\n            ctx.closePath();\n            ctx.fill();\n            ctx.fillStyle = theme.signal;\n            ctx.fillRect(0, 696, 650 * Math.min(1, distance / finish), 4);\n            if (mode !== \"running\") {\n              ctx.fillStyle = \"rgba(8,12,22,.77)\";\n              ctx.fillRect(60, 245, 530, 150);\n              ctx.fillStyle = theme.signal;\n              ctx.textAlign = \"center\";\n              ctx.font = \"32px Georgia\";\n              ctx.fillText(\n                {\n                  ready: \"Ready, courier?\",\n                  paused: \"Signal held.\",\n                  won: \"Transmission complete.\",\n                  lost: \"Connection lost.\",\n                }[mode],\n                325,\n                307,\n              );\n              ctx.font = \"15px monospace\";\n              ctx.fillStyle = \"#f5e6c8\";\n              ctx.fillText(\n                mode === \"ready\"\n                  ? \"PRESS START / THEN STEER\"\n                  : mode === \"paused\"\n                    ? \"RESUME WHEN READY\"\n                    : \"RESTART TO REPLAY THIS COURSE\",\n                325,\n                345,\n              );\n            }\n          }\n          function tick(time) {\n            if (mode !== \"running\") {\n              frame = 0;\n              return;\n            }\n            const dt = Math.min(0.05, Math.max(0, (time - last) / 1000));\n            last = time;\n            elapsed += dt;\n            distance += r.speed * dt;\n            flash = Math.max(0, flash - dt);\n            while (next < rows.length && rows[next].distance <= distance) {\n              const row = rows[next++];\n              if (row.blocks.includes(lane)) {\n                lives--;\n                flash = 0.2;\n                if (lives <= 0) {\n                  end(\n                    false,\n                    \"Hull depleted. Restart and follow the open lanes.\",\n                  );\n                  break;\n                }\n              } else if (row.signal === lane) score++;\n            }\n            if (mode === \"running\" && distance >= finish)\n              end(\n                score >= goal,\n                score >= goal\n                  ? \"Delivery complete: \" + score + \" signals received.\"\n                  : \"Reached the uplink, but needed \" +\n                      goal +\n                      \" signals. Try another run.\",\n              );\n            if (mode === \"running\" && elapsed >= r.time_limit)\n              end(false, \"Time expired. Restart to try again.\");\n            hud();\n            draw();\n            frame = mode === \"running\" ? requestAnimationFrame(tick) : 0;\n          }\n          function start() {\n            cancelAnimationFrame(frame);\n            mode = \"running\";\n            lane = 1;\n            distance = 0;\n            elapsed = 0;\n            score = 0;\n            lives = r.lives;\n            next = 0;\n            flash = 0;\n            last = performance.now();\n            $(\"status\").textContent =\n              \"Run active. Collect \" + goal + \" signals and reach the uplink.\";\n            $(\"start\").textContent = \"Restart run\";\n            $(\"pause\").textContent = \"Pause\";\n            $(\"pause\").disabled = false;\n            hud();\n            draw();\n            canvas.focus();\n            frame = requestAnimationFrame(tick);\n          }\n          function pause() {\n            if (mode !== \"running\" && mode !== \"paused\") return;\n            if (mode === \"running\") {\n              mode = \"paused\";\n              cancelAnimationFrame(frame);\n              frame = 0;\n              $(\"pause\").textContent = \"Resume\";\n              $(\"status\").textContent =\n                \"Paused. Your remaining time is preserved.\";\n            } else {\n              mode = \"running\";\n              last = performance.now();\n              $(\"pause\").textContent = \"Pause\";\n              $(\"status\").textContent = \"Run resumed.\";\n              frame = requestAnimationFrame(tick);\n            }\n            draw();\n          }\n          function steer(delta) {\n            if (mode === \"running\")\n              lane = Math.max(0, Math.min(2, lane + delta));\n          }\n          canvas.addEventListener(\"keydown\", (event) => {\n            if (\n              [\"ArrowLeft\", \"ArrowRight\", \"a\", \"A\", \"d\", \"D\", \" \"].includes(\n                event.key,\n              )\n            ) {\n              event.preventDefault();\n              if (event.key === \" \") {\n                if (!event.repeat) pause();\n              } else\n                steer([\"ArrowLeft\", \"a\", \"A\"].includes(event.key) ? -1 : 1);\n            }\n          });\n          $(\"start\").addEventListener(\"click\", start);\n          $(\"pause\").addEventListener(\"click\", () => {\n            pause();\n            canvas.focus();\n          });\n          $(\"left\").addEventListener(\"click\", () => steer(-1));\n          $(\"right\").addEventListener(\"click\", () => steer(1));\n          document.addEventListener(\"visibilitychange\", () => {\n            if (document.hidden && mode === \"running\") pause();\n          });\n          window.addEventListener(\"blur\", () => {\n            if (mode === \"running\") pause();\n          });\n          window.addEventListener(\"pagehide\", () =>\n            cancelAnimationFrame(frame),\n          );\n          hud();\n          draw();\n        } catch (error) {\n          cancelAnimationFrame(frame);\n          $(\"error\").hidden = false;\n          $(\"error\").textContent = error.message || \"Unable to load game.\";\n          $(\"start\").disabled = true;\n          $(\"pause\").disabled = true;\n        }\n      })();\n    </script>\n  </body>\n</html>\n"
+        },
+        "custom_inputs": {
+          "manifest_json": "str"
+        },
+        "exposed_inputs": [
+          "manifest_json"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_html_response",
+        "node_version": "1.0.0",
+        "title": "Playable game page",
+        "params": {},
+        "exposed_inputs": [
+          "html"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "data_response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Level manifest response",
+        "params": {},
+        "exposed_inputs": [
+          "value"
+        ],
+        "inputs_visibility_configured": true
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "seed",
+        "source_output": "value",
+        "target_node_id": "lanes",
+        "target_input": "seed"
+      },
+      {
+        "source_node_id": "length",
+        "source_output": "value",
+        "target_node_id": "lanes",
+        "target_input": "count"
+      },
+      {
+        "source_node_id": "length",
+        "source_output": "value",
+        "target_node_id": "indices",
+        "target_input": "count"
+      },
+      {
+        "source_node_id": "indices",
+        "source_output": "items",
+        "target_node_id": "zip",
+        "target_input": "index"
+      },
+      {
+        "source_node_id": "lanes",
+        "source_output": "items",
+        "target_node_id": "zip",
+        "target_input": "signal"
+      },
+      {
+        "source_node_id": "zip",
+        "source_output": "items",
+        "target_node_id": "positions",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "positions",
+        "source_output": "items",
+        "target_node_id": "obstacles",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "rules",
+        "source_output": "value",
+        "target_node_id": "select_rules",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "difficulty",
+        "source_output": "text",
+        "target_node_id": "select_rules",
+        "target_input": "path"
+      },
+      {
+        "source_node_id": "seed",
+        "source_output": "value",
+        "target_node_id": "manifest",
+        "target_input": "seed"
+      },
+      {
+        "source_node_id": "difficulty",
+        "source_output": "text",
+        "target_node_id": "manifest",
+        "target_input": "difficulty"
+      },
+      {
+        "source_node_id": "theme",
+        "source_output": "text",
+        "target_node_id": "manifest",
+        "target_input": "theme"
+      },
+      {
+        "source_node_id": "obstacles",
+        "source_output": "items",
+        "target_node_id": "manifest",
+        "target_input": "rows"
+      },
+      {
+        "source_node_id": "select_rules",
+        "source_output": "value",
+        "target_node_id": "manifest",
+        "target_input": "rules"
+      },
+      {
+        "source_node_id": "manifest",
+        "source_output": "value",
+        "target_node_id": "encode",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "encode",
+        "source_output": "text",
+        "target_node_id": "view",
+        "target_input": "manifest_json"
+      },
+      {
+        "source_node_id": "view",
+        "source_output": "html",
+        "target_node_id": "response",
+        "target_input": "html"
+      },
+      {
+        "source_node_id": "manifest",
+        "source_output": "value",
+        "target_node_id": "data_response",
+        "target_input": "value"
+      }
+    ],
+    "graph_outputs": {
+      "html": {
+        "node_instance_id": "view",
+        "output_name": "html"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      },
+      "manifest": {
+        "node_instance_id": "manifest",
+        "output_name": "value"
+      },
+      "data_response": {
+        "node_instance_id": "data_response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "games",
+        "status": "prototype",
+        "summary": "Inspectable level manifest plus playable Canvas output.",
+        "requires": {
+          "nodes": [
+            "n_static_value",
+            "n_number_sequence",
+            "n_seeded_random_integers",
+            "n_zip_lists",
+            "n_compute_field",
+            "n_list_difference",
+            "n_text_value",
+            "n_json_path",
+            "n_json_template",
+            "n_json_stringify",
+            "n_html_template",
+            "n_html_response",
+            "n_json_response"
+          ],
+          "panels": [
+            "html",
+            "json"
+          ],
+          "capabilities": [],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "seed": {
+            "x": 60,
+            "y": 60
+          },
+          "length": {
+            "x": 60,
+            "y": 280
+          },
+          "lanes": {
+            "x": 370,
+            "y": 60
+          },
+          "indices": {
+            "x": 370,
+            "y": 280
+          },
+          "zip": {
+            "x": 680,
+            "y": 160
+          },
+          "positions": {
+            "x": 990,
+            "y": 160
+          },
+          "obstacles": {
+            "x": 1300,
+            "y": 160
+          },
+          "rules": {
+            "x": 680,
+            "y": 500
+          },
+          "difficulty": {
+            "x": 680,
+            "y": 720
+          },
+          "select_rules": {
+            "x": 990,
+            "y": 520
+          },
+          "theme": {
+            "x": 1300,
+            "y": 680
+          },
+          "manifest": {
+            "x": 1610,
+            "y": 270
+          },
+          "encode": {
+            "x": 1920,
+            "y": 270
+          },
+          "view": {
+            "x": 2230,
+            "y": 270
+          },
+          "response": {
+            "x": 2540,
+            "y": 270
+          },
+          "data_response": {
+            "x": 1920,
+            "y": 570
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "html",
+            "binding": {
+              "nodeInstanceId": "view",
+              "outputName": "html"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "manifest",
+              "outputName": "value"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

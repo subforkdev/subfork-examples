@@ -1,0 +1,152 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "OpenAI Image Generation",
+    "description": "Composite-ready image generation graph: edit the prompt, add OPENAI_API_KEY as a graph secret, then run to produce previewable media.",
+    "nodes": [
+      {
+        "node_instance_id": "prompt",
+        "node_id": "n_text_value",
+        "node_version": "1.0.0",
+        "title": "Editable prompt",
+        "params": {
+          "text": "a cinematic photo of a tiny green terminal spaceship"
+        }
+      },
+      {
+        "node_instance_id": "body",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "OpenAI body",
+        "params": {
+          "template": {
+            "model": "gpt-image-1",
+            "prompt": "{{ inputs.prompt }}",
+            "size": "1024x1024",
+            "quality": "low",
+            "output_format": "jpeg",
+            "output_compression": 70
+          }
+        },
+        "custom_inputs": {
+          "prompt": "str"
+        },
+        "exposed_inputs": [
+          "prompt"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "OpenAI image request",
+        "params": {
+          "url": "https://api.openai.com/v1/images/generations",
+          "method": "POST",
+          "headers": {
+            "Authorization": "Bearer {{ secrets.OPENAI_API_KEY }}",
+            "Content-Type": "application/json"
+          },
+          "timeout_seconds": 90,
+          "max_response_bytes": 20000000
+        },
+        "exposed_inputs": [
+          "body"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "json"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "image_data",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Image base64",
+        "params": {
+          "path": "data.0.b64_json"
+        }
+      },
+      {
+        "node_instance_id": "media",
+        "node_id": "n_base64_image_to_media",
+        "node_version": "1.0.0",
+        "title": "Image media",
+        "params": {
+          "content_type": "image/jpeg",
+          "filename": "openai-image.jpg"
+        }
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_media_response",
+        "node_version": "1.0.0",
+        "title": "Media Response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "prompt", "source_output": "text", "target_node_id": "body", "target_input": "prompt"},
+      {"source_node_id": "body", "source_output": "value", "target_node_id": "request", "target_input": "body"},
+      {"source_node_id": "request", "source_output": "json", "target_node_id": "image_data", "target_input": "value"},
+      {"source_node_id": "image_data", "source_output": "value", "target_node_id": "media", "target_input": "b64_json"},
+      {"source_node_id": "media", "source_output": "media", "target_node_id": "response", "target_input": "media"}
+    ],
+    "graph_outputs": {
+      "image": {
+        "node_instance_id": "media",
+        "output_name": "media"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "ai",
+        "status": "provider-backed-probe",
+        "summary": "This graph is intentionally authored from generic primitives so it can later be imported or published as a collapsed composite node.",
+        "composite_interface": {
+          "inputs": {
+            "prompt": {
+              "type": "str",
+              "default_node": "prompt",
+              "default_param": "text"
+            }
+          },
+          "outputs": {
+            "image": {
+              "type": "media",
+              "node_instance_id": "media",
+              "output_name": "media"
+            },
+            "response": {
+              "type": "object",
+              "node_instance_id": "response",
+              "output_name": "response"
+            }
+          }
+        },
+        "requires": {
+          "nodes": ["n_text_value", "n_json_template", "n_fetch_url", "n_json_path", "n_base64_image_to_media", "n_media_response"],
+          "panels": ["image", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": ["OPENAI_API_KEY"]
+        }
+      },
+      "canvas": {
+        "positions": {
+          "prompt": {"x": 80, "y": 160},
+          "body": {"x": 340, "y": 160},
+          "request": {"x": 620, "y": 160},
+          "image_data": {"x": 900, "y": 160},
+          "media": {"x": 1160, "y": 160},
+          "response": {"x": 1420, "y": 160}
+        }
+      }
+    }
+  }
+}

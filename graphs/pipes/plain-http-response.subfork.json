@@ -1,0 +1,14 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Plain HTTP Response",
+    "description": "Stores and serves a generic authored HTTP response envelope.",
+    "nodes": [
+      {"node_instance_id":"response","node_id":"n_http_response","node_version":"1.0.0","title":"HTTP Response","params":{"status_code":200,"content_type":"text/plain; charset=utf-8","headers":{"Cache-Control":"no-store"},"body":"Hello from a generic Subfork response envelope.\n"}}
+    ],
+    "edges": [],
+    "graph_outputs":{"response":{"node_instance_id":"response","output_name":"response"}},
+    "metadata":{"template":{"category":"pipes","status":"runnable-probe","requires":{"nodes":["http-response"],"panels":["json"],"capabilities":[]}},"canvas":{"positions":{"response":{"x":160,"y":160}}}}
+  }
+}

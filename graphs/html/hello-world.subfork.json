@@ -1,0 +1,150 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Hello, World",
+    "description": "The smallest complete Subfork page: plain text flows through a text transform into a static HTML document. No network access, secrets, or AI required.",
+    "nodes": [
+      {
+        "node_instance_id": "hello",
+        "node_id": "n_text_value",
+        "node_version": "1.0.0",
+        "title": "Greeting",
+        "params": {
+          "text": "Hello"
+        },
+        "exposed_outputs": [
+          "text"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "message",
+        "node_id": "n_text_template",
+        "node_version": "1.0.0",
+        "title": "Complete the message",
+        "params": {
+          "template": "{{ inputs.greeting }}, world."
+        },
+        "custom_inputs": {
+          "greeting": "str"
+        },
+        "exposed_inputs": [
+          "greeting"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "text"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "page",
+        "node_id": "n_html_template",
+        "node_version": "1.0.0",
+        "title": "Build the page",
+        "params": {
+          "template": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Hello, World</title>\n    <style>\n      * { box-sizing: border-box; }\n      html, body { min-height: 100%; }\n      body {\n        margin: 0;\n        background: #fff;\n        color: #000;\n        font-family: Georgia, \"Times New Roman\", serif;\n      }\n      main {\n        min-height: 100vh;\n        display: grid;\n        place-items: center;\n        padding: clamp(1.5rem, 4vw, 4rem);\n      }\n      h1 {\n        margin: 0;\n        font-size: clamp(4rem, 14vw, 14rem);\n        font-weight: 400;\n        line-height: 0.85;\n        letter-spacing: -0.075em;\n        text-align: center;\n        text-wrap: balance;\n        overflow-wrap: anywhere;\n      }\n    </style>\n  </head>\n  <body>\n    <main>\n      <h1>{{ inputs.message }}</h1>\n    </main>\n  </body>\n</html>\n"
+        },
+        "custom_inputs": {
+          "message": "str"
+        },
+        "exposed_inputs": [
+          "message"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "html"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_html_response",
+        "node_version": "1.0.0",
+        "title": "Serve the page"
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "hello",
+        "source_output": "text",
+        "target_node_id": "message",
+        "target_input": "greeting"
+      },
+      {
+        "source_node_id": "message",
+        "source_output": "text",
+        "target_node_id": "page",
+        "target_input": "message"
+      },
+      {
+        "source_node_id": "page",
+        "source_output": "html",
+        "target_node_id": "response",
+        "target_input": "html"
+      }
+    ],
+    "graph_outputs": {
+      "message": {
+        "node_instance_id": "message",
+        "output_name": "text"
+      },
+      "html": {
+        "node_instance_id": "page",
+        "output_name": "html"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "html",
+        "status": "starter",
+        "requires": {
+          "nodes": [
+            "n_text_value",
+            "n_text_template",
+            "n_html_template",
+            "n_html_response"
+          ],
+          "panels": [
+            "html"
+          ],
+          "capabilities": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "hello": {
+            "x": 80,
+            "y": 180
+          },
+          "message": {
+            "x": 340,
+            "y": 180
+          },
+          "page": {
+            "x": 640,
+            "y": 180
+          },
+          "response": {
+            "x": 940,
+            "y": 180
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "html",
+            "binding": {
+              "nodeInstanceId": "page",
+              "outputName": "html"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

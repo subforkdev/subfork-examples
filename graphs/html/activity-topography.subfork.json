@@ -1,0 +1,342 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Activity Topography",
+    "description": "A public GitHub repository rendered as weekly SVG mountain ridges. Daily sampled commit counts, contributor filtering, palettes, relief and commit inspection. Bounded first page, not productivity or complete history.",
+    "nodes": [
+      {
+        "node_instance_id": "repository",
+        "node_id": "n_static_value",
+        "node_version": "1.0.0",
+        "title": "Repository / owner and name",
+        "params": {
+          "value": {
+            "owner": "psf",
+            "repo": "requests"
+          }
+        }
+      },
+      {
+        "node_instance_id": "url",
+        "node_id": "n_text_template",
+        "node_version": "1.0.0",
+        "title": "GitHub commit page / bounded to 100",
+        "params": {
+          "template": "https://api.github.com/repos/{{ inputs.repository.owner }}/{{ inputs.repository.repo }}/commits?per_page=100&page=1"
+        },
+        "custom_inputs": {
+          "repository": "json"
+        },
+        "exposed_inputs": [
+          "repository"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "fetch",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Read public default-branch commits",
+        "params": {
+          "method": "GET",
+          "headers": {
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "Subfork-Activity-Topography"
+          },
+          "timeout_seconds": 30,
+          "max_response_bytes": 2000000
+        },
+        "exposed_inputs": [
+          "url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "body",
+          "status",
+          "headers"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "parse",
+        "node_id": "n_json_parse",
+        "node_version": "1.0.0",
+        "title": "Parse GitHub response",
+        "params": {}
+      },
+      {
+        "node_instance_id": "project",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Commit facts / no emails or avatars",
+        "params": {
+          "mapping": {
+            "sha": "sha",
+            "date": "commit.committer.date",
+            "login": "author.login",
+            "message": "commit.message",
+            "url": "html_url"
+          }
+        }
+      },
+      {
+        "node_instance_id": "dataset",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Bounded commit snapshot",
+        "params": {
+          "template": {
+            "schema_version": "activity-topography/1",
+            "repository": "{{ inputs.repository.owner }}/{{ inputs.repository.repo }}",
+            "source_url": "{{ inputs.url }}",
+            "status": "{{ inputs.status }}",
+            "headers": "{{ inputs.headers }}",
+            "commits": "{{ inputs.commits }}"
+          }
+        },
+        "custom_inputs": {
+          "repository": "json",
+          "url": "str",
+          "status": "int",
+          "headers": "json",
+          "commits": "json"
+        },
+        "exposed_inputs": [
+          "repository",
+          "url",
+          "status",
+          "headers",
+          "commits"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "encode",
+        "node_id": "n_json_stringify",
+        "node_version": "1.0.0",
+        "title": "HTML-safe commit data",
+        "params": {
+          "html_safe": true
+        }
+      },
+      {
+        "node_instance_id": "view",
+        "node_id": "n_html_template",
+        "node_version": "1.0.0",
+        "title": "Activity Topography / weekly ridges",
+        "params": {
+          "template": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Activity Topography</title>\n    <style>\n      :root {\n        color-scheme: dark;\n        --bg: #111724;\n        --panel: #192130;\n        --ink: #f3e8d8;\n        --muted: #b4b9c0;\n        --line: #394457;\n        --accent: #f0ac7f;\n      }\n      * {\n        box-sizing: border-box;\n      }\n      body {\n        margin: 0;\n        background:\n          radial-gradient(ellipse at 15% 20%, #28394a, transparent 65%),\n          var(--bg);\n        color: var(--ink);\n        font:\n          16px Georgia,\n          serif;\n      }\n      main {\n        max-width: 1600px;\n        margin: auto;\n        padding: 36px;\n      }\n      header {\n        display: flex;\n        justify-content: space-between;\n        align-items: end;\n        gap: 30px;\n        padding-bottom: 28px;\n      }\n      .eyebrow,\n      label,\n      button,\n      select,\n      input,\n      .meta,\n      .legend,\n      footer,\n      .stat,\n      #status,\n      #coverage,\n      #error {\n        font:\n          12px/1.6 \"Courier New\",\n          monospace;\n      }\n      .eyebrow {\n        color: var(--accent);\n        letter-spacing: 0.2em;\n        text-transform: uppercase;\n      }\n      h1 {\n        font-size: clamp(40px, 6vw, 82px);\n        font-weight: normal;\n        letter-spacing: -0.045em;\n        line-height: 0.95;\n        margin: 22px 0;\n      }\n      h1 em {\n        color: var(--accent);\n        font-weight: normal;\n      }\n      h2 {\n        font-size: 28px;\n        font-weight: normal;\n        margin: 0 0 15px;\n      }\n      p {\n        line-height: 1.55;\n      }\n      .subtitle {\n        color: var(--muted);\n        margin-bottom: 0;\n      }\n      .source {\n        max-width: 340px;\n        text-align: right;\n        overflow-wrap: anywhere;\n      }\n      .source strong {\n        display: block;\n        color: var(--accent);\n        font-size: 18px;\n      }\n      .meta {\n        color: var(--muted);\n      }\n      .controls {\n        display: flex;\n        flex-wrap: wrap;\n        align-items: end;\n        gap: 22px;\n        border-block: 1px solid var(--line);\n        padding: 17px 0;\n      }\n      label {\n        display: grid;\n        gap: 6px;\n        color: var(--muted);\n      }\n      select,\n      button,\n      input {\n        color: var(--ink);\n        background: var(--panel);\n        border: 1px solid var(--line);\n        border-radius: 3px;\n        padding: 7px 10px;\n        max-width: 100%;\n      }\n      select {\n        min-width: 120px;\n      }\n      #author {\n        max-width: 240px;\n      }\n      input[type=\"range\"] {\n        width: 155px;\n        padding: 8px 0;\n        accent-color: var(--accent);\n      }\n      button {\n        cursor: pointer;\n      }\n      button:hover,\n      button[aria-pressed=\"true\"] {\n        border-color: var(--accent);\n        background: #314052;\n      }\n      :focus-visible {\n        outline: 2px solid var(--accent);\n        outline-offset: 3px;\n      }\n      .totals {\n        margin-left: auto;\n        display: flex;\n        gap: 28px;\n      }\n      .stat strong {\n        display: block;\n        font-size: 28px;\n        color: var(--accent);\n        line-height: 1.2;\n        font-weight: normal;\n      }\n      #coverage {\n        color: var(--muted);\n        max-width: 1100px;\n      }\n      .layout {\n        display: grid;\n        grid-template-columns: minmax(0, 2.2fr) minmax(260px, 1fr);\n        gap: 35px;\n        margin-top: 20px;\n      }\n      figure {\n        margin: 0;\n        min-width: 0;\n      }\n      svg {\n        display: block;\n        width: 100%;\n        height: auto;\n        overflow: visible;\n      }\n      svg text {\n        fill: var(--muted);\n        font:\n          10px \"Courier New\",\n          monospace;\n      }\n      svg .peak {\n        cursor: pointer;\n        stroke: var(--bg);\n        stroke-width: 1.5;\n      }\n      svg .peak:hover,\n      svg .peak:focus {\n        stroke: var(--ink);\n        stroke-width: 3;\n        outline: none;\n      }\n      .legend {\n        color: var(--muted);\n        border-top: 1px solid var(--line);\n        padding-top: 15px;\n      }\n      aside {\n        border-left: 1px solid var(--line);\n        padding-left: 24px;\n        min-width: 0;\n      }\n      .day-picker {\n        margin-bottom: 18px;\n      }\n      #day {\n        width: 100%;\n      }\n      #commits {\n        display: grid;\n        gap: 9px;\n        max-height: 350px;\n        overflow: auto;\n        padding: 3px;\n        margin: 16px 0;\n      }\n      #commits button {\n        text-align: left;\n        padding: 10px;\n        overflow-wrap: anywhere;\n      }\n      #commits button span {\n        display: block;\n        color: var(--muted);\n        font-size: 10px;\n        margin-top: 5px;\n      }\n      #detail {\n        background: var(--panel);\n        border-left: 2px solid var(--accent);\n        padding: 15px;\n        overflow-wrap: anywhere;\n      }\n      #detail p {\n        margin: 0 0 10px;\n      }\n      #detail input {\n        width: 100%;\n        font-size: 11px;\n      }\n      #error {\n        padding: 18px;\n        border: 1px solid #e5a080;\n        color: #ffd1b5;\n      }\n      #status {\n        color: var(--accent);\n      }\n      footer {\n        border-top: 1px solid var(--line);\n        margin-top: 35px;\n        padding-top: 18px;\n        color: var(--muted);\n      }\n      @media (max-width: 850px) {\n        main {\n          padding: 20px;\n        }\n        header {\n          display: block;\n        }\n        .source {\n          text-align: left;\n          margin-top: 20px;\n        }\n        .layout {\n          grid-template-columns: 1fr;\n        }\n        aside {\n          border-left: 0;\n          border-top: 1px solid var(--line);\n          padding: 24px 0 0;\n        }\n        .totals {\n          margin-left: 0;\n        }\n      }\n    </style>\n  </head>\n  <body>\n    <main>\n      <header>\n        <div>\n          <div class=\"eyebrow\">Subfork / field studies in open source / 06</div>\n          <h1>Activity<br /><em>Topography.</em></h1>\n          <p class=\"subtitle\">\n            A repository, seen as a landscape of recorded work.\n          </p>\n        </div>\n        <div class=\"source\">\n          <strong id=\"repository\"></strong>\n          <div class=\"meta\">GitHub / default-branch history sample</div>\n          <div id=\"snapshot\" class=\"meta\"></div>\n        </div>\n      </header>\n      <p id=\"error\" role=\"alert\" hidden></p>\n      <section class=\"controls\" aria-label=\"Landscape controls\">\n        <label\n          >Window<select id=\"weeks\">\n            <option value=\"12\">12 weeks</option>\n            <option value=\"24\" selected>24 weeks</option>\n            <option value=\"52\">52 weeks</option>\n          </select></label\n        >\n        <label\n          >Contributor<select id=\"author\">\n            <option value=\"all\">All contributors</option>\n          </select></label\n        >\n        <label\n          >Palette<select id=\"palette\">\n            <option value=\"copper\">Copper dusk</option>\n            <option value=\"glacier\">Glacier</option>\n            <option value=\"lichen\">Lichen</option>\n          </select></label\n        >\n        <label\n          >Relief<input\n            id=\"relief\"\n            type=\"range\"\n            min=\"0.4\"\n            max=\"1.8\"\n            step=\"0.1\"\n            value=\"1\"\n        /></label>\n        <div class=\"totals\">\n          <div class=\"stat\"><strong id=\"count\">0</strong>COMMITS IN VIEW</div>\n          <div class=\"stat\"><strong id=\"peak\">0</strong>PEAK / DAY</div>\n        </div>\n      </section>\n      <p id=\"coverage\"></p>\n      <div class=\"layout\">\n        <figure>\n          <svg\n            id=\"landscape\"\n            viewBox=\"0 0 960 650\"\n            role=\"group\"\n            aria-label=\"Weekly ridges of daily commit counts\"\n          >\n            <title>Activity Topography</title>\n            <desc>\n              Each ridge is a UTC week, Monday to Sunday. Select a peak to\n              inspect commits. An equivalent day selector follows the chart.\n            </desc>\n            <g id=\"ridges\"></g>\n            <g id=\"markers\"></g>\n            <g id=\"labels\"></g>\n          </svg>\n          <figcaption class=\"legend\">\n            Each ridge is one week. Each peak is one UTC day's commit count in\n            the fetched sample. Oldest week at the back; newest at the front.\n            Lines between days are decorative interpolation, not additional\n            measurements.\n          </figcaption>\n          <p id=\"status\" role=\"status\"></p>\n        </figure>\n        <aside>\n          <div class=\"eyebrow\">Field notes</div>\n          <h2 id=\"day-title\">Select a summit.</h2>\n          <label class=\"day-picker\"\n            >Inspect an active day<select\n              id=\"day\"\n              aria-label=\"Inspect an active day\"\n            ></select\n          ></label>\n          <div id=\"commits\" aria-label=\"Commits on selected day\"></div>\n          <div id=\"detail\">\n            <p>Select a commit to read its subject and copy its URL.</p>\n          </div>\n        </aside>\n      </div>\n      <footer>\n        Read-only snapshot. Rerun the graph to refresh. Counts are not lines\n        changed, effort, quality, or productivity. Merge commits and automated\n        contributions are included. No emails, avatars, external scripts, or\n        fonts are embedded in this page.\n      </footer>\n    </main>\n    <script id=\"dataset\" type=\"application/json\">\n      {{ inputs.dataset_json }}\n    </script>\n    <script>\n      (() => {\n        \"use strict\";\n        const $ = (id) => document.getElementById(id);\n        const DAY = 86400000;\n        const NS = \"http://www.w3.org/2000/svg\";\n        const palettes = {\n          copper: {\n            low: [42, 57, 72],\n            high: [208, 135, 101],\n            accent: \"#f0ac7f\",\n          },\n          glacier: {\n            low: [30, 49, 75],\n            high: [119, 182, 196],\n            accent: \"#9ce1e8\",\n          },\n          lichen: {\n            low: [39, 55, 58],\n            high: [151, 173, 112],\n            accent: \"#d3dea0\",\n          },\n        };\n        const iso = (time) => new Date(time).toISOString().slice(0, 10);\n        const midnight = (time) => Math.floor(time / DAY) * DAY;\n        const monday = (time) =>\n          midnight(time) - ((new Date(time).getUTCDay() + 6) % 7) * DAY;\n        function svg(tag, attrs, text) {\n          const el = document.createElementNS(NS, tag);\n          for (const [key, value] of Object.entries(attrs))\n            el.setAttribute(key, String(value));\n          if (text !== undefined) el.textContent = text;\n          return el;\n        }\n        function element(tag, text, className) {\n          const el = document.createElement(tag);\n          if (text !== undefined) el.textContent = text;\n          if (className) el.className = className;\n          return el;\n        }\n        function header(headers, key) {\n          return String(\n            Object.entries(headers || {}).find(\n              ([name]) => name.toLowerCase() === key,\n            )?.[1] ?? \"\",\n          );\n        }\n        function safeCommitUrl(raw) {\n          try {\n            const url = new URL(raw);\n            return url.protocol === \"https:\" &&\n              url.hostname === \"github.com\" &&\n              !url.username &&\n              !url.password &&\n              /\\/commit\\/[a-f0-9]{7,64}$/i.test(url.pathname)\n              ? url.href\n              : \"\";\n          } catch {\n            return \"\";\n          }\n        }\n        try {\n          const data = JSON.parse($(\"dataset\").textContent);\n          if (data.schema_version !== \"activity-topography/1\")\n            throw new Error(\"Unrecognized topography dataset.\");\n          $(\"repository\").textContent = String(\n            data.repository || \"Public repository\",\n          );\n          if (data.status !== 200)\n            throw new Error(\n              \"GitHub returned HTTP \" +\n                data.status +\n                \". Check the repository name or rate limit, then rerun. No sample landscape was substituted.\",\n            );\n          if (!Array.isArray(data.commits))\n            throw new Error(\"GitHub did not return a commit list.\");\n          const rawDate = header(data.headers, \"date\");\n          const responseTime = Date.parse(rawDate);\n          $(\"snapshot\").textContent = Number.isFinite(responseTime)\n            ? \"Retrieved: \" +\n              new Date(responseTime)\n                .toISOString()\n                .replace(\"T\", \" \")\n                .replace(\".000Z\", \" UTC\")\n            : \"Retrieval time not provided by source\";\n          const seen = new Set();\n          let invalid = 0,\n            duplicates = 0;\n          const records = [];\n          for (const row of data.commits.slice(0, 100)) {\n            if (\n              !row ||\n              typeof row.sha !== \"string\" ||\n              !/^[a-f0-9]{7,64}$/i.test(row.sha) ||\n              typeof row.date !== \"string\" ||\n              !/^\\d{4}-\\d{2}-\\d{2}T/.test(row.date) ||\n              !Number.isFinite(Date.parse(row.date))\n            ) {\n              invalid++;\n              continue;\n            }\n            if (seen.has(row.sha)) {\n              duplicates++;\n              continue;\n            }\n            seen.add(row.sha);\n            const login =\n              typeof row.login === \"string\" && row.login.trim()\n                ? row.login\n                : null;\n            records.push({\n              sha: row.sha,\n              time: Date.parse(row.date),\n              date: iso(Date.parse(row.date)),\n              author: login || \"Unlinked author\",\n              key: login ? \"login:\" + login : \"unlinked\",\n              subject: String(row.message || \"No commit subject\")\n                .split(/\\r?\\n/)[0]\n                .slice(0, 500),\n              url: safeCommitUrl(row.url),\n            });\n          }\n          records.sort((a, b) => a.time - b.time || a.sha.localeCompare(b.sha));\n          const authors = [\n            ...new Map(records.map((row) => [row.key, row.author])).entries(),\n          ].sort((a, b) => a[1].localeCompare(b[1]));\n          for (const [key, label] of authors) {\n            const option = element(\"option\", label);\n            option.value = key;\n            $(\"author\").append(option);\n          }\n          const hasMore = /rel=\"next\"/.test(header(data.headers, \"link\"));\n          $(\"coverage\").textContent =\n            \"Bounded snapshot: \" +\n            data.commits.length +\n            \" returned, \" +\n            records.length +\n            \" valid unique commits. \" +\n            (hasMore\n              ? \"GitHub reports older pages; they were not fetched. \"\n              : \"Only the first API page was requested. \") +\n            \"The window ends in the latest valid commit's week, not necessarily this week. Blank days mean no matching records in this sample, not proof of inactivity. \" +\n            invalid +\n            \" invalid, \" +\n            duplicates +\n            \" duplicate, \" +\n            Math.max(0, data.commits.length - 100) +\n            \" over-cap records excluded.\";\n          let selectedDay = \"\",\n            selectedSha = \"\",\n            visible = [],\n            buckets = new Map();\n          let peakElements = [];\n          function showCommit(row) {\n            selectedSha = row.sha;\n            $(\"detail\").replaceChildren(\n              element(\"p\", row.subject),\n              element(\n                \"p\",\n                row.author + \" / \" + new Date(row.time).toISOString(),\n                \"meta\",\n              ),\n              element(\"p\", row.sha, \"meta\"),\n            );\n            const label = element(\"label\", \"Commit URL (select to copy)\");\n            const input = element(\"input\");\n            input.readOnly = true;\n            input.value = row.url || \"No safe GitHub commit URL\";\n            input.addEventListener(\"focus\", () => input.select());\n            label.append(input);\n            $(\"detail\").append(label);\n            for (const button of $(\"commits\").children)\n              button.setAttribute(\n                \"aria-pressed\",\n                String(button.dataset.sha === selectedSha),\n              );\n          }\n          function selectDay(date) {\n            selectedDay = date;\n            $(\"day\").value = date;\n            $(\"day-title\").textContent = date\n              ? date + \" / UTC\"\n              : \"No matching commits.\";\n            $(\"commits\").replaceChildren();\n            $(\"detail\").replaceChildren(\n              element(\"p\", \"Select a commit to inspect its subject and URL.\"),\n            );\n            const rows = buckets.get(date) || [];\n            for (const row of [...rows].reverse()) {\n              const button = element(\"button\", row.subject);\n              button.type = \"button\";\n              button.dataset.sha = row.sha;\n              button.append(\n                element(\"span\", row.author + \" / \" + row.sha.slice(0, 7)),\n              );\n              button.addEventListener(\"click\", () => showCommit(row));\n              $(\"commits\").append(button);\n            }\n            for (const [el, day] of peakElements) {\n              el.setAttribute(\"r\", day === date ? \"6\" : \"3.5\");\n              el.setAttribute(\"aria-pressed\", String(day === date));\n            }\n            if (rows.length)\n              showCommit(\n                rows.find((row) => row.sha === selectedSha) ||\n                  rows[rows.length - 1],\n              );\n          }\n          function draw() {\n            const weeks = Number($(\"weeks\").value);\n            const palette = palettes[$(\"palette\").value];\n            document.documentElement.style.setProperty(\n              \"--accent\",\n              palette.accent,\n            );\n            const anchor = records.length\n              ? monday(records[records.length - 1].time)\n              : 0;\n            const start = anchor - (weeks - 1) * 7 * DAY;\n            const end = anchor + 7 * DAY;\n            visible = records.filter(\n              (row) =>\n                row.time >= start &&\n                row.time < end &&\n                ($(\"author\").value === \"all\" || row.key === $(\"author\").value),\n            );\n            buckets = new Map();\n            for (const row of visible) {\n              if (!buckets.has(row.date)) buckets.set(row.date, []);\n              buckets.get(row.date).push(row);\n            }\n            const maximum = Math.max(\n              1,\n              ...[...buckets.values()].map((rows) => rows.length),\n            );\n            $(\"count\").textContent = String(visible.length);\n            $(\"peak\").textContent = String(visible.length ? maximum : 0);\n            $(\"ridges\").replaceChildren();\n            $(\"markers\").replaceChildren();\n            $(\"labels\").replaceChildren();\n            peakElements = [];\n            $(\"day\").replaceChildren();\n            for (const date of [...buckets.keys()].reverse()) {\n              const option = element(\n                \"option\",\n                date + \" / \" + buckets.get(date).length + \" commits\",\n              );\n              option.value = date;\n              $(\"day\").append(option);\n            }\n            if (!records.length) {\n              $(\"status\").textContent =\n                \"No valid commits in the fetched sample. No landscape fabricated.\";\n              selectDay(\"\");\n              return;\n            }\n            for (let week = 0; week < weeks; week++) {\n              const ratio = week / Math.max(1, weeks - 1);\n              const base = 130 + ratio * 445;\n              const left = 175 - ratio * 48,\n                width = 650 + ratio * 110;\n              const fill =\n                \"rgb(\" +\n                palette.low\n                  .map((low, index) =>\n                    Math.round(\n                      low + (palette.high[index] - low) * ratio * 0.75,\n                    ),\n                  )\n                  .join(\",\") +\n                \")\";\n              const points = [];\n              for (let day = 0; day < 7; day++) {\n                const date = iso(start + (week * 7 + day) * DAY);\n                const count = (buckets.get(date) || []).length;\n                const x = left + (width * day) / 6;\n                const y =\n                  base - (count / maximum) * 60 * Number($(\"relief\").value);\n                points.push([x, y]);\n                if (count) {\n                  const peak = svg(\"circle\", {\n                    cx: x,\n                    cy: y,\n                    r: 3.5,\n                    fill: palette.accent,\n                    class: \"peak\",\n                    tabindex: 0,\n                    role: \"button\",\n                    \"aria-label\": date + \": \" + count + \" commits\",\n                  });\n                  peak.append(\n                    svg(\"title\", {}, date + \" / \" + count + \" commits\"),\n                  );\n                  peak.addEventListener(\"click\", () => selectDay(date));\n                  peak.addEventListener(\"keydown\", (event) => {\n                    if (event.key === \"Enter\" || event.key === \" \") {\n                      event.preventDefault();\n                      selectDay(date);\n                    }\n                  });\n                  peakElements.push([peak, date]);\n                }\n              }\n              const line =\n                \"M \" + points.map((point) => point.join(\" \")).join(\" L \");\n              $(\"ridges\").append(\n                svg(\"path\", {\n                  d:\n                    line +\n                    \" L \" +\n                    (left + width) +\n                    \" \" +\n                    (base + 12) +\n                    \" L \" +\n                    left +\n                    \" \" +\n                    (base + 12) +\n                    \" Z\",\n                  fill,\n                  \"fill-opacity\": 0.7,\n                }),\n              );\n              $(\"ridges\").append(\n                svg(\"path\", {\n                  d: line,\n                  fill: \"none\",\n                  stroke: palette.accent,\n                  \"stroke-opacity\": 0.6,\n                  \"stroke-width\": 1,\n                }),\n              );\n              if (weeks <= 24 || week % 2 === 0 || week === weeks - 1)\n                $(\"labels\").append(\n                  svg(\n                    \"text\",\n                    { x: left - 12, y: base + 3, \"text-anchor\": \"end\" },\n                    iso(start + week * 7 * DAY),\n                  ),\n                );\n            }\n            for (const [peak] of peakElements) $(\"markers\").append(peak);\n            for (const [index, name] of [\n              \"MON\",\n              \"TUE\",\n              \"WED\",\n              \"THU\",\n              \"FRI\",\n              \"SAT\",\n              \"SUN\",\n            ].entries())\n              $(\"labels\").append(\n                svg(\n                  \"text\",\n                  {\n                    x: 127 + (760 * index) / 6,\n                    y: 615,\n                    \"text-anchor\": \"middle\",\n                  },\n                  name,\n                ),\n              );\n            $(\"status\").textContent =\n              iso(start) +\n              \" to \" +\n              iso(end - DAY) +\n              \" / \" +\n              visible.length +\n              \" matching commits on \" +\n              buckets.size +\n              \" days. \" +\n              (records.length - visible.length) +\n              \" valid sample records outside these filters. \" +\n              (visible.length\n                ? \"Select a summit or choose a day.\"\n                : \"No matching commits in this window.\");\n            selectDay(\n              buckets.has(selectedDay)\n                ? selectedDay\n                : [...buckets.keys()].at(-1) || \"\",\n            );\n          }\n          for (const id of [\"weeks\", \"author\", \"palette\"])\n            $(id).addEventListener(\"change\", draw);\n          $(\"relief\").addEventListener(\"input\", draw);\n          $(\"day\").addEventListener(\"change\", () => selectDay($(\"day\").value));\n          draw();\n        } catch (error) {\n          $(\"error\").hidden = false;\n          $(\"error\").textContent =\n            error.message || \"Unable to render this snapshot.\";\n        }\n      })();\n    </script>\n  </body>\n</html>\n"
+        },
+        "custom_inputs": {
+          "dataset_json": "str"
+        },
+        "exposed_inputs": [
+          "dataset_json"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_html_response",
+        "node_version": "1.0.0",
+        "title": "Topography page",
+        "params": {}
+      },
+      {
+        "node_instance_id": "data_response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Commit dataset response",
+        "params": {}
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "repository",
+        "source_output": "value",
+        "target_node_id": "url",
+        "target_input": "repository"
+      },
+      {
+        "source_node_id": "url",
+        "source_output": "text",
+        "target_node_id": "fetch",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "fetch",
+        "source_output": "body",
+        "target_node_id": "parse",
+        "target_input": "text"
+      },
+      {
+        "source_node_id": "parse",
+        "source_output": "value",
+        "target_node_id": "project",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "repository",
+        "source_output": "value",
+        "target_node_id": "dataset",
+        "target_input": "repository"
+      },
+      {
+        "source_node_id": "url",
+        "source_output": "text",
+        "target_node_id": "dataset",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "fetch",
+        "source_output": "status",
+        "target_node_id": "dataset",
+        "target_input": "status"
+      },
+      {
+        "source_node_id": "fetch",
+        "source_output": "headers",
+        "target_node_id": "dataset",
+        "target_input": "headers"
+      },
+      {
+        "source_node_id": "project",
+        "source_output": "value",
+        "target_node_id": "dataset",
+        "target_input": "commits"
+      },
+      {
+        "source_node_id": "dataset",
+        "source_output": "value",
+        "target_node_id": "encode",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "encode",
+        "source_output": "text",
+        "target_node_id": "view",
+        "target_input": "dataset_json"
+      },
+      {
+        "source_node_id": "view",
+        "source_output": "html",
+        "target_node_id": "response",
+        "target_input": "html"
+      },
+      {
+        "source_node_id": "dataset",
+        "source_output": "value",
+        "target_node_id": "data_response",
+        "target_input": "value"
+      }
+    ],
+    "graph_outputs": {
+      "html": {
+        "node_instance_id": "view",
+        "output_name": "html"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      },
+      "dataset": {
+        "node_instance_id": "dataset",
+        "output_name": "value"
+      },
+      "data_response": {
+        "node_instance_id": "data_response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "html",
+        "status": "provider-backed-probe",
+        "summary": "Public GitHub commit facts become an inspectable weekly landscape.",
+        "requires": {
+          "nodes": [
+            "n_static_value",
+            "n_text_template",
+            "n_fetch_url",
+            "n_json_parse",
+            "n_map_fields",
+            "n_json_template",
+            "n_json_stringify",
+            "n_html_template",
+            "n_html_response",
+            "n_json_response"
+          ],
+          "panels": [
+            "html",
+            "json"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "repository": {
+            "x": 60,
+            "y": 80
+          },
+          "url": {
+            "x": 350,
+            "y": 80
+          },
+          "fetch": {
+            "x": 650,
+            "y": 80
+          },
+          "parse": {
+            "x": 950,
+            "y": 80
+          },
+          "project": {
+            "x": 1250,
+            "y": 80
+          },
+          "dataset": {
+            "x": 1550,
+            "y": 170
+          },
+          "encode": {
+            "x": 1850,
+            "y": 170
+          },
+          "view": {
+            "x": 2150,
+            "y": 170
+          },
+          "response": {
+            "x": 2450,
+            "y": 170
+          },
+          "data_response": {
+            "x": 1850,
+            "y": 450
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "html",
+            "binding": {
+              "nodeInstanceId": "view",
+              "outputName": "html"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "dataset",
+              "outputName": "value"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

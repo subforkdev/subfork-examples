@@ -1,0 +1,340 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Weather Loom",
+    "description": "NOAA daily station weather woven into an interactive year-long SVG tapestry. Temperature colors the threads, precipitation bends them, and wind adds texture. Edit station/year and run to refresh.",
+    "nodes": [
+      {
+        "node_instance_id": "config",
+        "node_id": "n_static_value",
+        "node_version": "1.0.0",
+        "title": "Station and year",
+        "params": {
+          "value": {
+            "station": "72494023234",
+            "year": 2024
+          }
+        }
+      },
+      {
+        "node_instance_id": "url",
+        "node_id": "n_text_template",
+        "node_version": "1.0.0",
+        "title": "NOAA station file",
+        "params": {
+          "template": "https://www.ncei.noaa.gov/data/global-summary-of-the-day/access/{{ inputs.config.year }}/{{ inputs.config.station }}.csv"
+        },
+        "custom_inputs": {
+          "config": "json"
+        },
+        "exposed_inputs": [
+          "config"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "fetch",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch annual observations",
+        "params": {
+          "method": "GET",
+          "timeout_seconds": 40,
+          "max_response_bytes": 2000000
+        },
+        "exposed_inputs": [
+          "url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "body",
+          "status"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "parse",
+        "node_id": "n_csv_parse",
+        "node_version": "1.0.0",
+        "title": "Daily CSV records",
+        "params": {}
+      },
+      {
+        "node_instance_id": "rows",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Project weather fields",
+        "params": {
+          "mapping": {
+            "date": "DATE",
+            "station": "STATION",
+            "name": "NAME",
+            "temp_f": "TEMP",
+            "precip_in": "PRCP",
+            "rain_flag": "PRCP_ATTRIBUTES",
+            "wind_knots": "WDSP"
+          }
+        }
+      },
+      {
+        "node_instance_id": "dataset",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Weather dataset",
+        "params": {
+          "template": {
+            "schema_version": "weather-loom/1",
+            "source": "NOAA NCEI Global Summary of the Day",
+            "source_url": "{{ inputs.url }}",
+            "config": "{{ inputs.config }}",
+            "rows": "{{ inputs.rows }}",
+            "units": {
+              "temp_f": "Fahrenheit",
+              "precip_in": "inches",
+              "wind_knots": "knots"
+            },
+            "timezone": "UTC"
+          }
+        },
+        "custom_inputs": {
+          "config": "json",
+          "url": "str",
+          "rows": "json"
+        },
+        "exposed_inputs": [
+          "config",
+          "url",
+          "rows"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "encode",
+        "node_id": "n_json_stringify",
+        "node_version": "1.0.0",
+        "title": "HTML-safe weather data",
+        "params": {
+          "html_safe": true
+        }
+      },
+      {
+        "node_instance_id": "view",
+        "node_id": "n_html_template",
+        "node_version": "1.0.0",
+        "title": "Weather Loom / SVG textile",
+        "params": {
+          "template": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\" />\n    <title>Weather Loom</title>\n    <style>\n      :root {\n        color-scheme: light;\n        --paper: #ede6d8;\n        --ink: #302d28;\n        --muted: #716c63;\n        --line: #c6bcaa;\n        --accent: #a44329;\n      }\n      * {\n        box-sizing: border-box;\n      }\n      body {\n        margin: 0;\n        color: var(--ink);\n        background:\n          radial-gradient(circle at 1px 1px, #8a745211 1px, transparent 0) 0\n            0/6px 6px,\n          var(--paper);\n        font:\n          15px/1.5 Georgia,\n          serif;\n      }\n      main {\n        max-width: 1500px;\n        margin: auto;\n        padding: 30px;\n      }\n      header {\n        display: flex;\n        justify-content: space-between;\n        gap: 30px;\n        align-items: end;\n      }\n      .eyebrow,\n      .small,\n      label,\n      button,\n      select,\n      footer,\n      dt {\n        font-family: monospace;\n      }\n      .eyebrow {\n        font-size: 11px;\n        letter-spacing: 0.22em;\n        color: var(--accent);\n      }\n      h1 {\n        font-size: clamp(45px, 6vw, 82px);\n        letter-spacing: -0.04em;\n        font-weight: 400;\n        margin: 10px 0;\n        line-height: 1.1;\n      }\n      h1 em {\n        color: var(--accent);\n      }\n      p {\n        margin: 8px 0;\n      }\n      .small {\n        font-size: 11px;\n        line-height: 1.7;\n        color: var(--muted);\n      }\n      .station {\n        max-width: 370px;\n      }\n      .controls {\n        display: flex;\n        flex-wrap: wrap;\n        gap: 22px;\n        align-items: end;\n        padding: 18px 0;\n        margin: 24px 0 16px;\n        border-block: 1px solid var(--line);\n      }\n      label {\n        display: grid;\n        gap: 5px;\n        font-size: 11px;\n        color: var(--muted);\n      }\n      select,\n      input,\n      button {\n        color: var(--ink);\n        background: #f6f1e6;\n        border: 1px solid #b4a68e;\n        border-radius: 3px;\n        padding: 8px;\n        font: 12px monospace;\n      }\n      input[type=\"range\"] {\n        padding: 0;\n        accent-color: var(--accent);\n        height: 32px;\n      }\n      button {\n        cursor: pointer;\n      }\n      button:hover {\n        background: #e1d7c3;\n      }\n      :focus-visible {\n        outline: 2px solid var(--accent);\n        outline-offset: 3px;\n      }\n      .scroll {\n        overflow: auto;\n        background: #14212b;\n        border: 8px solid #d0c3ae;\n        box-shadow: 0 12px 24px #41342515;\n      }\n      svg {\n        display: block;\n        width: 100%;\n        min-width: 800px;\n        height: auto;\n      }\n      svg text {\n        fill: #b3b8b4;\n        font: 11px monospace;\n      }\n      .day {\n        cursor: pointer;\n        outline: none;\n      }\n      .selection {\n        opacity: 0;\n      }\n      .day:hover .selection,\n      .day:focus .selection,\n      .day[aria-pressed=\"true\"] .selection {\n        opacity: 1;\n      }\n      .below {\n        display: grid;\n        grid-template-columns: 1fr 1fr;\n        gap: 36px;\n        margin-top: 24px;\n      }\n      h2 {\n        font-size: 25px;\n        font-weight: 400;\n        margin: 0 0 12px;\n      }\n      #detail {\n        min-height: 160px;\n        padding: 18px;\n        border-left: 3px solid var(--accent);\n        background: #e1dacb;\n      }\n      #detail h3 {\n        font-weight: 400;\n        font-size: 21px;\n        margin: 0 0 12px;\n      }\n      dl {\n        display: grid;\n        grid-template-columns: 140px 1fr;\n        gap: 6px 12px;\n        margin: 0;\n      }\n      dt {\n        font-size: 11px;\n        color: var(--muted);\n      }\n      dd {\n        margin: 0;\n      }\n      #swatches {\n        display: flex;\n        gap: 4px;\n        margin: 10px 0;\n      }\n      #swatches i {\n        display: block;\n        width: 34px;\n        height: 8px;\n      }\n      footer {\n        font-size: 11px;\n        color: var(--muted);\n        margin-top: 24px;\n        padding-top: 16px;\n        border-top: 1px solid var(--line);\n        overflow-wrap: anywhere;\n      }\n      #error {\n        color: #a22f24;\n      }\n      .stats {\n        display: flex;\n        gap: 24px;\n        margin-bottom: 12px;\n      }\n      .stats strong {\n        display: block;\n        font-size: 25px;\n        font-weight: 400;\n      }\n      @media (max-width: 700px) {\n        main {\n          padding: 20px 14px;\n        }\n        header {\n          display: block;\n        }\n        .station {\n          margin-top: 16px;\n        }\n        .below {\n          grid-template-columns: 1fr;\n          gap: 20px;\n        }\n      }\n    </style>\n  </head>\n  <body>\n    <main>\n      <header>\n        <div>\n          <div class=\"eyebrow\">SUBFORK / WOVEN OBSERVATIONS / 04</div>\n          <h1>Weather <em>Loom.</em></h1>\n          <p>A year, threaded through temperature, water, and wind.</p>\n        </div>\n        <div class=\"station small\">\n          <div id=\"station\">Reading station data...</div>\n          <div id=\"period\"></div>\n          <div>NOAA / Global Summary of the Day</div>\n        </div>\n      </header>\n      <div class=\"controls\">\n        <label\n          >Thread color<select id=\"color\">\n            <option value=\"temp\">Mean temperature</option>\n            <option value=\"rain\">Reported precipitation</option>\n            <option value=\"wind\">Mean wind speed</option>\n          </select></label\n        ><label\n          >Palette<select id=\"palette\">\n            <option value=\"thermal\">Thermal</option>\n            <option value=\"tide\">Tide</option>\n            <option value=\"ochre\">Ochre</option>\n          </select></label\n        ><label\n          >Units<select id=\"units\">\n            <option value=\"metric\">C / mm / km/h</option>\n            <option value=\"source\">F / inches / knots</option>\n          </select></label\n        ><label\n          >Rain shaping<input\n            id=\"shape\"\n            type=\"range\"\n            min=\"0\"\n            max=\"2\"\n            step=\"0.25\"\n            value=\"1\" /></label\n        ><label\n          >Wind texture<select id=\"texture\">\n            <option value=\"on\">On</option>\n            <option value=\"off\">Off</option>\n          </select></label\n        ><label>Inspect date<input id=\"date\" type=\"date\" /></label>\n      </div>\n      <p id=\"error\" role=\"alert\" hidden></p>\n      <p id=\"coverage\" class=\"small\"></p>\n      <div\n        class=\"scroll\"\n        tabindex=\"0\"\n        aria-label=\"Weather tapestry. Scroll horizontally on narrow screens.\"\n      >\n        <svg\n          id=\"loom\"\n          viewBox=\"0 0 1160 690\"\n          role=\"group\"\n          aria-label=\"Weather woven by month and day. Each day is selectable; the date input offers another way to inspect it.\"\n        >\n          <defs>\n            <pattern\n              id=\"missing\"\n              width=\"6\"\n              height=\"6\"\n              patternUnits=\"userSpaceOnUse\"\n            >\n              <path d=\"M0 6L6 0\" stroke=\"#73818b\" stroke-width=\".7\" />\n            </pattern>\n          </defs>\n          <g id=\"grid\"></g>\n          <g id=\"threads\"></g>\n        </svg>\n      </div>\n      <div class=\"below\">\n        <section>\n          <h2>Read the weave</h2>\n          <div class=\"stats\">\n            <div>\n              <strong id=\"records\">--</strong\n              ><span class=\"small\">REPORTED DAYS</span>\n            </div>\n            <div>\n              <strong id=\"missing-days\">--</strong\n              ><span class=\"small\">ABSENT DAYS</span>\n            </div>\n          </div>\n          <div id=\"swatches\"></div>\n          <p id=\"scale\" class=\"small\"></p>\n          <p class=\"small\">\n            Months run downward; day of month runs left to right. Wet days bend\n            the threads; wind adds cross-stitches. Gray crosshatching marks an\n            absent day or a missing color measurement. Incomplete precipitation\n            flags are not treated as dry weather.\n          </p>\n        </section>\n        <section>\n          <h2>Daily sample</h2>\n          <div id=\"detail\" aria-live=\"polite\">\n            Choose a day in the weave or use Inspect date.\n          </div>\n        </section>\n      </div>\n      <footer>\n        Source: NOAA NCEI Global Summary of the Day. Daily summaries use\n        GMT/UTC, not the browser's timezone. Station observations do not\n        represent an entire city. Precipitation reporting intervals may overlap\n        the previous day; flags and gaps matter. This is a descriptive artwork,\n        not a forecast, climate trend, or certified annual total. Controls\n        change this snapshot only; changing station/year requires editing the\n        graph configuration and running again.\n        <div id=\"source-url\"></div>\n      </footer>\n    </main>\n    <!-- prettier-ignore -->\n    <script id=\"dataset\" type=\"application/json\">{{ inputs.dataset_json }}</script>\n    <script>\n      \"use strict\";\n      const $ = (id) => document.getElementById(id),\n        DAY = 86400000;\n      const palettes = {\n        thermal: [\"#679da7\", \"#acb7a1\", \"#d9b76e\", \"#c8804f\", \"#ae4c39\"],\n        tide: [\"#435d84\", \"#5f91ab\", \"#80b3b1\", \"#b8d4b7\", \"#e4d6a0\"],\n        ochre: [\"#807056\", \"#ad8c54\", \"#dbb95f\", \"#d9894b\", \"#ad563a\"],\n      };\n      const months = [\n        \"JAN\",\n        \"FEB\",\n        \"MAR\",\n        \"APR\",\n        \"MAY\",\n        \"JUN\",\n        \"JUL\",\n        \"AUG\",\n        \"SEP\",\n        \"OCT\",\n        \"NOV\",\n        \"DEC\",\n      ];\n      function numeric(value, missing) {\n        if (\n          value === null ||\n          value === undefined ||\n          String(value).trim() === \"\"\n        )\n          return null;\n        const n = Number(value);\n        return Number.isFinite(n) && n !== missing ? n : null;\n      }\n      function prepare(data) {\n        const year = Number(data.config?.year),\n          station = String(data.config?.station || \"\");\n        if (\n          !Number.isInteger(year) ||\n          year < 1929 ||\n          year > 2100 ||\n          !/^\\d{11}$/.test(station) ||\n          !Array.isArray(data.rows)\n        )\n          throw new Error(\n            \"Expected a valid year, 11-digit NOAA station ID, and daily rows.\",\n          );\n        const records = new Map();\n        let skipped = 0;\n        for (const row of data.rows) {\n          const date = row?.date;\n          if (\n            typeof date !== \"string\" ||\n            !/^\\d{4}-\\d{2}-\\d{2}$/.test(date) ||\n            !date.startsWith(year + \"-\") ||\n            String(row.station) !== station\n          ) {\n            skipped++;\n            continue;\n          }\n          const time = Date.parse(date + \"T00:00:00Z\");\n          if (\n            !Number.isFinite(time) ||\n            new Date(time).toISOString().slice(0, 10) !== date ||\n            records.has(date)\n          ) {\n            skipped++;\n            continue;\n          }\n          const flag = String(row.rain_flag || \"\").trim();\n          let rain = numeric(row.precip_in, 99.99),\n            wind = numeric(row.wind_knots, 999.9);\n          if (\n            rain !== null &&\n            (rain < 0 || ![\"A\", \"B\", \"C\", \"D\", \"E\", \"F\", \"G\"].includes(flag))\n          )\n            rain = null;\n          if (wind !== null && wind < 0) wind = null;\n          records.set(date, {\n            date,\n            name: row.name,\n            temp: numeric(row.temp_f, 9999.9),\n            rain,\n            wind,\n            flag,\n            rawRain: row.precip_in,\n          });\n        }\n        const days = [];\n        for (\n          let t = Date.UTC(year, 0, 1);\n          t < Date.UTC(year + 1, 0, 1);\n          t += DAY\n        ) {\n          const date = new Date(t).toISOString().slice(0, 10);\n          days.push(\n            records.get(date) || {\n              date,\n              temp: null,\n              rain: null,\n              wind: null,\n              absent: true,\n            },\n          );\n        }\n        return { year, station, records, days, skipped };\n      }\n      function displayValue(value, key, metric) {\n        if (value === null) return null;\n        return !metric\n          ? value\n          : key === \"temp\"\n            ? ((value - 32) * 5) / 9\n            : key === \"rain\"\n              ? value * 25.4\n              : value * 1.852;\n      }\n      function svg(tag, attrs = {}) {\n        const n = document.createElementNS(\"http://www.w3.org/2000/svg\", tag);\n        for (const [k, v] of Object.entries(attrs))\n          n.setAttribute(k, String(v));\n        return n;\n      }\n      const fmt = (value) =>\n        value === null\n          ? \"Not reported\"\n          : Number(value.toFixed(2)).toLocaleString();\n      try {\n        const data = JSON.parse($(\"dataset\").textContent),\n          state = prepare(data);\n        let selected = null;\n        const cells = new Map();\n        $(\"station\").textContent = String(\n          [...state.records.values()][0]?.name || \"Station \" + state.station,\n        );\n        $(\"period\").textContent =\n          state.year + \" / station \" + state.station + \" / UTC daily summaries\";\n        $(\"source-url\").textContent = String(data.source_url || \"\");\n        $(\"records\").textContent = String(state.records.size);\n        $(\"missing-days\").textContent = String(\n          state.days.length - state.records.size,\n        );\n        $(\"coverage\").textContent =\n          state.records.size +\n          \" of \" +\n          state.days.length +\n          \" calendar days reported. \" +\n          (state.skipped\n            ? state.skipped +\n              \" invalid, duplicate, or out-of-scope rows skipped. \"\n            : \"\") +\n          \"Select a day for measurements and precipitation flags.\";\n        $(\"date\").min = state.year + \"-01-01\";\n        $(\"date\").max = state.year + \"-12-31\";\n        function unit(key) {\n          return $(\"units\").value === \"metric\"\n            ? { temp: \"C\", rain: \"mm\", wind: \"km/h\" }[key]\n            : { temp: \"F\", rain: \"inches\", wind: \"knots\" }[key];\n        }\n        function value(row, key) {\n          return displayValue(row[key], key, $(\"units\").value === \"metric\");\n        }\n        function inspect(row) {\n          selected = row;\n          $(\"date\").value = row.date;\n          $(\"detail\").replaceChildren();\n          const h = document.createElement(\"h3\");\n          h.textContent = row.date + \" / UTC\";\n          $(\"detail\").append(h);\n          if (row.absent) {\n            const p = document.createElement(\"p\");\n            p.textContent = \"No station record for this day.\";\n            $(\"detail\").append(p);\n          } else {\n            const dl = document.createElement(\"dl\");\n            for (const [key, label] of [\n              [\"temp\", \"Mean temperature\"],\n              [\"rain\", \"Reported precipitation\"],\n              [\"wind\", \"Mean wind speed\"],\n            ]) {\n              const dt = document.createElement(\"dt\"),\n                dd = document.createElement(\"dd\");\n              dt.textContent = label;\n              dd.textContent =\n                fmt(value(row, key)) +\n                (row[key] === null ? \"\" : \" \" + unit(key));\n              dl.append(dt, dd);\n            }\n            const dt = document.createElement(\"dt\"),\n              dd = document.createElement(\"dd\");\n            dt.textContent = \"Precipitation flag\";\n            dd.textContent = row.flag || \"Not supplied\";\n            dl.append(dt, dd);\n            $(\"detail\").append(dl);\n            const p = document.createElement(\"p\");\n            p.className = \"small\";\n            p.textContent = [\"H\", \"I\"].includes(row.flag)\n              ? \"Incomplete/uncertain precipitation; excluded from shaping and color.\"\n              : row.flag === \"G\"\n                ? \"G: reported 24-hour amount.\"\n                : \"Reported amount may cover less than 24 hours; not a complete daily total.\";\n            $(\"detail\").append(p);\n          }\n          for (const [date, cell] of cells)\n            cell.setAttribute(\"aria-pressed\", String(date === row.date));\n        }\n        function draw() {\n          const key = $(\"color\").value,\n            colors = palettes[$(\"palette\").value],\n            values = state.days\n              .map((row) => value(row, key))\n              .filter((v) => v !== null),\n            low = values.length ? Math.min(...values) : null,\n            high = values.length ? Math.max(...values) : null;\n          $(\"swatches\").replaceChildren();\n          colors.forEach((color) => {\n            const i = document.createElement(\"i\");\n            i.style.background = color;\n            $(\"swatches\").append(i);\n          });\n          $(\"scale\").textContent = values.length\n            ? \"Color: \" +\n              fmt(low) +\n              \" to \" +\n              fmt(high) +\n              \" \" +\n              unit(key) +\n              \" / five equal-width bins across reported values in this year.\"\n            : \"No usable values for the selected color field.\";\n          $(\"grid\").replaceChildren();\n          $(\"threads\").replaceChildren();\n          cells.clear();\n          for (let d = 1; d <= 31; d++) {\n            const x = 90 + (d - 1) * 33;\n            const text = svg(\"text\", {\n              x: x + 16,\n              y: 28,\n              \"text-anchor\": \"middle\",\n            });\n            text.textContent = String(d).padStart(2, \"0\");\n            $(\"grid\").append(text);\n            $(\"grid\").append(\n              svg(\"path\", {\n                d: \"M\" + x + \" 42V663\",\n                stroke: \"#66756d\",\n                \"stroke-opacity\": 0.2,\n              }),\n            );\n          }\n          months.forEach((m, i) => {\n            const text = svg(\"text\", { x: 22, y: 72 + i * 50 });\n            text.textContent = m;\n            $(\"grid\").append(text);\n          });\n          state.days.forEach((row) => {\n            const month = Number(row.date.slice(5, 7)) - 1,\n              day = Number(row.date.slice(8, 10)),\n              x = 90 + (day - 1) * 33,\n              y = 46 + month * 50,\n              v = value(row, key),\n              fraction =\n                v === null\n                  ? null\n                  : low === high\n                    ? 0.5\n                    : (v - low) / (high - low),\n              color =\n                fraction === null\n                  ? \"#80908f\"\n                  : colors[Math.min(4, Math.floor(fraction * 5))];\n            const group = svg(\"g\", {\n              class: \"day\",\n              role: \"button\",\n              tabindex: 0,\n              \"aria-label\": row.date + (row.absent ? \" / no record\" : \"\"),\n              \"aria-pressed\": String(selected?.date === row.date),\n            });\n            group.append(\n              svg(\"rect\", {\n                x,\n                y,\n                width: 31,\n                height: 44,\n                fill: fraction === null ? \"url(#missing)\" : color,\n                \"fill-opacity\": fraction === null ? 0.25 : 0.09,\n              }),\n            );\n            if (!row.absent) {\n              const amplitude =\n                (row.rain === null\n                  ? 0\n                  : Math.min(8, Math.log1p(row.rain * 25.4) * 2)) *\n                Number($(\"shape\").value);\n              for (let thread = 0; thread < 6; thread++) {\n                let path = \"\";\n                for (let step = 0; step <= 12; step++) {\n                  const px = x + 1 + step * 2.4,\n                    py =\n                      y +\n                      7 +\n                      thread * 6 +\n                      Math.sin((step / 12) * Math.PI * 2) * amplitude * 0.32;\n                  path +=\n                    (step ? \"L\" : \"M\") + px.toFixed(2) + \",\" + py.toFixed(2);\n                }\n                group.append(\n                  svg(\"path\", {\n                    d: path,\n                    fill: \"none\",\n                    stroke: color,\n                    \"stroke-width\": thread % 2 ? 1.5 : 2,\n                    \"stroke-opacity\": 0.8,\n                  }),\n                );\n              }\n              if ($(\"texture\").value === \"on\" && row.wind !== null) {\n                const count = Math.min(5, Math.floor(row.wind / 4));\n                for (let n = 0; n < count; n++) {\n                  const px = x + 4 + n * 5;\n                  group.append(\n                    svg(\"path\", {\n                      d:\n                        \"M\" +\n                        px +\n                        \" \" +\n                        (y + 11) +\n                        \"l3 10 M\" +\n                        px +\n                        \" \" +\n                        (y + 28) +\n                        \"l3 9\",\n                      stroke: \"#e6d5a6\",\n                      \"stroke-width\": 0.75,\n                      \"stroke-opacity\": 0.6,\n                    }),\n                  );\n                }\n              }\n            }\n            group.append(\n              svg(\"rect\", {\n                class: \"selection\",\n                x: x - 1,\n                y: y - 1,\n                width: 33,\n                height: 46,\n                rx: 2,\n                fill: \"none\",\n                stroke: \"#fff3d1\",\n                \"stroke-width\": 2,\n              }),\n            );\n            const title = svg(\"title\");\n            title.textContent = row.date;\n            group.append(title);\n            group.addEventListener(\"click\", () => inspect(row));\n            group.addEventListener(\"focus\", () => inspect(row));\n            group.addEventListener(\"keydown\", (event) => {\n              if (event.key === \"Enter\" || event.key === \" \") {\n                event.preventDefault();\n                inspect(row);\n              }\n            });\n            $(\"threads\").append(group);\n            cells.set(row.date, group);\n          });\n          if (selected) inspect(selected);\n        }\n        for (const id of [\"color\", \"palette\", \"units\", \"texture\"])\n          $(id).addEventListener(\"change\", draw);\n        $(\"shape\").addEventListener(\"input\", draw);\n        $(\"date\").addEventListener(\"change\", () => {\n          const row = state.days.find((r) => r.date === $(\"date\").value);\n          if (row) inspect(row);\n        });\n        draw();\n      } catch (error) {\n        $(\"error\").hidden = false;\n        $(\"error\").textContent =\n          error instanceof Error\n            ? error.message\n            : \"Unable to weave this dataset.\";\n      }\n    </script>\n  </body>\n</html>\n"
+        },
+        "custom_inputs": {
+          "dataset_json": "str"
+        },
+        "exposed_inputs": [
+          "dataset_json"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_html_response",
+        "node_version": "1.0.0",
+        "title": "Weather Loom page",
+        "params": {}
+      },
+      {
+        "node_instance_id": "data_response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Weather dataset response",
+        "params": {}
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "config",
+        "source_output": "value",
+        "target_node_id": "url",
+        "target_input": "config"
+      },
+      {
+        "source_node_id": "url",
+        "source_output": "text",
+        "target_node_id": "fetch",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "fetch",
+        "source_output": "body",
+        "target_node_id": "parse",
+        "target_input": "text"
+      },
+      {
+        "source_node_id": "parse",
+        "source_output": "rows",
+        "target_node_id": "rows",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "config",
+        "source_output": "value",
+        "target_node_id": "dataset",
+        "target_input": "config"
+      },
+      {
+        "source_node_id": "url",
+        "source_output": "text",
+        "target_node_id": "dataset",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "rows",
+        "source_output": "items",
+        "target_node_id": "dataset",
+        "target_input": "rows"
+      },
+      {
+        "source_node_id": "dataset",
+        "source_output": "value",
+        "target_node_id": "encode",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "encode",
+        "source_output": "text",
+        "target_node_id": "view",
+        "target_input": "dataset_json"
+      },
+      {
+        "source_node_id": "view",
+        "source_output": "html",
+        "target_node_id": "response",
+        "target_input": "html"
+      },
+      {
+        "source_node_id": "dataset",
+        "source_output": "value",
+        "target_node_id": "data_response",
+        "target_input": "value"
+      }
+    ],
+    "graph_outputs": {
+      "html": {
+        "node_instance_id": "view",
+        "output_name": "html"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      },
+      "rows": {
+        "node_instance_id": "rows",
+        "output_name": "items"
+      },
+      "dataset": {
+        "node_instance_id": "dataset",
+        "output_name": "value"
+      },
+      "data_response": {
+        "node_instance_id": "data_response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "html",
+        "status": "provider-backed-probe",
+        "summary": "A weather-history textile using real station observations, with explicit gaps and reporting flags.",
+        "requires": {
+          "nodes": [
+            "n_static_value",
+            "n_text_template",
+            "n_fetch_url",
+            "n_csv_parse",
+            "n_map_fields",
+            "n_json_template",
+            "n_json_stringify",
+            "n_html_template",
+            "n_html_response",
+            "n_json_response"
+          ],
+          "panels": [
+            "html",
+            "table",
+            "json"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "config": {
+            "x": 60,
+            "y": 180
+          },
+          "url": {
+            "x": 340,
+            "y": 180
+          },
+          "fetch": {
+            "x": 620,
+            "y": 180
+          },
+          "parse": {
+            "x": 900,
+            "y": 180
+          },
+          "rows": {
+            "x": 1180,
+            "y": 180
+          },
+          "dataset": {
+            "x": 1460,
+            "y": 180
+          },
+          "encode": {
+            "x": 1740,
+            "y": 180
+          },
+          "view": {
+            "x": 2020,
+            "y": 180
+          },
+          "response": {
+            "x": 2300,
+            "y": 180
+          },
+          "data_response": {
+            "x": 2580,
+            "y": 400
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "html",
+            "binding": {
+              "nodeInstanceId": "view",
+              "outputName": "html"
+            }
+          },
+          {
+            "kind": "table",
+            "binding": {
+              "nodeInstanceId": "rows",
+              "outputName": "items"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "dataset",
+              "outputName": "value"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

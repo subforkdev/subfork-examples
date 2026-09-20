@@ -1,0 +1,484 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Tidal Resonance",
+    "description": "Three NOAA coastal stations become flowing SVG tide-prediction ribbons. Six-minute UTC samples, shared time scrubber, units and palettes. Educational only, not observed conditions or a navigation tool.",
+    "nodes": [
+      {
+        "node_instance_id": "sf_url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "San Francisco / NOAA predictions",
+        "params": {
+          "url": "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&date=today&interval=6&datum=MLLW&station=9414290&time_zone=gmt&units=metric&format=json&application=Subfork"
+        }
+      },
+      {
+        "node_instance_id": "sf_fetch",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch San Francisco",
+        "params": {
+          "method": "GET",
+          "timeout_seconds": 30,
+          "max_response_bytes": 500000
+        },
+        "exposed_inputs": [
+          "url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "body",
+          "status",
+          "headers"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "sf_parse",
+        "node_id": "n_json_parse",
+        "node_version": "1.0.0",
+        "title": "Parse San Francisco",
+        "params": {}
+      },
+      {
+        "node_instance_id": "seattle_url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "Seattle / NOAA predictions",
+        "params": {
+          "url": "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&date=today&interval=6&datum=MLLW&station=9447130&time_zone=gmt&units=metric&format=json&application=Subfork"
+        }
+      },
+      {
+        "node_instance_id": "seattle_fetch",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch Seattle",
+        "params": {
+          "method": "GET",
+          "timeout_seconds": 30,
+          "max_response_bytes": 500000
+        },
+        "exposed_inputs": [
+          "url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "body",
+          "status",
+          "headers"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "seattle_parse",
+        "node_id": "n_json_parse",
+        "node_version": "1.0.0",
+        "title": "Parse Seattle",
+        "params": {}
+      },
+      {
+        "node_instance_id": "ny_url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "The Battery / NOAA predictions",
+        "params": {
+          "url": "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&date=today&interval=6&datum=MLLW&station=8518750&time_zone=gmt&units=metric&format=json&application=Subfork"
+        }
+      },
+      {
+        "node_instance_id": "ny_fetch",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch The Battery",
+        "params": {
+          "method": "GET",
+          "timeout_seconds": 30,
+          "max_response_bytes": 500000
+        },
+        "exposed_inputs": [
+          "url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "body",
+          "status",
+          "headers"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "ny_parse",
+        "node_id": "n_json_parse",
+        "node_version": "1.0.0",
+        "title": "Parse The Battery",
+        "params": {}
+      },
+      {
+        "node_instance_id": "dataset",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Three-coast prediction snapshot",
+        "params": {
+          "template": {
+            "schema_version": "tidal-resonance/1",
+            "units": "meters",
+            "datum": "MLLW",
+            "time_zone": "UTC",
+            "stations": [
+              {
+                "name": "San Francisco",
+                "station": "9414290",
+                "payload": "{{ inputs.sf_payload }}",
+                "status": "{{ inputs.sf_status }}",
+                "url": "{{ inputs.sf_url }}",
+                "headers": "{{ inputs.sf_headers }}"
+              },
+              {
+                "name": "Seattle",
+                "station": "9447130",
+                "payload": "{{ inputs.seattle_payload }}",
+                "status": "{{ inputs.seattle_status }}",
+                "url": "{{ inputs.seattle_url }}",
+                "headers": "{{ inputs.seattle_headers }}"
+              },
+              {
+                "name": "The Battery",
+                "station": "8518750",
+                "payload": "{{ inputs.ny_payload }}",
+                "status": "{{ inputs.ny_status }}",
+                "url": "{{ inputs.ny_url }}",
+                "headers": "{{ inputs.ny_headers }}"
+              }
+            ]
+          }
+        },
+        "custom_inputs": {
+          "sf_payload": "json",
+          "sf_status": "int",
+          "sf_url": "str",
+          "sf_headers": "json",
+          "seattle_payload": "json",
+          "seattle_status": "int",
+          "seattle_url": "str",
+          "seattle_headers": "json",
+          "ny_payload": "json",
+          "ny_status": "int",
+          "ny_url": "str",
+          "ny_headers": "json"
+        },
+        "exposed_inputs": [
+          "sf_payload",
+          "sf_status",
+          "sf_url",
+          "sf_headers",
+          "seattle_payload",
+          "seattle_status",
+          "seattle_url",
+          "seattle_headers",
+          "ny_payload",
+          "ny_status",
+          "ny_url",
+          "ny_headers"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "encode",
+        "node_id": "n_json_stringify",
+        "node_version": "1.0.0",
+        "title": "HTML-safe tide data",
+        "params": {
+          "html_safe": true
+        }
+      },
+      {
+        "node_instance_id": "view",
+        "node_id": "n_html_template",
+        "node_version": "1.0.0",
+        "title": "Tidal Resonance / coastal ribbons",
+        "params": {
+          "template": "<!doctype html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <title>Tidal Resonance</title>\n    <style>\n      :root {\n        color-scheme: light;\n        --paper: #edece2;\n        --ink: #193d47;\n        --muted: #526c72;\n        --line: #bec9c3;\n        --accent: #176f79;\n      }\n      * {\n        box-sizing: border-box;\n      }\n      body {\n        margin: 0;\n        background:\n          radial-gradient(ellipse at 90% 0%, #d2e5db, transparent 60%),\n          var(--paper);\n        color: var(--ink);\n        font:\n          16px Georgia,\n          serif;\n      }\n      main {\n        max-width: 1450px;\n        margin: auto;\n        padding: 35px;\n      }\n      .eyebrow,\n      .mono,\n      label,\n      select,\n      button,\n      input,\n      footer,\n      #status,\n      #error {\n        font:\n          12px/1.6 \"Courier New\",\n          monospace;\n      }\n      .eyebrow {\n        letter-spacing: 0.18em;\n        color: var(--accent);\n        text-transform: uppercase;\n      }\n      header {\n        display: flex;\n        align-items: end;\n        justify-content: space-between;\n        gap: 25px;\n        padding-bottom: 24px;\n        border-bottom: 1px solid var(--line);\n      }\n      h1 {\n        margin: 18px 0 10px;\n        font-size: clamp(44px, 7vw, 90px);\n        font-weight: normal;\n        line-height: 1;\n        letter-spacing: -0.05em;\n      }\n      h1 em {\n        color: var(--accent);\n      }\n      h2 {\n        font-size: 24px;\n        font-weight: normal;\n        margin: 0 0 10px;\n      }\n      p {\n        line-height: 1.6;\n      }\n      .subtitle {\n        margin: 0;\n        color: var(--muted);\n      }\n      .source {\n        max-width: 300px;\n        color: var(--muted);\n        text-align: right;\n      }\n      .source strong {\n        display: block;\n        color: var(--ink);\n        font-weight: normal;\n        font-size: 17px;\n      }\n      .controls {\n        display: flex;\n        flex-wrap: wrap;\n        align-items: end;\n        gap: 24px;\n        padding: 18px 0;\n        border-bottom: 1px solid var(--line);\n      }\n      label {\n        display: grid;\n        gap: 5px;\n        color: var(--muted);\n      }\n      select,\n      button,\n      input {\n        background: #f6f5ed;\n        border: 1px solid #9cafaa;\n        border-radius: 3px;\n        padding: 7px 10px;\n        color: var(--ink);\n        max-width: 100%;\n      }\n      button {\n        cursor: pointer;\n      }\n      :focus-visible {\n        outline: 2px solid var(--accent);\n        outline-offset: 3px;\n      }\n      .scrubber {\n        flex: 1;\n        min-width: 200px;\n      }\n      input[type=\"range\"] {\n        width: 100%;\n        accent-color: var(--accent);\n        padding: 8px 0;\n      }\n      #time {\n        font-size: 24px;\n        color: var(--accent);\n        min-width: 100px;\n      }\n      figure {\n        margin: 18px 0 0;\n      }\n      svg {\n        display: block;\n        width: 100%;\n        height: auto;\n      }\n      svg text {\n        fill: var(--muted);\n        font:\n          12px \"Courier New\",\n          monospace;\n      }\n      svg .station-name {\n        fill: var(--ink);\n        font:\n          25px Georgia,\n          serif;\n      }\n      figcaption,\n      #status {\n        color: var(--muted);\n      }\n      .cards {\n        display: grid;\n        grid-template-columns: repeat(3, minmax(0, 1fr));\n        gap: 22px;\n        margin-top: 24px;\n      }\n      article {\n        border-top: 2px solid var(--accent);\n        padding-top: 15px;\n        min-width: 0;\n      }\n      article strong {\n        display: block;\n        font-size: 35px;\n        font-weight: normal;\n        margin: 10px 0;\n      }\n      article p {\n        margin: 7px 0;\n      }\n      article input {\n        width: 100%;\n        font-size: 10px;\n      }\n      #error {\n        background: #f6e4d2;\n        padding: 15px;\n        border: 1px solid #b07650;\n      }\n      footer {\n        margin-top: 28px;\n        padding-top: 18px;\n        border-top: 1px solid var(--line);\n        color: var(--muted);\n      }\n      @media (max-width: 700px) {\n        main {\n          padding: 20px;\n        }\n        header {\n          display: block;\n        }\n        .source {\n          text-align: left;\n          margin-top: 18px;\n        }\n        .cards {\n          grid-template-columns: 1fr;\n        }\n        .chart-scroll {\n          overflow-x: auto;\n        }\n        svg {\n          min-width: 650px;\n        }\n      }\n    </style>\n  </head>\n  <body>\n    <main>\n      <header>\n        <div>\n          <div class=\"eyebrow\">Subfork / coastal rhythm studies / 07</div>\n          <h1>Tidal <em>Resonance.</em></h1>\n          <p class=\"subtitle\">Three coasts. One day. Different rhythms.</p>\n        </div>\n        <div class=\"source mono\">\n          <strong id=\"date\">NOAA tide predictions</strong>Six-minute samples /\n          UTC<br />Heights relative to each station's MLLW datum\n        </div>\n      </header>\n      <p id=\"error\" role=\"alert\" hidden></p>\n      <section class=\"controls\" aria-label=\"Tide controls\">\n        <label\n          >Coast<select id=\"station\">\n            <option value=\"all\">All three stations</option>\n          </select></label\n        >\n        <label\n          >Units<select id=\"units\">\n            <option value=\"m\">Meters</option>\n            <option value=\"ft\">Feet</option>\n          </select></label\n        >\n        <label\n          >Palette<select id=\"palette\">\n            <option value=\"coastal\">Coastal ink</option>\n            <option value=\"sunset\">Sunset</option>\n            <option value=\"mono\">Monochrome</option>\n          </select></label\n        >\n        <label class=\"scrubber\"\n          >Inspect time / UTC<input\n            type=\"range\"\n            id=\"cursor\"\n            min=\"0\"\n            max=\"239\"\n            step=\"1\"\n            value=\"120\"\n        /></label>\n        <output id=\"time\" class=\"mono\" for=\"cursor\">12:00</output>\n      </section>\n      <figure>\n        <div class=\"chart-scroll\">\n          <svg\n            id=\"chart\"\n            viewBox=\"0 0 1200 630\"\n            role=\"img\"\n            aria-labelledby=\"chart-title chart-desc\"\n          >\n            <title id=\"chart-title\">\n              One day's tide predictions at three stations\n            </title>\n            <desc id=\"chart-desc\">\n              Ribbons trace predicted water height. A shared UTC cursor selects\n              an exact six-minute sample, also listed in the station cards\n              below. Dashed lines indicate local zero datum.\n            </desc>\n            <g id=\"plot\"></g>\n          </svg>\n        </div>\n        <figcaption class=\"mono\">\n          Shared height scale; separate local zero references. Ribbons are\n          six-minute predictions joined by straight segments, not observed\n          waves. Negative values mean below local Mean Lower Low Water (MLLW),\n          not negative water depth.\n        </figcaption>\n      </figure>\n      <p id=\"status\" role=\"status\"></p>\n      <section\n        id=\"cards\"\n        class=\"cards\"\n        aria-label=\"Selected time and station details\"\n      ></section>\n      <footer>\n        NOAA CO-OPS harmonic tide predictions, not measured water levels or a\n        weather/storm-surge forecast. Educational visualization only; not for\n        navigation or safety decisions. Rerun the graph to refresh. The page\n        makes no network requests.\n      </footer>\n    </main>\n    <script id=\"dataset\" type=\"application/json\">\n      {{ inputs.dataset_json }}\n    </script>\n    <script>\n      (() => {\n        \"use strict\";\n        const $ = (id) => document.getElementById(id);\n        const STEP = 360000,\n          DAY = 86400000,\n          NS = \"http://www.w3.org/2000/svg\";\n        const palettes = {\n          coastal: [\"#176f79\", \"#6b8170\", \"#ad683f\"],\n          sunset: [\"#b2583f\", \"#98657d\", \"#8a751e\"],\n          mono: [\"#204e60\", \"#204e60\", \"#204e60\"],\n        };\n        function html(tag, text, className) {\n          const e = document.createElement(tag);\n          if (text !== undefined) e.textContent = text;\n          if (className) e.className = className;\n          return e;\n        }\n        function svg(tag, attrs, text) {\n          const e = document.createElementNS(NS, tag);\n          for (const [k, v] of Object.entries(attrs))\n            e.setAttribute(k, String(v));\n          if (text !== undefined) e.textContent = text;\n          return e;\n        }\n        function utc(time) {\n          return new Date(time).toISOString().slice(11, 16);\n        }\n        try {\n          const data = JSON.parse($(\"dataset\").textContent);\n          if (\n            data.schema_version !== \"tidal-resonance/1\" ||\n            !Array.isArray(data.stations) ||\n            data.stations.length !== 3\n          )\n            throw new Error(\n              \"Expected a three-station tidal-resonance/1 dataset.\",\n            );\n          if (\n            data.units !== \"meters\" ||\n            data.datum !== \"MLLW\" ||\n            data.time_zone !== \"UTC\"\n          )\n            throw new Error(\n              \"Expected meter heights relative to MLLW with UTC timestamps.\",\n            );\n          const stations = data.stations.map((station, index) => {\n            const name = String(station.name || \"Station \" + (index + 1));\n            const source = {\n              ...station,\n              name,\n              index,\n              records: [],\n              rejected: 0,\n              duplicates: 0,\n              excess: 0,\n              issue: \"\",\n            };\n            const rows = station.payload?.predictions;\n            if (\n              station.status !== 200 ||\n              station.payload?.error ||\n              !Array.isArray(rows)\n            ) {\n              source.issue = station.payload?.error\n                ? String(\n                    station.payload.error.message || \"NOAA returned an error\",\n                  )\n                : \"No prediction list (HTTP \" + station.status + \")\";\n              return source;\n            }\n            source.excess = Math.max(0, rows.length - 240);\n            const seen = new Set();\n            for (const row of rows.slice(0, 240)) {\n              const time =\n                typeof row?.t === \"string\" &&\n                /^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}$/.test(row.t)\n                  ? Date.parse(row.t.replace(\" \", \"T\") + \":00Z\")\n                  : NaN;\n              const height =\n                typeof row?.v === \"string\" &&\n                /^-?\\d+(\\.\\d+)?$/.test(row.v.trim())\n                  ? Number(row.v)\n                  : NaN;\n              if (\n                !Number.isFinite(time) ||\n                new Date(time).toISOString().slice(0, 16).replace(\"T\", \" \") !==\n                  row.t ||\n                time % STEP !== 0 ||\n                !Number.isFinite(height) ||\n                Math.abs(height) > 100\n              ) {\n                source.rejected++;\n                continue;\n              }\n              if (seen.has(time)) {\n                source.duplicates++;\n                continue;\n              }\n              seen.add(time);\n              source.records.push({ time, height });\n            }\n            source.records.sort((a, b) => a.time - b.time);\n            return source;\n          });\n          const first = stations.find((station) => station.records.length)\n            ?.records[0];\n          if (!first)\n            throw new Error(\n              \"No usable predictions. \" +\n                stations\n                  .map(\n                    (station) =>\n                      station.name + \": \" + (station.issue || \"empty data\"),\n                  )\n                  .join(\"; \"),\n            );\n          const anchor = Math.floor(first.time / DAY) * DAY;\n          $(\"date\").textContent =\n            new Date(anchor).toISOString().slice(0, 10) + \" / UTC\";\n          for (const station of stations) {\n            const inDay = station.records.filter(\n              (row) => row.time >= anchor && row.time < anchor + DAY,\n            );\n            station.rejected += station.records.length - inDay.length;\n            station.records = inDay;\n            station.samples = new Map(\n              inDay.map((row) => [row.time, row.height]),\n            );\n            const option = html(\"option\", station.name);\n            option.value = String(station.index);\n            $(\"station\").append(option);\n          }\n          const values = stations.flatMap((station) =>\n            station.records.map((row) => row.height),\n          );\n          const low = Math.min(0, ...values),\n            high = Math.max(0.1, ...values),\n            span = high - low;\n          const clock = (slot) => utc(anchor + slot * STEP);\n          function draw() {\n            const chosen = $(\"station\").value;\n            const visible = stations.filter(\n              (station) => chosen === \"all\" || chosen === String(station.index),\n            );\n            const slot = Number($(\"cursor\").value),\n              time = anchor + slot * STEP;\n            const unit = $(\"units\").value,\n              factor = unit === \"ft\" ? 3.280839895 : 1;\n            const format = (height) =>\n              (height * factor).toFixed(2) + \" \" + unit;\n            const colors = palettes[$(\"palette\").value];\n            const panelHeight = 170,\n              left = 220,\n              width = 920;\n            $(\"time\").textContent = clock(slot) + \" UTC\";\n            $(\"cursor\").setAttribute(\"aria-valuetext\", clock(slot) + \" UTC\");\n            $(\"plot\").replaceChildren();\n            $(\"cards\").replaceChildren();\n            $(\"chart\").setAttribute(\n              \"viewBox\",\n              \"0 0 1200 \" + (visible.length * panelHeight + 80),\n            );\n            $(\"chart-title\").textContent =\n              new Date(anchor).toISOString().slice(0, 10) +\n              \" / NOAA predicted tides\";\n            visible.forEach((station, rowIndex) => {\n              const top = 25 + rowIndex * panelHeight;\n              const y = (height) => top + 125 - ((height - low) / span) * 105;\n              const x = (time) =>\n                left + ((time - anchor) / (239 * STEP)) * width;\n              const color = colors[station.index];\n              $(\"plot\").append(\n                svg(\n                  \"text\",\n                  { x: 0, y: top + 35, class: \"station-name\" },\n                  station.name,\n                ),\n                svg(\"text\", { x: 0, y: top + 57 }, \"NOAA / \" + station.station),\n                svg(\n                  \"text\",\n                  { x: 0, y: top + 100 },\n                  station.samples.has(time)\n                    ? format(station.samples.get(time))\n                    : \"No sample\",\n                ),\n              );\n              for (const hour of [0, 6, 12, 18])\n                $(\"plot\").append(\n                  svg(\"line\", {\n                    x1: x(anchor + hour * 3600000),\n                    x2: x(anchor + hour * 3600000),\n                    y1: top + 10,\n                    y2: top + 132,\n                    stroke: \"#bcc8c2\",\n                    \"stroke-opacity\": 0.5,\n                  }),\n                );\n              $(\"plot\").append(\n                svg(\"line\", {\n                  x1: left,\n                  x2: left + width,\n                  y1: y(0),\n                  y2: y(0),\n                  stroke: color,\n                  \"stroke-dasharray\": \"3 5\",\n                  \"stroke-opacity\": 0.5,\n                }),\n                svg(\"text\", { x: left + width + 7, y: y(0) + 4 }, \"0\"),\n              );\n              const segments = [];\n              let segment = [];\n              for (const sample of station.records) {\n                if (\n                  segment.length &&\n                  sample.time - segment[segment.length - 1].time !== STEP\n                ) {\n                  segments.push(segment);\n                  segment = [];\n                }\n                segment.push(sample);\n              }\n              if (segment.length) segments.push(segment);\n              for (const segment of segments) {\n                const line =\n                  \"M \" +\n                  segment\n                    .map((sample) => x(sample.time) + \" \" + y(sample.height))\n                    .join(\" L \");\n                if (segment.length > 1)\n                  $(\"plot\").append(\n                    svg(\"path\", {\n                      d:\n                        line +\n                        \" L \" +\n                        x(segment.at(-1).time) +\n                        \" \" +\n                        y(0) +\n                        \" L \" +\n                        x(segment[0].time) +\n                        \" \" +\n                        y(0) +\n                        \" Z\",\n                      fill: color,\n                      \"fill-opacity\": 0.18,\n                    }),\n                  );\n                $(\"plot\").append(\n                  svg(\"path\", {\n                    d: line,\n                    stroke: color,\n                    \"stroke-width\": 2.5,\n                    fill: \"none\",\n                  }),\n                );\n                if (segment.length === 1)\n                  $(\"plot\").append(\n                    svg(\"circle\", {\n                      cx: x(segment[0].time),\n                      cy: y(segment[0].height),\n                      r: 2.5,\n                      fill: color,\n                    }),\n                  );\n              }\n              $(\"plot\").append(\n                svg(\"line\", {\n                  x1: x(time),\n                  x2: x(time),\n                  y1: top + 8,\n                  y2: top + 132,\n                  stroke: color,\n                  \"stroke-width\": 1.2,\n                }),\n              );\n              if (station.samples.has(time))\n                $(\"plot\").append(\n                  svg(\"circle\", {\n                    cx: x(time),\n                    cy: y(station.samples.get(time)),\n                    r: 5,\n                    fill: color,\n                    stroke: \"#edece2\",\n                    \"stroke-width\": 2,\n                  }),\n                );\n              if (!station.records.length)\n                $(\"plot\").append(\n                  svg(\n                    \"text\",\n                    { x: left + 20, y: top + 65 },\n                    \"Predictions unavailable for this day\",\n                  ),\n                );\n              const card = html(\"article\");\n              card.style.borderColor = color;\n              card.append(\n                html(\"h2\", station.name),\n                html(\n                  \"div\",\n                  \"Station \" + station.station + \" / \" + clock(slot) + \" UTC\",\n                  \"mono\",\n                ),\n                html(\n                  \"strong\",\n                  station.samples.has(time)\n                    ? format(station.samples.get(time))\n                    : \"Unavailable\",\n                ),\n              );\n              if (station.records.length) {\n                const heights = station.records.map((sample) => sample.height);\n                card.append(\n                  html(\n                    \"p\",\n                    \"Sampled daily range: \" +\n                      format(Math.min(...heights)) +\n                      \" to \" +\n                      format(Math.max(...heights)),\n                    \"mono\",\n                  ),\n                );\n              }\n              card.append(\n                html(\n                  \"p\",\n                  station.records.length +\n                    \" / 240 samples. \" +\n                    station.rejected +\n                    \" invalid/off-day; \" +\n                    station.duplicates +\n                    \" duplicate; \" +\n                    station.excess +\n                    \" over-cap.\",\n                  \"mono\",\n                ),\n              );\n              if (station.issue) card.append(html(\"p\", station.issue, \"mono\"));\n              const label = html(\"label\", \"NOAA station URL (select to copy)\"),\n                input = html(\"input\");\n              input.readOnly = true;\n              input.value = /^\\d{7}$/.test(String(station.station))\n                ? \"https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=\" +\n                  station.station\n                : \"Station URL unavailable\";\n              input.addEventListener(\"focus\", () => input.select());\n              label.append(input);\n              card.append(label);\n              $(\"cards\").append(card);\n            });\n            for (const hour of [0, 6, 12, 18])\n              $(\"plot\").append(\n                svg(\n                  \"text\",\n                  {\n                    x: left + (hour / 23.9) * width,\n                    y: visible.length * panelHeight + 50,\n                    \"text-anchor\": \"middle\",\n                  },\n                  String(hour).padStart(2, \"0\") + \":00\",\n                ),\n              );\n            $(\"plot\").append(\n              svg(\n                \"text\",\n                {\n                  x: left + width,\n                  y: visible.length * panelHeight + 50,\n                  \"text-anchor\": \"end\",\n                },\n                \"23:54 UTC\",\n              ),\n            );\n            const incomplete = stations.filter(\n              (station) => station.records.length !== 240,\n            );\n            $(\"status\").textContent =\n              (incomplete.length\n                ? \"Incomplete coverage: \" +\n                  incomplete.map((station) => station.name).join(\", \") +\n                  \". Gaps are not interpolated. \"\n                : \"720 predicted samples across three stations. \") +\n              \"Day resolved by NOAA's date=today request; actual returned UTC date shown above. Shared scale: \" +\n              format(low) +\n              \" to \" +\n              format(high) +\n              \" relative to each local datum. Sampled extrema are not exact high/low tide times.\";\n          }\n          for (const id of [\"station\", \"units\", \"palette\"])\n            $(id).addEventListener(\"change\", draw);\n          $(\"cursor\").addEventListener(\"input\", draw);\n          draw();\n        } catch (error) {\n          $(\"error\").hidden = false;\n          $(\"error\").textContent =\n            error.message || \"Unable to render predictions.\";\n        }\n      })();\n    </script>\n  </body>\n</html>\n"
+        },
+        "custom_inputs": {
+          "dataset_json": "str"
+        },
+        "exposed_inputs": [
+          "dataset_json"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_html_response",
+        "node_version": "1.0.0",
+        "title": "Tide atlas page",
+        "params": {}
+      },
+      {
+        "node_instance_id": "data_response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Prediction dataset response",
+        "params": {}
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "sf_url",
+        "source_output": "url",
+        "target_node_id": "sf_fetch",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "sf_fetch",
+        "source_output": "body",
+        "target_node_id": "sf_parse",
+        "target_input": "text"
+      },
+      {
+        "source_node_id": "sf_parse",
+        "source_output": "value",
+        "target_node_id": "dataset",
+        "target_input": "sf_payload"
+      },
+      {
+        "source_node_id": "sf_fetch",
+        "source_output": "status",
+        "target_node_id": "dataset",
+        "target_input": "sf_status"
+      },
+      {
+        "source_node_id": "sf_url",
+        "source_output": "url",
+        "target_node_id": "dataset",
+        "target_input": "sf_url"
+      },
+      {
+        "source_node_id": "sf_fetch",
+        "source_output": "headers",
+        "target_node_id": "dataset",
+        "target_input": "sf_headers"
+      },
+      {
+        "source_node_id": "seattle_url",
+        "source_output": "url",
+        "target_node_id": "seattle_fetch",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "seattle_fetch",
+        "source_output": "body",
+        "target_node_id": "seattle_parse",
+        "target_input": "text"
+      },
+      {
+        "source_node_id": "seattle_parse",
+        "source_output": "value",
+        "target_node_id": "dataset",
+        "target_input": "seattle_payload"
+      },
+      {
+        "source_node_id": "seattle_fetch",
+        "source_output": "status",
+        "target_node_id": "dataset",
+        "target_input": "seattle_status"
+      },
+      {
+        "source_node_id": "seattle_url",
+        "source_output": "url",
+        "target_node_id": "dataset",
+        "target_input": "seattle_url"
+      },
+      {
+        "source_node_id": "seattle_fetch",
+        "source_output": "headers",
+        "target_node_id": "dataset",
+        "target_input": "seattle_headers"
+      },
+      {
+        "source_node_id": "ny_url",
+        "source_output": "url",
+        "target_node_id": "ny_fetch",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "ny_fetch",
+        "source_output": "body",
+        "target_node_id": "ny_parse",
+        "target_input": "text"
+      },
+      {
+        "source_node_id": "ny_parse",
+        "source_output": "value",
+        "target_node_id": "dataset",
+        "target_input": "ny_payload"
+      },
+      {
+        "source_node_id": "ny_fetch",
+        "source_output": "status",
+        "target_node_id": "dataset",
+        "target_input": "ny_status"
+      },
+      {
+        "source_node_id": "ny_url",
+        "source_output": "url",
+        "target_node_id": "dataset",
+        "target_input": "ny_url"
+      },
+      {
+        "source_node_id": "ny_fetch",
+        "source_output": "headers",
+        "target_node_id": "dataset",
+        "target_input": "ny_headers"
+      },
+      {
+        "source_node_id": "dataset",
+        "source_output": "value",
+        "target_node_id": "encode",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "encode",
+        "source_output": "text",
+        "target_node_id": "view",
+        "target_input": "dataset_json"
+      },
+      {
+        "source_node_id": "view",
+        "source_output": "html",
+        "target_node_id": "response",
+        "target_input": "html"
+      },
+      {
+        "source_node_id": "dataset",
+        "source_output": "value",
+        "target_node_id": "data_response",
+        "target_input": "value"
+      }
+    ],
+    "graph_outputs": {
+      "html": {
+        "node_instance_id": "view",
+        "output_name": "html"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      },
+      "dataset": {
+        "node_instance_id": "dataset",
+        "output_name": "value"
+      },
+      "data_response": {
+        "node_instance_id": "data_response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "html",
+        "status": "provider-backed-probe",
+        "summary": "Bounded NOAA predictions from three coasts form an inspectable tidal atlas.",
+        "requires": {
+          "nodes": [
+            "n_url_input",
+            "n_fetch_url",
+            "n_json_parse",
+            "n_json_template",
+            "n_json_stringify",
+            "n_html_template",
+            "n_html_response",
+            "n_json_response"
+          ],
+          "panels": [
+            "html",
+            "json"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "sf_url": {
+            "x": 60,
+            "y": 80
+          },
+          "sf_fetch": {
+            "x": 370,
+            "y": 80
+          },
+          "sf_parse": {
+            "x": 680,
+            "y": 80
+          },
+          "seattle_url": {
+            "x": 60,
+            "y": 320
+          },
+          "seattle_fetch": {
+            "x": 370,
+            "y": 320
+          },
+          "seattle_parse": {
+            "x": 680,
+            "y": 320
+          },
+          "ny_url": {
+            "x": 60,
+            "y": 560
+          },
+          "ny_fetch": {
+            "x": 370,
+            "y": 560
+          },
+          "ny_parse": {
+            "x": 680,
+            "y": 560
+          },
+          "dataset": {
+            "x": 990,
+            "y": 200
+          },
+          "encode": {
+            "x": 1300,
+            "y": 200
+          },
+          "view": {
+            "x": 1610,
+            "y": 200
+          },
+          "response": {
+            "x": 1920,
+            "y": 200
+          },
+          "data_response": {
+            "x": 1300,
+            "y": 500
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "html",
+            "binding": {
+              "nodeInstanceId": "view",
+              "outputName": "html"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "dataset",
+              "outputName": "value"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
