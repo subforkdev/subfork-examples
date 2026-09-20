@@ -17,4 +17,4 @@ Every scene element is graph-owned; there are no demo-specific renderer branches
 embedded scripts, external assets or credentials. Playback is not graph execution.
 The output is scene JSON requiring a compatible renderer, not standalone HTML.
 
-See [3D contract](../../docs/planning/subfork-3d-preview.md).
+See [3D contract](https://github.com/subforkdev/subfork-new/blob/master/docs/planning/subfork-3d-preview.md).

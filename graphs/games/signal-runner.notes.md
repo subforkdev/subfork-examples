@@ -73,5 +73,5 @@ visibility pause, restart/local best, invalid manifests, and a single animation
 loop. Desktop and narrow-screen ready-state layouts were inspected in headless
 Chrome. Dashboard import/run and real keyboard/touch play remain manual checks.
 
-See [bounded compute contracts](../../docs/planning/subfork-bounded-compute-nodes.md)
+See [bounded compute contracts](https://github.com/subforkdev/subfork-new/blob/master/docs/planning/subfork-bounded-compute-nodes.md)
 for reproducibility, numeric validation, and resource limits.

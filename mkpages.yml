@@ -1,0 +1,23 @@
+title: Subfork Examples
+description: Importable example graphs for dashboards, visualizations, data pipelines, media, and more.
+url: https://examples.subfork.com
+theme: dark
+favicon: assets/subfork-favicon.png
+navigation:
+  - label: Home
+    href: /
+  - label: Graphs
+    href: /graphs/
+  - label: Importing
+    href: /docs/importing/
+  - label: Authoring
+    href: /docs/authoring/
+  - label: Subfork
+    href: https://subfork.com
+  - label: GitHub
+    href: https://github.com/subforkdev/subfork-examples
+card:
+  enabled: true
+  title: Subfork Examples
+  description: Importable graphs for Subfork.
+  logo: assets/subfork-favicon.png

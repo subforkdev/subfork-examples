@@ -15,4 +15,4 @@ self-contained ASCII USDA is enabled. Binary USD/USDC, USDZ, external references
 textures, variants, USD animation and Alembic are not supported yet. Applying
 graph-authored motion to this static mesh is not USD animation-cache playback.
 
-See [format support and limits](../../docs/planning/subfork-3d-preview.md).
+See [format support and limits](https://github.com/subforkdev/subfork-new/blob/master/docs/planning/subfork-3d-preview.md).

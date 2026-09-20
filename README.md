@@ -1,8 +1,9 @@
-<p align="center">
+<div class="gridline-home-hero">
   <a href="https://subfork.com">
-    <img src="assets/subfork-word-mark.png" alt="Subfork" width="360">
+    <img src="assets/subfork-word-mark.png" alt="Subfork" width="430">
   </a>
-</p>
+  <p>Importable graphs for dashboards, visualizations, data pipelines, media, and more.</p>
+</div>
 
 # Subfork Examples
 
@@ -28,14 +29,16 @@ external services.
 
 ## Categories
 
-- [`graphs/html/`](graphs/html/) contains static pages, SVG visualizations, and response examples.
-- [`graphs/geo/`](graphs/geo/) contains public geographic-data maps and situational views.
-- [`graphs/dashboards/`](graphs/dashboards/) contains linked, interactive panel layouts.
-- [`graphs/3d/`](graphs/3d/) contains graph-authored scenes and 3D data visualizations.
-- [`graphs/ai/`](graphs/ai/) contains provider-backed media workflows and design probes.
-- [`graphs/calendar/`](graphs/calendar/) contains event normalization, merging, and briefing examples.
-- [`graphs/pipes/`](graphs/pipes/) contains feed, text, row, and digest transformations.
-- [`graphs/games/`](graphs/games/) contains graph-authored playable browser experiences.
+- [`html`](graphs/README.md#html) contains static pages, SVG visualizations, and response examples.
+- [`geo`](graphs/README.md#geo) contains public geographic-data maps and situational views.
+- [`dashboards`](graphs/README.md#dashboards) contains linked, interactive panel layouts.
+- [`3d`](graphs/README.md#3d) contains graph-authored scenes and 3D data visualizations.
+- [`ai`](graphs/README.md#ai) contains provider-backed media workflows and design probes.
+- [`calendar`](graphs/README.md#calendar) contains event normalization, merging, and briefing examples.
+- [`pipes`](graphs/README.md#pipes) contains feed, text, row, and digest transformations.
+- [`games`](graphs/README.md#games) contains graph-authored playable browser experiences.
+
+[Browse all example graphs](graphs/README.md).
 
 Featured examples include [Planet Pulse](graphs/geo/planet-pulse.notes.md),
 [Regional Watch](graphs/dashboards/regional-watch.notes.md),
@@ -53,6 +56,21 @@ Runnable examples have two files:
 A notes-only entry is a design proposal rather than an importable graph. See
 [Authoring examples](docs/authoring.md) and [CONTRIBUTING.md](CONTRIBUTING.md)
 before proposing changes.
+
+## Documentation Site
+
+The site at [examples.subfork.com](https://examples.subfork.com) is generated
+from this repository with [MkPages](https://mkdpages.dev) and the bundled
+Gridline theme.
+
+```bash
+python -m pip install --requirement requirements-docs.txt
+mkpages build . --output .mkpages
+```
+
+The GitHub Pages workflow supplies the configured hostname and base path during
+deployment. Generated `.mkpages/` and `_site/` directories are disposable and
+must not be committed.
 
 ## License
 

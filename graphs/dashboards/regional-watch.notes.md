@@ -71,4 +71,4 @@ date-line behavior, generic facet filtering and recommended layout round trips.
 
 [USGS source and format](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
 
-See [dashboard architecture](../../docs/planning/subfork-dashboard-snapshots.md).
+See [dashboard architecture](https://github.com/subforkdev/subfork-new/blob/master/docs/planning/subfork-dashboard-snapshots.md).

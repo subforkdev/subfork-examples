@@ -16,6 +16,8 @@ to examples, their documentation, and repository validation.
 - Preserve the exported `subfork.graph/1` envelope. Do not hand-edit generated
   IDs unless the change is intentional and validated.
 - Run `python3 scripts/validate_examples.py` before completing a change.
+- After changing site content or navigation, run
+  `mkpages build . --output .mkpages`; never edit generated output directly.
 
 Subdirectory `AGENTS.md` files add category-specific guidance and take precedence
 for files in that directory.
