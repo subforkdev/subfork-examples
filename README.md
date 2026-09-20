@@ -57,21 +57,6 @@ A notes-only entry is a design proposal rather than an importable graph. See
 [Authoring examples](docs/authoring.md) and [CONTRIBUTING.md](CONTRIBUTING.md)
 before proposing changes.
 
-## Documentation Site
-
-The site at [examples.subfork.com](https://examples.subfork.com) is generated
-from this repository with [MkPages](https://mkdpages.dev) and the bundled
-Gridline theme.
-
-```bash
-python -m pip install --requirement requirements-docs.txt
-mkpages build . --output .mkpages
-```
-
-The GitHub Pages workflow supplies the configured hostname and base path during
-deployment. Generated `.mkpages/` and `_site/` directories are disposable and
-must not be committed.
-
 ## License
 
 Copyright 2026 Enluminari LLC.
