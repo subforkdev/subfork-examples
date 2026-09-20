@@ -42,8 +42,8 @@ jobs:
       - name: Generate Jekyll source
         run: >-
           mkpages build . --output .mkpages
-          --url "https://${{ steps.pages.outputs.host }}"
-          --baseurl "${{ steps.pages.outputs.base_path }}"
+          --url "https://examples.subfork.com"
+          --baseurl ""
 
       - name: Build site
         uses: actions/jekyll-build-pages@v1
