@@ -6,61 +6,83 @@ uses network access, provider credentials, or paid services.
 
 ## HTML
 
-- [Activity Topography](html/activity-topography.notes.md) · [Download graph](html/activity-topography.subfork.json)
-- [Calendar Merge HTML View](html/calendar-merge-html-view.notes.md) · [Download graph](html/calendar-merge-html-view.subfork.json)
-- [Client Dynamic HTML Shell](html/client-dynamic-html-shell.notes.md) · [Download graph](html/client-dynamic-html-shell.subfork.json)
-- [Earthquake Situation Page](html/earthquake-situation-page.notes.md) · [Download graph](html/earthquake-situation-page.subfork.json)
-- [Other Worlds](html/exoplanet-portrait.notes.md) · [Download graph](html/exoplanet-portrait.subfork.json)
-- [Graph Run Status Page](html/graph-run-status-page.notes.md) · [Download graph](html/graph-run-status-page.subfork.json)
-- [Hello, World](html/hello-world.notes.md) · [Download graph](html/hello-world.subfork.json)
-- [Image Gallery HTML Page](html/image-gallery-html-page.notes.md) · [Download graph](html/image-gallery-html-page.subfork.json)
-- [JSON to HTML Renderer](html/json-to-html-renderer.notes.md) · [Download graph](html/json-to-html-renderer.subfork.json)
-- [Markdown-ish Content Page](html/markdown-ish-content-page.notes.md) · [Download graph](html/markdown-ish-content-page.subfork.json)
-- [News Constellation](html/news-constellation.notes.md) · [Download graph](html/news-constellation.subfork.json)
-- [Signal Garden](html/signal-garden.notes.md) · [Download graph](html/signal-garden.subfork.json)
-- [Tidal Resonance](html/tidal-resonance.notes.md) · [Download graph](html/tidal-resonance.subfork.json)
-- [Weather Loom](html/weather-loom.notes.md) · [Download graph](html/weather-loom.subfork.json)
+- [Activity Topography](html/activity-topography.notes.md) · <a href="html/activity-topography.subfork.json" download="activity-topography.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Calendar Merge HTML View](html/calendar-merge-html-view.notes.md) · <a href="html/calendar-merge-html-view.subfork.json" download="calendar-merge-html-view.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Client Dynamic HTML Shell](html/client-dynamic-html-shell.notes.md) · <a href="html/client-dynamic-html-shell.subfork.json" download="client-dynamic-html-shell.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Earthquake Situation Page](html/earthquake-situation-page.notes.md) · <a href="html/earthquake-situation-page.subfork.json" download="earthquake-situation-page.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Other Worlds](html/exoplanet-portrait.notes.md) · <a href="html/exoplanet-portrait.subfork.json" download="exoplanet-portrait.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Graph Run Status Page](html/graph-run-status-page.notes.md) · <a href="html/graph-run-status-page.subfork.json" download="graph-run-status-page.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Hello, World](html/hello-world.notes.md) · <a href="html/hello-world.subfork.json" download="hello-world.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Image Gallery HTML Page](html/image-gallery-html-page.notes.md) · <a href="html/image-gallery-html-page.subfork.json" download="image-gallery-html-page.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [JSON to HTML Renderer](html/json-to-html-renderer.notes.md) · <a href="html/json-to-html-renderer.subfork.json" download="json-to-html-renderer.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Markdown-ish Content Page](html/markdown-ish-content-page.notes.md) · <a href="html/markdown-ish-content-page.subfork.json" download="markdown-ish-content-page.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [News Constellation](html/news-constellation.notes.md) · <a href="html/news-constellation.subfork.json" download="news-constellation.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Signal Garden](html/signal-garden.notes.md) · <a href="html/signal-garden.subfork.json" download="signal-garden.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Tidal Resonance](html/tidal-resonance.notes.md) · <a href="html/tidal-resonance.subfork.json" download="tidal-resonance.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Weather Loom](html/weather-loom.notes.md) · <a href="html/weather-loom.subfork.json" download="weather-loom.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 
 ## Geo
 
-- [Earthquake Map](geo/earthquake-map.notes.md) · [Download graph](geo/earthquake-map.subfork.json)
-- [Geo Situational Brief](geo/geo-situational-brief.notes.md) · [Download graph](geo/geo-situational-brief.subfork.json)
-- [Live USGS Earthquake Map](geo/live-usgs-earthquake-map.notes.md) · [Download graph](geo/live-usgs-earthquake-map.subfork.json)
-- [Planet Pulse](geo/planet-pulse.notes.md) · [Download graph](geo/planet-pulse.subfork.json)
+- [Earthquake Map](geo/earthquake-map.notes.md) · <a href="geo/earthquake-map.subfork.json" download="earthquake-map.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Geo Situational Brief](geo/geo-situational-brief.notes.md) · <a href="geo/geo-situational-brief.subfork.json" download="geo-situational-brief.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Live USGS Earthquake Map](geo/live-usgs-earthquake-map.notes.md) · <a href="geo/live-usgs-earthquake-map.subfork.json" download="live-usgs-earthquake-map.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Planet Pulse](geo/planet-pulse.notes.md) · <a href="geo/planet-pulse.subfork.json" download="planet-pulse.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 
 ## Dashboards
 
-- [Regional Watch](dashboards/regional-watch.notes.md) · [Download graph](dashboards/regional-watch.subfork.json)
+- [Regional Watch](dashboards/regional-watch.notes.md) · <a href="dashboards/regional-watch.subfork.json" download="regional-watch.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 
 ## 3D
 
-- [Orbit Field](3d/orbit-field.notes.md) · [Download graph](3d/orbit-field.subfork.json)
-- [Seismic Depth Field](3d/seismic-depth-field.notes.md) · [Download graph](3d/seismic-depth-field.subfork.json)
-- [Seismic Globe](3d/seismic-globe.notes.md) · [Download graph](3d/seismic-globe.subfork.json)
-- [USD Pyramid](3d/usd-pyramid.notes.md) · [Download graph](3d/usd-pyramid.subfork.json)
+- [Orbit Field](3d/orbit-field.notes.md) · <a href="3d/orbit-field.subfork.json" download="orbit-field.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Seismic Depth Field](3d/seismic-depth-field.notes.md) · <a href="3d/seismic-depth-field.subfork.json" download="seismic-depth-field.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Seismic Globe](3d/seismic-globe.notes.md) · <a href="3d/seismic-globe.subfork.json" download="seismic-globe.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [USD Pyramid](3d/usd-pyramid.notes.md) · <a href="3d/usd-pyramid.subfork.json" download="usd-pyramid.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 
 ## AI
 
-- [Image Gallery](ai/image-gallery.notes.md) · [Download graph](ai/image-gallery.subfork.json)
-- [OpenAI 3D Generation](ai/openai-3d-generation.notes.md) (design proposal)
-- [OpenAI Asset Pack](ai/openai-asset-pack.notes.md) · [Download graph](ai/openai-asset-pack.subfork.json)
-- [OpenAI Image Generation](ai/openai-image-generation.notes.md) · [Download graph](ai/openai-image-generation.subfork.json)
-- [OpenAI Speech Generation](ai/openai-speech-generation.notes.md) · [Download graph](ai/openai-speech-generation.subfork.json)
-- [OpenAI Video Generation Job](ai/openai-video-generation-job.notes.md) · [Download graph](ai/openai-video-generation-job.subfork.json)
+### Images
+
+[Browse AI Images](ai/image/README.md)
+
+- [Image Gallery](ai/image/image-gallery.notes.md) · <a href="ai/image/image-gallery.subfork.json" download="image-gallery.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [OpenAI Asset Pack](ai/image/openai-asset-pack.notes.md) · <a href="ai/image/openai-asset-pack.subfork.json" download="openai-asset-pack.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [OpenAI Image Generation](ai/image/openai-image-generation.notes.md) · <a href="ai/image/openai-image-generation.subfork.json" download="openai-image-generation.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+
+### Video
+
+[Browse AI Video](ai/video/README.md)
+
+- [OpenAI Image to Video Job](ai/video/openai-image-to-video-job.notes.md) · <a href="ai/video/openai-image-to-video-job.subfork.json" download="openai-image-to-video-job.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [OpenAI Video Generation Job](ai/video/openai-video-generation-job.notes.md) · <a href="ai/video/openai-video-generation-job.subfork.json" download="openai-video-generation-job.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+
+### Audio
+
+[Browse AI Audio](ai/audio/README.md)
+
+- [OpenAI PDF Narration](ai/audio/openai-pdf-narration.notes.md) · <a href="ai/audio/openai-pdf-narration.subfork.json" download="openai-pdf-narration.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [OpenAI Read Aloud](ai/audio/openai-read-aloud.notes.md) · <a href="ai/audio/openai-read-aloud.subfork.json" download="openai-read-aloud.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [OpenAI Speech Generation](ai/audio/openai-speech-generation.notes.md) · <a href="ai/audio/openai-speech-generation.subfork.json" download="openai-speech-generation.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+
+### 3D Generation
+
+[Browse AI 3D Generation](ai/3d/README.md)
+
+- [OpenAI 3D Generation](ai/3d/openai-3d-generation.notes.md) (design proposal)
 
 ## Calendar
 
-- [Daily Brief](calendar/daily-brief.notes.md) · [Download graph](calendar/daily-brief.subfork.json)
-- [Merge Calendars](calendar/merge-calendars.notes.md) · [Download graph](calendar/merge-calendars.subfork.json)
-- [Remote ICS Merge Response](calendar/remote-ics-merge-response.notes.md) · [Download graph](calendar/remote-ics-merge-response.subfork.json)
+- [Daily Brief](calendar/daily-brief.notes.md) · <a href="calendar/daily-brief.subfork.json" download="daily-brief.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Merge Calendars](calendar/merge-calendars.notes.md) · <a href="calendar/merge-calendars.subfork.json" download="merge-calendars.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Remote ICS Merge Response](calendar/remote-ics-merge-response.notes.md) · <a href="calendar/remote-ics-merge-response.subfork.json" download="remote-ics-merge-response.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 
 ## Pipes
 
-- [Open Tickets Pipe](pipes/open-tickets-pipe.notes.md) · [Download graph](pipes/open-tickets-pipe.subfork.json)
-- [Plain HTTP Response](pipes/plain-http-response.notes.md) · [Download graph](pipes/plain-http-response.subfork.json)
-- [RSS News Digest](pipes/rss-news-digest.notes.md) · [Download graph](pipes/rss-news-digest.subfork.json)
-- [URL Extract Pipe](pipes/url-extract-pipe.notes.md) · [Download graph](pipes/url-extract-pipe.subfork.json)
+- [Open Tickets Pipe](pipes/open-tickets-pipe.notes.md) · <a href="pipes/open-tickets-pipe.subfork.json" download="open-tickets-pipe.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Plain HTTP Response](pipes/plain-http-response.notes.md) · <a href="pipes/plain-http-response.subfork.json" download="plain-http-response.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [RSS News Digest](pipes/rss-news-digest.notes.md) · <a href="pipes/rss-news-digest.subfork.json" download="rss-news-digest.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [URL Extract Pipe](pipes/url-extract-pipe.notes.md) · <a href="pipes/url-extract-pipe.subfork.json" download="url-extract-pipe.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 
 ## Games
 
-- [Signal Runner](games/signal-runner.notes.md) · [Download graph](games/signal-runner.subfork.json)
+- [Signal Runner](games/signal-runner.notes.md) · <a href="games/signal-runner.subfork.json" download="signal-runner.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>

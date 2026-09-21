@@ -1,0 +1,464 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "OpenAI Image to Video Job",
+    "description": "Upload an image, crop or pad it to the selected video resolution, then submit and poll an OpenAI video job.",
+    "nodes": [
+      {
+        "node_instance_id": "image",
+        "node_id": "n_image_asset",
+        "node_version": "1.0.0",
+        "title": "Upload reference image",
+        "params": {
+          "artifact_id": ""
+        },
+        "exposed_outputs": [
+          "url",
+          "info"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "resize",
+        "node_id": "n_image_resize",
+        "node_version": "1.0.0",
+        "title": "Fit reference image to video",
+        "params": {
+          "mode": "pad",
+          "background": "#000000"
+        },
+        "exposed_inputs": [
+          "url",
+          "size"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "url",
+          "media",
+          "info"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "prompt",
+        "node_id": "n_text_value",
+        "node_version": "1.0.0",
+        "title": "Editable prompt",
+        "params": {
+          "text": "a tiny green terminal rover driving across a moonlit hangar floor"
+        }
+      },
+      {
+        "node_instance_id": "video_size",
+        "node_id": "n_text_value",
+        "node_version": "1.0.0",
+        "title": "Video size (width x height)",
+        "params": {
+          "text": "1280x720"
+        }
+      },
+      {
+        "node_instance_id": "body",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "OpenAI video body",
+        "params": {
+          "template": {
+            "model": "sora-2",
+            "prompt": "{{ inputs.prompt }}",
+            "input_reference?": {
+              "image_url?": "{{ inputs.image_url }}"
+            },
+            "seconds": "4",
+            "size": "{{ inputs.size }}"
+          }
+        },
+        "custom_inputs": {
+          "prompt": "str",
+          "image_url": "url",
+          "size": "str"
+        },
+        "exposed_inputs": [
+          "prompt",
+          "image_url",
+          "size"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "submit_url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "OpenAI videos URL",
+        "params": {
+          "url": "https://api.openai.com/v1/videos"
+        }
+      },
+      {
+        "node_instance_id": "submit",
+        "node_id": "n_http_submit_job",
+        "node_version": "1.0.0",
+        "title": "Submit video job",
+        "params": {
+          "method": "POST",
+          "headers": {
+            "Authorization": "Bearer {{ secrets.OPENAI_API_KEY }}",
+            "Content-Type": "application/json"
+          },
+          "job_id_path": "id",
+          "status_url_path": "",
+          "poll_after_seconds": 10
+        },
+        "exposed_inputs": [
+          "url",
+          "body"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "remote_job",
+          "response"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "video_id",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Video id",
+        "params": {
+          "path": "id"
+        }
+      },
+      {
+        "node_instance_id": "status_url",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Status URL",
+        "params": {
+          "template": "https://api.openai.com/v1/videos/{{ inputs.video_id }}"
+        },
+        "custom_inputs": {
+          "video_id": "str"
+        },
+        "exposed_inputs": [
+          "video_id"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "poll",
+        "node_id": "n_http_poll_job",
+        "node_version": "1.0.0",
+        "title": "Poll video job",
+        "params": {
+          "headers": {
+            "Authorization": "Bearer {{ secrets.OPENAI_API_KEY }}"
+          },
+          "status_path": "status",
+          "complete_values": [
+            "completed"
+          ],
+          "failed_values": [
+            "failed"
+          ],
+          "media_url_path": "url",
+          "poll_after_seconds": 10
+        },
+        "exposed_inputs": [
+          "remote_job",
+          "status_url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "status",
+          "response",
+          "media"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "content_url",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Video content URL",
+        "params": {
+          "template": "https://api.openai.com/v1/videos/{{ inputs.video_id }}/content"
+        },
+        "custom_inputs": {
+          "video_id": "str",
+          "status": "str"
+        },
+        "exposed_inputs": [
+          "video_id",
+          "status"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "fetch_video",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch video content",
+        "params": {
+          "method": "GET",
+          "headers": {
+            "Authorization": "Bearer {{ secrets.OPENAI_API_KEY }}"
+          },
+          "timeout_seconds": 120,
+          "max_response_bytes": 25000000
+        },
+        "exposed_inputs": [
+          "url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "media",
+          "status"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "json_response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Job JSON Response"
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "prompt",
+        "source_output": "text",
+        "target_node_id": "body",
+        "target_input": "prompt"
+      },
+      {
+        "source_node_id": "submit_url",
+        "source_output": "url",
+        "target_node_id": "submit",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "body",
+        "source_output": "value",
+        "target_node_id": "submit",
+        "target_input": "body"
+      },
+      {
+        "source_node_id": "submit",
+        "source_output": "response",
+        "target_node_id": "video_id",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "video_id",
+        "source_output": "value",
+        "target_node_id": "status_url",
+        "target_input": "video_id"
+      },
+      {
+        "source_node_id": "submit",
+        "source_output": "remote_job",
+        "target_node_id": "poll",
+        "target_input": "remote_job"
+      },
+      {
+        "source_node_id": "status_url",
+        "source_output": "value",
+        "target_node_id": "poll",
+        "target_input": "status_url"
+      },
+      {
+        "source_node_id": "video_id",
+        "source_output": "value",
+        "target_node_id": "content_url",
+        "target_input": "video_id"
+      },
+      {
+        "source_node_id": "poll",
+        "source_output": "status",
+        "target_node_id": "content_url",
+        "target_input": "status"
+      },
+      {
+        "source_node_id": "content_url",
+        "source_output": "value",
+        "target_node_id": "fetch_video",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "poll",
+        "source_output": "response",
+        "target_node_id": "json_response",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "video_size",
+        "source_output": "text",
+        "target_node_id": "body",
+        "target_input": "size"
+      },
+      {
+        "source_node_id": "image",
+        "source_output": "url",
+        "target_node_id": "resize",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "video_size",
+        "source_output": "text",
+        "target_node_id": "resize",
+        "target_input": "size"
+      },
+      {
+        "source_node_id": "resize",
+        "source_output": "url",
+        "target_node_id": "body",
+        "target_input": "image_url"
+      }
+    ],
+    "graph_outputs": {
+      "job": {
+        "node_instance_id": "submit",
+        "output_name": "remote_job"
+      },
+      "status": {
+        "node_instance_id": "poll",
+        "output_name": "status"
+      },
+      "video": {
+        "node_instance_id": "fetch_video",
+        "output_name": "media"
+      },
+      "response": {
+        "node_instance_id": "json_response",
+        "output_name": "response"
+      },
+      "reference_image": {
+        "node_instance_id": "resize",
+        "output_name": "media"
+      },
+      "image_info": {
+        "node_instance_id": "image",
+        "output_name": "info"
+      },
+      "resized_info": {
+        "node_instance_id": "resize",
+        "output_name": "info"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "ai",
+        "status": "async-provider-probe",
+        "summary": "Upload an image, crop or pad it to the selected video resolution, then submit and poll an OpenAI video job.",
+        "requires": {
+          "nodes": [
+            "n_text_value",
+            "n_json_template",
+            "n_url_input",
+            "n_http_submit_job",
+            "n_http_poll_job",
+            "n_json_path",
+            "n_fetch_url",
+            "n_json_response",
+            "n_image_asset",
+            "n_image_resize"
+          ],
+          "panels": [
+            "video",
+            "json",
+            "logs",
+            "image"
+          ],
+          "capabilities": [
+            "public-http",
+            "async-execution"
+          ],
+          "secrets": [
+            "OPENAI_API_KEY"
+          ]
+        }
+      },
+      "canvas": {
+        "positions": {
+          "prompt": {
+            "x": 80,
+            "y": 600
+          },
+          "body": {
+            "x": 700,
+            "y": 200
+          },
+          "submit_url": {
+            "x": 700,
+            "y": 40
+          },
+          "submit": {
+            "x": 1000,
+            "y": 160
+          },
+          "video_id": {
+            "x": 1300,
+            "y": 100
+          },
+          "status_url": {
+            "x": 1580,
+            "y": 100
+          },
+          "poll": {
+            "x": 1580,
+            "y": 360
+          },
+          "content_url": {
+            "x": 1880,
+            "y": 100
+          },
+          "fetch_video": {
+            "x": 2180,
+            "y": 100
+          },
+          "json_response": {
+            "x": 1880,
+            "y": 360
+          },
+          "video_size": {
+            "x": 80,
+            "y": 360
+          },
+          "image": {
+            "x": 80,
+            "y": 80
+          },
+          "resize": {
+            "x": 390,
+            "y": 80
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "image",
+            "binding": {
+              "nodeInstanceId": "resize",
+              "outputName": "media"
+            }
+          },
+          {
+            "kind": "video",
+            "binding": {
+              "nodeInstanceId": "fetch_video",
+              "outputName": "media"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "resize",
+              "outputName": "info"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

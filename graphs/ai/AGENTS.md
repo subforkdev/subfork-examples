@@ -1,5 +1,9 @@
 # AI Example Instructions
 
+- Place graphs and companion notes together in `image/`, `video/`, `audio/`,
+  or `3d/` according to their main output. Update the subcategory's `README.md`
+  and the graph index when adding an example. Each subcategory README becomes
+  its landing page in MkPages; navigation is configured in `mkpages.yml`.
 - Never include provider keys, user IDs, uploaded private assets, or generated
   media in an export.
 - Name required execution-profile secrets exactly in the companion notes.
