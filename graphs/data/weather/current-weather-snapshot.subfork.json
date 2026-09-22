@@ -1,0 +1,108 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Current Weather Snapshot",
+    "description": "Fetches current Open-Meteo conditions for Seattle and converts the response object into one table-ready row.",
+    "nodes": [
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch current weather",
+        "params": {
+          "url": "https://api.open-meteo.com/v1/forecast",
+          "method": "GET",
+          "query": {
+            "latitude": 47.6062,
+            "longitude": -122.3321,
+            "current": "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m",
+            "temperature_unit": "fahrenheit",
+            "wind_speed_unit": "mph",
+            "precipitation_unit": "inch",
+            "timezone": "UTC",
+            "forecast_days": 1
+          },
+          "headers": {"Accept": "application/json"},
+          "timeout_seconds": 20,
+          "max_response_bytes": 200000
+        },
+        "exposed_inputs": [],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["json", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "current",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Current conditions",
+        "params": {"path": "current"}
+      },
+      {
+        "node_instance_id": "project",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Weather table row",
+        "params": {
+          "mapping": {
+            "observed_at_utc": "time",
+            "temperature_f": "temperature_2m",
+            "apparent_temperature_f": "apparent_temperature",
+            "relative_humidity_pct": "relative_humidity_2m",
+            "precipitation_in": "precipitation",
+            "wind_speed_mph": "wind_speed_10m",
+            "weather_code": "weather_code"
+          }
+        }
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Weather JSON response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "request", "source_output": "json", "target_node_id": "current", "target_input": "value"},
+      {"source_node_id": "current", "source_output": "value", "target_node_id": "project", "target_input": "value"},
+      {"source_node_id": "project", "source_output": "items", "target_node_id": "response", "target_input": "value"}
+    ],
+    "graph_outputs": {
+      "conditions": {"node_instance_id": "project", "output_name": "items"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "data",
+        "status": "live-public-data",
+        "composite_interface": {
+          "inputs": {},
+          "outputs": {
+            "conditions": {"type": "json", "node_instance_id": "project", "output_name": "items"},
+            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_fetch_url", "n_json_path", "n_map_fields", "n_json_response"],
+          "panels": ["table", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "request": {"x": 100, "y": 180},
+          "current": {"x": 410, "y": 180},
+          "project": {"x": 720, "y": 180},
+          "response": {"x": 1030, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "table", "binding": {"nodeInstanceId": "project", "outputName": "items"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+        ]
+      }
+    }
+  }
+}

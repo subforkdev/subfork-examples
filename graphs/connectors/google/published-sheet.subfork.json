@@ -1,0 +1,96 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Published Google Sheet",
+    "description": "Fetches a published Google Sheet as CSV, parses it, and exposes at most 100 rows.",
+    "nodes": [
+      {
+        "node_instance_id": "sheet_url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "Published CSV URL",
+        "params": {"url": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_PUBLISHED_SHEET_ID/export?format=csv&gid=0"}
+      },
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch published sheet",
+        "params": {
+          "method": "GET",
+          "headers": {"Accept": "text/csv,text/plain;q=0.9"},
+          "timeout_seconds": 20,
+          "max_response_bytes": 1000000
+        },
+        "exposed_inputs": ["url"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["body", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "parse",
+        "node_id": "n_csv_parse",
+        "node_version": "1.0.0",
+        "title": "Parse CSV rows",
+        "params": {"delimiter": ","}
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most 100 rows",
+        "params": {"count": 100}
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Sheet JSON response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "sheet_url", "source_output": "url", "target_node_id": "request", "target_input": "url"},
+      {"source_node_id": "request", "source_output": "body", "target_node_id": "parse", "target_input": "text"},
+      {"source_node_id": "parse", "source_output": "rows", "target_node_id": "limit", "target_input": "items"},
+      {"source_node_id": "limit", "source_output": "items", "target_node_id": "response", "target_input": "value"}
+    ],
+    "graph_outputs": {
+      "rows": {"node_instance_id": "limit", "output_name": "items"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "connectors",
+        "status": "provider-backed-probe",
+        "composite_interface": {
+          "inputs": {"sheet_url": {"type": "url", "default_node": "sheet_url", "default_param": "url"}},
+          "outputs": {
+            "rows": {"type": "json", "node_instance_id": "limit", "output_name": "items"},
+            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_url_input", "n_fetch_url", "n_csv_parse", "n_limit", "n_json_response"],
+          "panels": ["table", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "sheet_url": {"x": 80, "y": 180},
+          "request": {"x": 340, "y": 180},
+          "parse": {"x": 600, "y": 180},
+          "limit": {"x": 850, "y": 180},
+          "response": {"x": 1100, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "table", "binding": {"nodeInstanceId": "limit", "outputName": "items"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+        ]
+      }
+    }
+  }
+}

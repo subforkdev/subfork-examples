@@ -108,6 +108,24 @@ def validate(path: Path, node_types: set[str] | None = None) -> list[str]:
             errors.append(f"{relative}: edge {index} has an unknown source node")
         if edge.get("target_node_id") not in known:
             errors.append(f"{relative}: edge {index} has an unknown target node")
+        if not isinstance(edge.get("source_output"), str) or not edge["source_output"]:
+            errors.append(f"{relative}: edge {index} needs a string source_output")
+        if not isinstance(edge.get("target_input"), str) or not edge["target_input"]:
+            errors.append(f"{relative}: edge {index} needs a string target_input")
+    graph_outputs = definition.get("graph_outputs")
+    if graph_outputs is not None and not isinstance(graph_outputs, dict):
+        errors.append(f"{relative}: definition.graph_outputs must be an object")
+    elif isinstance(graph_outputs, dict):
+        for name, binding in graph_outputs.items():
+            if not isinstance(name, str) or not name:
+                errors.append(f"{relative}: graph output names must be non-empty strings")
+            if not isinstance(binding, dict):
+                errors.append(f"{relative}: graph output {name!r} must be an object")
+                continue
+            if binding.get("node_instance_id") not in known:
+                errors.append(f"{relative}: graph output {name!r} has an unknown node")
+            if not isinstance(binding.get("output_name"), str) or not binding["output_name"]:
+                errors.append(f"{relative}: graph output {name!r} needs a string output_name")
     notes = path.with_name(path.name[: -len(".subfork.json")] + ".notes.md")
     if not notes.is_file():
         errors.append(f"{relative}: missing companion {notes.name}")

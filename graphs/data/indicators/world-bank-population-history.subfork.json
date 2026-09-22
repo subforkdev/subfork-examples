@@ -1,0 +1,115 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "World Bank Population History",
+    "description": "Fetches the ten most recent non-empty U.S. population observations from the World Bank and shapes them as chronological table rows.",
+    "nodes": [
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch World Bank observations",
+        "params": {
+          "url": "https://api.worldbank.org/v2/country/USA/indicator/SP.POP.TOTL",
+          "method": "GET",
+          "query": {"format": "json", "mrnev": 10, "per_page": 10},
+          "headers": {"Accept": "application/json"},
+          "timeout_seconds": 20,
+          "max_response_bytes": 300000
+        },
+        "exposed_inputs": [],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["json", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "observations",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Observation rows",
+        "params": {"path": "1"}
+      },
+      {
+        "node_instance_id": "project",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Select table columns",
+        "params": {
+          "mapping": {
+            "year": "date",
+            "population": "value",
+            "country": "country.value",
+            "country_code": "countryiso3code",
+            "indicator": "indicator.value"
+          }
+        }
+      },
+      {
+        "node_instance_id": "sort",
+        "node_id": "n_sort_rows",
+        "node_version": "1.0.0",
+        "title": "Oldest to newest",
+        "params": {"field": "year", "direction": "asc"}
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most ten years",
+        "params": {"count": 10}
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Population JSON response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "request", "source_output": "json", "target_node_id": "observations", "target_input": "value"},
+      {"source_node_id": "observations", "source_output": "value", "target_node_id": "project", "target_input": "value"},
+      {"source_node_id": "project", "source_output": "items", "target_node_id": "sort", "target_input": "items"},
+      {"source_node_id": "sort", "source_output": "items", "target_node_id": "limit", "target_input": "items"},
+      {"source_node_id": "limit", "source_output": "items", "target_node_id": "response", "target_input": "value"}
+    ],
+    "graph_outputs": {
+      "rows": {"node_instance_id": "limit", "output_name": "items"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "data",
+        "status": "live-public-data",
+        "composite_interface": {
+          "inputs": {},
+          "outputs": {
+            "rows": {"type": "json", "node_instance_id": "limit", "output_name": "items"},
+            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_fetch_url", "n_json_path", "n_map_fields", "n_sort_rows", "n_limit", "n_json_response"],
+          "panels": ["table", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "request": {"x": 80, "y": 180},
+          "observations": {"x": 350, "y": 180},
+          "project": {"x": 620, "y": 180},
+          "sort": {"x": 890, "y": 180},
+          "limit": {"x": 1160, "y": 180},
+          "response": {"x": 1430, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "table", "binding": {"nodeInstanceId": "limit", "outputName": "items"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+        ]
+      }
+    }
+  }
+}

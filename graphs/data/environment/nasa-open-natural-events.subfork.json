@@ -1,0 +1,119 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "NASA Open Natural Events",
+    "description": "Fetches up to ten recently active EONET events and flattens their first category, source, and geometry observation into table rows.",
+    "nodes": [
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch open EONET events",
+        "params": {
+          "url": "https://eonet.gsfc.nasa.gov/api/v3/events",
+          "method": "GET",
+          "query": {"status": "open", "days": 30, "limit": 10},
+          "headers": {"Accept": "application/json"},
+          "timeout_seconds": 20,
+          "max_response_bytes": 500000
+        },
+        "exposed_inputs": [],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["json", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "events",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Event rows",
+        "params": {"path": "events"}
+      },
+      {
+        "node_instance_id": "project",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Flatten event fields",
+        "params": {
+          "mapping": {
+            "id": "id",
+            "title": "title",
+            "category": "categories.0.title",
+            "start_time": "geometry.0.date",
+            "magnitude": "geometry.0.magnitudeValue",
+            "magnitude_unit": "geometry.0.magnitudeUnit",
+            "source": "sources.0.id",
+            "source_url": "sources.0.url",
+            "event_url": "link"
+          }
+        }
+      },
+      {
+        "node_instance_id": "sort",
+        "node_id": "n_sort_rows",
+        "node_version": "1.0.0",
+        "title": "Newest starts first",
+        "params": {"field": "start_time", "direction": "desc"}
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most ten events",
+        "params": {"count": 10}
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Event JSON response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "request", "source_output": "json", "target_node_id": "events", "target_input": "value"},
+      {"source_node_id": "events", "source_output": "value", "target_node_id": "project", "target_input": "value"},
+      {"source_node_id": "project", "source_output": "items", "target_node_id": "sort", "target_input": "items"},
+      {"source_node_id": "sort", "source_output": "items", "target_node_id": "limit", "target_input": "items"},
+      {"source_node_id": "limit", "source_output": "items", "target_node_id": "response", "target_input": "value"}
+    ],
+    "graph_outputs": {
+      "events": {"node_instance_id": "limit", "output_name": "items"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "data",
+        "status": "live-public-data",
+        "composite_interface": {
+          "inputs": {},
+          "outputs": {
+            "events": {"type": "json", "node_instance_id": "limit", "output_name": "items"},
+            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_fetch_url", "n_json_path", "n_map_fields", "n_sort_rows", "n_limit", "n_json_response"],
+          "panels": ["table", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "request": {"x": 80, "y": 180},
+          "events": {"x": 350, "y": 180},
+          "project": {"x": 620, "y": 180},
+          "sort": {"x": 890, "y": 180},
+          "limit": {"x": 1160, "y": 180},
+          "response": {"x": 1430, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "table", "binding": {"nodeInstanceId": "limit", "outputName": "items"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "ThingSpeak Public Sensor Feed",
+    "description": "Reads ten entries from ThingSpeak's documented public home-sensor channel and projects its raw light and temperature fields.",
+    "nodes": [
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch public channel entries",
+        "params": {
+          "url": "https://api.thingspeak.com/channels/9/feeds.json",
+          "method": "GET",
+          "query": {"results": 10},
+          "headers": {"Accept": "application/json"},
+          "timeout_seconds": 20,
+          "max_response_bytes": 300000
+        },
+        "exposed_inputs": [],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["json", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "feeds",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Sensor entries",
+        "params": {"path": "feeds"}
+      },
+      {
+        "node_instance_id": "project",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Select sensor fields",
+        "params": {
+          "mapping": {
+            "observed_at": "created_at",
+            "entry_id": "entry_id",
+            "light_raw": "field1",
+            "outside_temperature_raw": "field2"
+          }
+        }
+      },
+      {
+        "node_instance_id": "sort",
+        "node_id": "n_sort_rows",
+        "node_version": "1.0.0",
+        "title": "Newest entries first",
+        "params": {"field": "observed_at", "direction": "desc"}
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most ten entries",
+        "params": {"count": 10}
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Sensor JSON response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "request", "source_output": "json", "target_node_id": "feeds", "target_input": "value"},
+      {"source_node_id": "feeds", "source_output": "value", "target_node_id": "project", "target_input": "value"},
+      {"source_node_id": "project", "source_output": "items", "target_node_id": "sort", "target_input": "items"},
+      {"source_node_id": "sort", "source_output": "items", "target_node_id": "limit", "target_input": "items"},
+      {"source_node_id": "limit", "source_output": "items", "target_node_id": "response", "target_input": "value"}
+    ],
+    "graph_outputs": {
+      "entries": {"node_instance_id": "limit", "output_name": "items"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "iot",
+        "status": "public-telemetry-probe",
+        "composite_interface": {
+          "inputs": {},
+          "outputs": {
+            "entries": {"type": "json", "node_instance_id": "limit", "output_name": "items"},
+            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_fetch_url", "n_json_path", "n_map_fields", "n_sort_rows", "n_limit", "n_json_response"],
+          "panels": ["table", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "request": {"x": 80, "y": 180},
+          "feeds": {"x": 350, "y": 180},
+          "project": {"x": 620, "y": 180},
+          "sort": {"x": 890, "y": 180},
+          "limit": {"x": 1160, "y": 180},
+          "response": {"x": 1430, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "table", "binding": {"nodeInstanceId": "limit", "outputName": "items"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+        ]
+      }
+    }
+  }
+}

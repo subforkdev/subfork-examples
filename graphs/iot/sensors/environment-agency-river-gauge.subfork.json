@@ -1,0 +1,118 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Environment Agency River Gauge",
+    "description": "Reads the latest public stage and flow observations from Environment Agency station 2200TH and exposes table-ready telemetry.",
+    "nodes": [
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch latest gauge readings",
+        "params": {
+          "url": "https://environment.data.gov.uk/flood-monitoring/id/stations/2200TH/readings?latest",
+          "method": "GET",
+          "query": {"_view": "full", "_limit": 10},
+          "headers": {"Accept": "application/json"},
+          "timeout_seconds": 20,
+          "max_response_bytes": 300000
+        },
+        "exposed_inputs": [],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["json", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "readings",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Reading rows",
+        "params": {"path": "items"}
+      },
+      {
+        "node_instance_id": "project",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Select telemetry columns",
+        "params": {
+          "mapping": {
+            "observed_at": "dateTime",
+            "parameter": "measure.parameter",
+            "qualifier": "measure.qualifier",
+            "value": "value",
+            "unit": "measure.unitName",
+            "interval_seconds": "measure.period",
+            "station_reference": "measure.stationReference",
+            "reading_url": "@id"
+          }
+        }
+      },
+      {
+        "node_instance_id": "sort",
+        "node_id": "n_sort_rows",
+        "node_version": "1.0.0",
+        "title": "Newest readings first",
+        "params": {"field": "observed_at", "direction": "desc"}
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most ten readings",
+        "params": {"count": 10}
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Telemetry JSON response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "request", "source_output": "json", "target_node_id": "readings", "target_input": "value"},
+      {"source_node_id": "readings", "source_output": "value", "target_node_id": "project", "target_input": "value"},
+      {"source_node_id": "project", "source_output": "items", "target_node_id": "sort", "target_input": "items"},
+      {"source_node_id": "sort", "source_output": "items", "target_node_id": "limit", "target_input": "items"},
+      {"source_node_id": "limit", "source_output": "items", "target_node_id": "response", "target_input": "value"}
+    ],
+    "graph_outputs": {
+      "readings": {"node_instance_id": "limit", "output_name": "items"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "iot",
+        "status": "live-public-telemetry",
+        "composite_interface": {
+          "inputs": {},
+          "outputs": {
+            "readings": {"type": "json", "node_instance_id": "limit", "output_name": "items"},
+            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_fetch_url", "n_json_path", "n_map_fields", "n_sort_rows", "n_limit", "n_json_response"],
+          "panels": ["table", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "request": {"x": 80, "y": 180},
+          "readings": {"x": 350, "y": 180},
+          "project": {"x": 620, "y": 180},
+          "sort": {"x": 890, "y": 180},
+          "limit": {"x": 1160, "y": 180},
+          "response": {"x": 1430, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "table", "binding": {"nodeInstanceId": "limit", "outputName": "items"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+        ]
+      }
+    }
+  }
+}

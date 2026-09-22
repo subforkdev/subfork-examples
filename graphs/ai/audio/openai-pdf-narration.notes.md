@@ -11,7 +11,8 @@ not a complete audiobook production system or a verbatim PDF reader.
 This example requires the new **File Asset** node (`n_file_asset`, version
 `1.0.0`), the `/graphs/{graph_id}/assets/files` upload route, and the inspector's
 file-upload control. Update the API, frontend, node catalog, and execution workers
-with that support before importing. Older instances will not recognize the node.
+with that support before importing. Earlier Subfork versions will not recognize
+the node.
 
 OpenAI fetches a temporary signed artifact URL. Your dev instance or configured
 object storage must be reachable by OpenAI; a localhost-only URL will not work.

@@ -34,8 +34,11 @@ external services.
 - [`dashboards`](graphs/README.md#dashboards) contains linked, interactive panel layouts.
 - [`3d`](graphs/README.md#3d) contains graph-authored scenes and 3D data visualizations.
 - [`ai`](graphs/README.md#ai) contains provider-backed media workflows and design probes.
-- [`calendar`](graphs/README.md#calendar) contains event normalization, merging, and briefing examples.
+- [`events`](graphs/events/README.md) contains calendars and event-driven decision patterns.
 - [`pipes`](graphs/README.md#pipes) contains feed, text, row, and digest transformations.
+- [`data`](graphs/data/README.md) contains bounded, keyless snapshots from public HTTP APIs.
+- [`iot`](graphs/iot/README.md) contains public sensor and telemetry snapshots.
+- [`connectors`](graphs/connectors/README.md) contains bounded service API recipes using generic HTTP primitives.
 - [`games`](graphs/README.md#games) contains graph-authored playable browser experiences.
 
 [Browse all example graphs](graphs/README.md).
@@ -54,12 +57,15 @@ Runnable examples have two files:
 - `<name>.notes.md` explains behavior, requirements, limitations, and expected outputs.
 
 A notes-only entry is a design proposal rather than an importable graph. See
-[Authoring examples](docs/authoring.md) and [CONTRIBUTING.md](CONTRIBUTING.md)
-before proposing changes.
+[Authoring examples](docs/authoring.md), the
+[graph document format](docs/graph-format.md), and
+[CONTRIBUTING.md](CONTRIBUTING.md) before proposing changes.
 
 For node ports, parameters, and defaults, see the public
 [JSON node catalog](https://subfork.com/api/v1/nodes) and
 [node documentation guide](docs/authoring.md#node-documentation).
+Reusable published graphs are available from the existing
+[composite catalog](https://subfork.com/api/v1/graphs/published).
 
 ## License
 

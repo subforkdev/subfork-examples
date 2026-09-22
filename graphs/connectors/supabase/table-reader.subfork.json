@@ -1,0 +1,83 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Supabase Table Reader",
+    "description": "Reads at most 25 rows from a Supabase table or view through the Data REST API and Row Level Security.",
+    "nodes": [
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch Supabase rows",
+        "params": {
+          "url": "https://PROJECT_REF.supabase.co/rest/v1/RELATION",
+          "method": "GET",
+          "query": {"select": "*", "limit": 25},
+          "headers": {
+            "apikey": "{{ secrets.SUPABASE_PUBLISHABLE_KEY }}",
+            "Accept": "application/json"
+          },
+          "timeout_seconds": 20,
+          "max_response_bytes": 500000
+        },
+        "exposed_inputs": [],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["json", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most 25 rows",
+        "params": {"count": 25}
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Row JSON response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "request", "source_output": "json", "target_node_id": "limit", "target_input": "items"},
+      {"source_node_id": "limit", "source_output": "items", "target_node_id": "response", "target_input": "value"}
+    ],
+    "graph_outputs": {
+      "rows": {"node_instance_id": "limit", "output_name": "items"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "connectors",
+        "status": "provider-backed-probe",
+        "composite_interface": {
+          "inputs": {},
+          "outputs": {
+            "rows": {"type": "json", "node_instance_id": "limit", "output_name": "items"},
+            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_fetch_url", "n_limit", "n_json_response"],
+          "panels": ["table", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": ["SUPABASE_PUBLISHABLE_KEY"]
+        }
+      },
+      "canvas": {
+        "positions": {
+          "request": {"x": 160, "y": 180},
+          "limit": {"x": 480, "y": 180},
+          "response": {"x": 800, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "table", "binding": {"nodeInstanceId": "limit", "outputName": "items"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+        ]
+      }
+    }
+  }
+}

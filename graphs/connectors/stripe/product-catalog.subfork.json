@@ -1,0 +1,83 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Stripe Product Catalog",
+    "description": "Reads at most ten active Stripe products using a graph-scoped restricted key.",
+    "nodes": [
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch active Stripe products",
+        "params": {
+          "url": "https://api.stripe.com/v1/products",
+          "method": "GET",
+          "query": {"active": "true", "limit": 10},
+          "headers": {
+            "Authorization": "Bearer {{ secrets.STRIPE_RESTRICTED_KEY }}",
+            "Accept": "application/json"
+          },
+          "timeout_seconds": 20,
+          "max_response_bytes": 500000
+        },
+        "exposed_inputs": [],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["json", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "products",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Product rows",
+        "params": {"path": "data"}
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Product JSON response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "request", "source_output": "json", "target_node_id": "products", "target_input": "value"},
+      {"source_node_id": "products", "source_output": "value", "target_node_id": "response", "target_input": "value"}
+    ],
+    "graph_outputs": {
+      "products": {"node_instance_id": "products", "output_name": "value"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "connectors",
+        "status": "provider-backed-probe",
+        "composite_interface": {
+          "inputs": {},
+          "outputs": {
+            "products": {"type": "json", "node_instance_id": "products", "output_name": "value"},
+            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_fetch_url", "n_json_path", "n_json_response"],
+          "panels": ["table", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": ["STRIPE_RESTRICTED_KEY"]
+        }
+      },
+      "canvas": {
+        "positions": {
+          "request": {"x": 160, "y": 180},
+          "products": {"x": 480, "y": 180},
+          "response": {"x": 800, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "table", "binding": {"nodeInstanceId": "products", "outputName": "value"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+        ]
+      }
+    }
+  }
+}

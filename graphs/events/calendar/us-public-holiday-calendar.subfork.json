@@ -1,0 +1,116 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "US Public Holiday Calendar",
+    "description": "Fetches 2026 U.S. holiday data, keeps national entries, and returns a bounded iCalendar response plus table-ready rows.",
+    "nodes": [
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch U.S. holidays",
+        "params": {
+          "url": "https://date.nager.at/api/v3/publicholidays/2026/US",
+          "method": "GET",
+          "headers": {"Accept": "application/json"},
+          "timeout_seconds": 20,
+          "max_response_bytes": 300000
+        },
+        "exposed_inputs": [],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["json", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "national",
+        "node_id": "n_filter_rows",
+        "node_version": "1.0.0",
+        "title": "National holidays only",
+        "params": {"field": "global", "operation": "equals", "equals": true}
+      },
+      {
+        "node_instance_id": "project",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Normalize calendar events",
+        "params": {
+          "mapping": {
+            "title": "name",
+            "date": "date",
+            "description": "localName",
+            "country": "countryCode",
+            "type": "types.0",
+            "fixed_date": "fixed"
+          }
+        }
+      },
+      {
+        "node_instance_id": "sort",
+        "node_id": "n_sort_rows",
+        "node_version": "1.0.0",
+        "title": "Chronological holidays",
+        "params": {"field": "date", "direction": "asc"}
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most 25 holidays",
+        "params": {"count": 25}
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_ics_response",
+        "node_version": "1.0.0",
+        "title": "Holiday calendar response",
+        "params": {"name": "U.S. Public Holidays 2026"}
+      }
+    ],
+    "edges": [
+      {"source_node_id": "request", "source_output": "json", "target_node_id": "national", "target_input": "items"},
+      {"source_node_id": "national", "source_output": "items", "target_node_id": "project", "target_input": "value"},
+      {"source_node_id": "project", "source_output": "items", "target_node_id": "sort", "target_input": "items"},
+      {"source_node_id": "sort", "source_output": "items", "target_node_id": "limit", "target_input": "items"},
+      {"source_node_id": "limit", "source_output": "items", "target_node_id": "response", "target_input": "events"}
+    ],
+    "graph_outputs": {
+      "holidays": {"node_instance_id": "limit", "output_name": "items"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "events",
+        "status": "live-public-calendar",
+        "composite_interface": {
+          "inputs": {},
+          "outputs": {
+            "holidays": {"type": "json", "node_instance_id": "limit", "output_name": "items"},
+            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_fetch_url", "n_filter_rows", "n_map_fields", "n_sort_rows", "n_limit", "n_ics_response"],
+          "panels": ["table", "json", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "request": {"x": 80, "y": 180},
+          "national": {"x": 350, "y": 180},
+          "project": {"x": 620, "y": 180},
+          "sort": {"x": 890, "y": 180},
+          "limit": {"x": 1160, "y": 180},
+          "response": {"x": 1430, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "table", "binding": {"nodeInstanceId": "limit", "outputName": "items"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+        ]
+      }
+    }
+  }
+}
