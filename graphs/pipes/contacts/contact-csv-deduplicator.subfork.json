@@ -1,0 +1,134 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Contact CSV Deduplicator",
+    "description": "Uploads a contact CSV, keeps a small documented field set, removes exact duplicate email values, sorts by last name, and exposes at most 250 rows.",
+    "nodes": [
+      {
+        "node_instance_id": "file",
+        "node_id": "n_file_asset",
+        "node_version": "1.0.0",
+        "title": "Upload contact CSV",
+        "params": {"artifact_id": ""},
+        "exposed_outputs": ["url", "filename", "media_type"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Read uploaded CSV",
+        "params": {
+          "method": "GET",
+          "headers": {"Accept": "text/csv,text/plain;q=0.9"},
+          "timeout_seconds": 20,
+          "max_response_bytes": 1000000
+        },
+        "exposed_inputs": ["url"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["body", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "parse",
+        "node_id": "n_csv_parse",
+        "node_version": "1.0.0",
+        "title": "Parse contact rows",
+        "params": {"delimiter": ","}
+      },
+      {
+        "node_instance_id": "project",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Keep contact fields",
+        "params": {
+          "mapping": {
+            "first_name": "first_name",
+            "last_name": "last_name",
+            "email": "email",
+            "phone": "phone",
+            "company": "company"
+          }
+        }
+      },
+      {
+        "node_instance_id": "unique",
+        "node_id": "n_unique",
+        "node_version": "1.0.0",
+        "title": "Unique email values",
+        "params": {"field": "email"}
+      },
+      {
+        "node_instance_id": "sort",
+        "node_id": "n_sort_rows",
+        "node_version": "1.0.0",
+        "title": "Sort by last name",
+        "params": {"field": "last_name", "direction": "asc"}
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most 250 contacts",
+        "params": {"count": 250}
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Contact JSON response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "file", "source_output": "url", "target_node_id": "request", "target_input": "url"},
+      {"source_node_id": "request", "source_output": "body", "target_node_id": "parse", "target_input": "text"},
+      {"source_node_id": "parse", "source_output": "rows", "target_node_id": "project", "target_input": "value"},
+      {"source_node_id": "project", "source_output": "items", "target_node_id": "unique", "target_input": "items"},
+      {"source_node_id": "unique", "source_output": "items", "target_node_id": "sort", "target_input": "items"},
+      {"source_node_id": "sort", "source_output": "items", "target_node_id": "limit", "target_input": "items"},
+      {"source_node_id": "limit", "source_output": "items", "target_node_id": "response", "target_input": "value"}
+    ],
+    "graph_outputs": {
+      "contacts": {"node_instance_id": "limit", "output_name": "items"},
+      "filename": {"node_instance_id": "file", "output_name": "filename"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "pipes",
+        "status": "local-file-transform",
+        "composite_interface": {
+          "inputs": {},
+          "outputs": {
+            "contacts": {"type": "json", "node_instance_id": "limit", "output_name": "items"},
+            "filename": {"type": "str", "node_instance_id": "file", "output_name": "filename"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_file_asset", "n_fetch_url", "n_csv_parse", "n_map_fields", "n_unique", "n_sort_rows", "n_limit", "n_json_response"],
+          "panels": ["table", "json", "logs"],
+          "capabilities": ["network", "artifact-storage"],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "file": {"x": 60, "y": 180},
+          "request": {"x": 310, "y": 180},
+          "parse": {"x": 570, "y": 180},
+          "project": {"x": 820, "y": 180},
+          "unique": {"x": 1070, "y": 180},
+          "sort": {"x": 1320, "y": 180},
+          "limit": {"x": 1570, "y": 180},
+          "response": {"x": 1820, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "table", "binding": {"nodeInstanceId": "limit", "outputName": "items"}},
+          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+        ]
+      }
+    }
+  }
+}

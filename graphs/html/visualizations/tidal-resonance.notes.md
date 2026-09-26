@@ -8,7 +8,7 @@ storm-surge forecast, or navigation/safety tool.
 
 ## Try It
 
-1. Import `graphs/html/tidal-resonance.subfork.json` and run it.
+1. Import `graphs/html/visualizations/tidal-resonance.subfork.json` and run it.
 2. Bind HTML Preview to `view.html` if the recommended layout is not applied.
 3. Scrub through the day, isolate a station, switch meters/feet, or change palette.
 4. Inspect the exact selected six-minute sample in the station cards. The slider

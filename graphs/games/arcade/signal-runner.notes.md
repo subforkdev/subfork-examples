@@ -10,7 +10,7 @@ or persistent storage.
 
 1. Rebuild API, workers, and frontend first: this example requires the new bounded
    list/math nodes and their catalog manifests. No database migration is needed.
-2. Import `graphs/games/signal-runner.subfork.json`, run, and bind HTML Preview to
+2. Import `graphs/games/arcade/signal-runner.subfork.json`, run, and bind HTML Preview to
    `view.html` if the recommended layout is not applied.
 3. Press Start run. With Canvas focused, use Left/Right arrows or A/D to change
    lanes. Touch users can tap the steering buttons. Space or Pause holds the run.

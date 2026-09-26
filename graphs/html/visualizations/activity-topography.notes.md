@@ -7,7 +7,7 @@ required.
 
 ## Try It
 
-1. Import `graphs/html/activity-topography.subfork.json` and run it.
+1. Import `graphs/html/visualizations/activity-topography.subfork.json` and run it.
 2. Bind HTML Preview to `view.html` if the recommended layout is not applied.
 3. Maximize the preview. Try 12, 24, or 52 weeks, filter a contributor, change the
    palette, or adjust relief.

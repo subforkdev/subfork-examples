@@ -6,7 +6,7 @@ gallery track and requires neither an AI service nor an API key.
 
 ## Try It
 
-1. Import `graphs/html/news-constellation.subfork.json` and run it.
+1. Import `graphs/html/visualizations/news-constellation.subfork.json` and run it.
 2. Bind HTML Preview to `view.html` if the recommended layout is not applied.
 3. Maximize the panel, search headlines, filter a source, or toggle the lines.
 4. Select a star or headline-index button to inspect its source and feed date.

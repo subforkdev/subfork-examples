@@ -1,0 +1,125 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Printable Label Sheet",
+    "description": "Uploads an address CSV and renders at most 60 records as print-friendly three-column mailing labels without sending data to a third-party provider.",
+    "nodes": [
+      {
+        "node_instance_id": "file",
+        "node_id": "n_file_asset",
+        "node_version": "1.0.0",
+        "title": "Upload address CSV",
+        "params": {"artifact_id": ""},
+        "exposed_outputs": ["url", "filename", "media_type"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Read uploaded CSV",
+        "params": {
+          "method": "GET",
+          "headers": {"Accept": "text/csv,text/plain;q=0.9"},
+          "timeout_seconds": 20,
+          "max_response_bytes": 1000000
+        },
+        "exposed_inputs": ["url"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["body", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "parse",
+        "node_id": "n_csv_parse",
+        "node_version": "1.0.0",
+        "title": "Parse address rows",
+        "params": {"delimiter": ","}
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most 60 labels",
+        "params": {"count": 60}
+      },
+      {
+        "node_instance_id": "encode",
+        "node_id": "n_json_stringify",
+        "node_version": "1.0.0",
+        "title": "HTML-safe address data",
+        "params": {"html_safe": true}
+      },
+      {
+        "node_instance_id": "page",
+        "node_id": "n_html_template",
+        "node_version": "1.0.0",
+        "title": "Render printable labels",
+        "params": {
+          "template": "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>Printable Label Sheet</title>\n<style>\n@page{size:letter;margin:.5in}*{box-sizing:border-box}body{margin:0;background:#ecece8;color:#171915;font:14px/1.35 system-ui,sans-serif}main{max-width:8.5in;margin:24px auto;background:white;padding:.5in;box-shadow:0 5px 24px #0002}header{display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid #777;padding-bottom:12px;margin-bottom:18px}h1{font:36px/1 Georgia,serif;margin:0}.meta{font:12px monospace;color:#555}.sheet{display:grid;grid-template-columns:repeat(3,1fr);gap:.125in .15in}.label{height:.95in;border:1px dashed #aaa;border-radius:4px;padding:.12in .16in;overflow:hidden;break-inside:avoid}.name{font-weight:700}.line{min-height:1.2em}#error{border:1px solid #a33;padding:14px;color:#811}@media print{body{background:#fff}main{margin:0;max-width:none;padding:0;box-shadow:none}header{display:none}.sheet{gap:.125in .15in}.label{border-color:#ddd}}\n</style>\n</head>\n<body>\n<main><header><div><div class=\"meta\">SUBFORK / PRINT PREVIEW</div><h1>Mailing Labels</h1></div><div class=\"meta\"><span id=\"count\">0</span> labels<br>Letter / 3 columns</div></header><p id=\"error\" role=\"alert\" hidden></p><section id=\"sheet\" class=\"sheet\" aria-label=\"Mailing labels\"></section></main>\n<script id=\"rows\" type=\"application/json\">{{ inputs.rows_json }}</script>\n<script>\n\"use strict\";\nconst text=(value)=>String(value??\"\").trim();\ntry{\n const rows=JSON.parse(document.getElementById(\"rows\").textContent);if(!Array.isArray(rows)||rows.length>60)throw new Error(\"Expected at most 60 address rows.\");\n const root=document.getElementById(\"sheet\");\n rows.forEach((row)=>{\n  const label=document.createElement(\"article\");label.className=\"label\";\n  const locality=[text(row.city),text(row.region),text(row.postal_code)].filter(Boolean).join(\" \"),lines=[text(row.name),text(row.address1),text(row.address2),locality,text(row.country)].filter(Boolean);\n  lines.forEach((value,index)=>{const line=document.createElement(\"div\");line.className=index===0?\"line name\":\"line\";line.textContent=value;label.append(line)});root.append(label);\n });document.getElementById(\"count\").textContent=String(rows.length);\n}catch(error){const el=document.getElementById(\"error\");el.hidden=false;el.textContent=error instanceof Error?error.message:\"Unable to render labels.\"}\n</script>\n</body>\n</html>\n"
+        },
+        "custom_inputs": {"rows_json": "str"},
+        "exposed_inputs": ["rows_json"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["html"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_html_response",
+        "node_version": "1.0.0",
+        "title": "Label HTML response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "file", "source_output": "url", "target_node_id": "request", "target_input": "url"},
+      {"source_node_id": "request", "source_output": "body", "target_node_id": "parse", "target_input": "text"},
+      {"source_node_id": "parse", "source_output": "rows", "target_node_id": "limit", "target_input": "items"},
+      {"source_node_id": "limit", "source_output": "items", "target_node_id": "encode", "target_input": "value"},
+      {"source_node_id": "encode", "source_output": "text", "target_node_id": "page", "target_input": "rows_json"},
+      {"source_node_id": "page", "source_output": "html", "target_node_id": "response", "target_input": "html"}
+    ],
+    "graph_outputs": {
+      "rows": {"node_instance_id": "limit", "output_name": "items"},
+      "html": {"node_instance_id": "page", "output_name": "html"},
+      "filename": {"node_instance_id": "file", "output_name": "filename"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "html",
+        "status": "local-file-renderer",
+        "composite_interface": {
+          "inputs": {},
+          "outputs": {
+            "rows": {"type": "json", "node_instance_id": "limit", "output_name": "items"},
+            "html": {"type": "html", "node_instance_id": "page", "output_name": "html"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_file_asset", "n_fetch_url", "n_csv_parse", "n_limit", "n_json_stringify", "n_html_template", "n_html_response"],
+          "panels": ["html", "table", "logs"],
+          "capabilities": ["network", "artifact-storage"],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "file": {"x": 60, "y": 180},
+          "request": {"x": 320, "y": 180},
+          "parse": {"x": 580, "y": 180},
+          "limit": {"x": 830, "y": 180},
+          "encode": {"x": 1080, "y": 180},
+          "page": {"x": 1340, "y": 180},
+          "response": {"x": 1600, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "html", "binding": {"nodeInstanceId": "page", "outputName": "html"}},
+          {"kind": "table", "binding": {"nodeInstanceId": "limit", "outputName": "items"}}
+        ]
+      }
+    }
+  }
+}

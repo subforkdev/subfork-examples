@@ -10,7 +10,7 @@
 Importable example graphs for [Subfork](https://subfork.com), an open graph
 platform owned and operated by Enluminari LLC.
 
-Start with [Hello, World](graphs/html/hello-world.notes.md). It is a four-node,
+Start with [Hello, World](graphs/html/rendering/hello-world.notes.md). It is a four-node,
 credential-free graph that turns plain text into a static HTML page.
 
 ## Use An Example
@@ -29,25 +29,25 @@ external services.
 
 ## Categories
 
-- [`html`](graphs/README.md#html) contains static pages, SVG visualizations, and response examples.
-- [`geo`](graphs/README.md#geo) contains public geographic-data maps and situational views.
-- [`dashboards`](graphs/README.md#dashboards) contains linked, interactive panel layouts.
-- [`3d`](graphs/README.md#3d) contains graph-authored scenes and 3D data visualizations.
+- [`html`](graphs/html/README.md) contains static pages, SVG visualizations, and response examples.
+- [`geo`](graphs/geo/README.md) contains public geographic-data maps and situational views.
+- [`dashboards`](graphs/dashboards/README.md) contains linked, interactive panel layouts.
+- [`3d`](graphs/3d/README.md) contains graph-authored scenes and 3D data visualizations.
 - [`ai`](graphs/README.md#ai) contains provider-backed media workflows and design probes.
 - [`events`](graphs/events/README.md) contains calendars and event-driven decision patterns.
-- [`pipes`](graphs/README.md#pipes) contains feed, text, row, and digest transformations.
+- [`pipes`](graphs/pipes/README.md) contains feed, text, row, and digest transformations.
 - [`data`](graphs/data/README.md) contains bounded, keyless snapshots from public HTTP APIs.
 - [`iot`](graphs/iot/README.md) contains public sensor and telemetry snapshots.
 - [`connectors`](graphs/connectors/README.md) contains bounded service API recipes using generic HTTP primitives.
-- [`games`](graphs/README.md#games) contains graph-authored playable browser experiences.
+- [`games`](graphs/games/README.md) contains graph-authored playable browser experiences.
 
 [Browse all example graphs](graphs/README.md).
 
-Featured examples include [Planet Pulse](graphs/geo/planet-pulse.notes.md),
-[Regional Watch](graphs/dashboards/regional-watch.notes.md),
-[Seismic Globe](graphs/3d/seismic-globe.notes.md),
-[Signal Garden](graphs/html/signal-garden.notes.md), and
-[Signal Runner](graphs/games/signal-runner.notes.md).
+Featured examples include [Planet Pulse](graphs/geo/situational/planet-pulse.notes.md),
+[Regional Watch](graphs/dashboards/monitoring/regional-watch.notes.md),
+[Seismic Globe](graphs/3d/seismic/seismic-globe.notes.md),
+[Signal Garden](graphs/html/visualizations/signal-garden.notes.md), and
+[Signal Runner](graphs/games/arcade/signal-runner.notes.md).
 
 ## File Convention
 

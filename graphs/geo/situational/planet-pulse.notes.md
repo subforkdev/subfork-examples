@@ -9,7 +9,7 @@ require Three.js, published composite dependencies, or a paid service.
 1. Rebuild dev first: this graph uses the new opt-in `html_safe` parameter on
    JSON Stringify. The parameter escapes HTML delimiters without changing the
    decoded JSON value; existing JSON Stringify behavior is unchanged by default.
-2. Import `graphs/geo/planet-pulse.subfork.json` through Import graph.
+2. Import `graphs/geo/situational/planet-pulse.subfork.json` through Import graph.
 3. Run the graph. Open/bind HTML Preview to `view.html` if the recommended panel
    layout is not applied. Maximize that panel for the full observatory layout.
 4. Filter to 24/12/6/1 hours, change the minimum magnitude, rotate the longitude

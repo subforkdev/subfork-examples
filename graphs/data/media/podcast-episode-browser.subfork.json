@@ -1,0 +1,121 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Podcast Episode Browser",
+    "description": "Fetches a public podcast RSS or Atom feed, parses at most 20 episode records, and renders a safe HTML episode browser.",
+    "nodes": [
+      {
+        "node_instance_id": "feed_url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "Podcast RSS URL",
+        "params": {"url": "https://www.nasa.gov/rss/dyn/Houston-We-Have-a-Podcast.rss"}
+      },
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch podcast feed",
+        "params": {
+          "method": "GET",
+          "headers": {"Accept": "application/rss+xml,application/atom+xml,application/xml,text/xml;q=0.9"},
+          "timeout_seconds": 20,
+          "max_response_bytes": 2000000
+        },
+        "exposed_inputs": ["url"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["body", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "parse",
+        "node_id": "n_rss_parse",
+        "node_version": "1.0.0",
+        "title": "Parse episode rows"
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "Latest 20 feed entries",
+        "params": {"count": 20}
+      },
+      {
+        "node_instance_id": "encode",
+        "node_id": "n_json_stringify",
+        "node_version": "1.0.0",
+        "title": "HTML-safe episode data",
+        "params": {"html_safe": true}
+      },
+      {
+        "node_instance_id": "page",
+        "node_id": "n_html_template",
+        "node_version": "1.0.0",
+        "title": "Render episode browser",
+        "params": {
+          "template": "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>Podcast Episode Browser</title>\n<style>\n:root{color-scheme:dark;--bg:#10151d;--panel:#18222d;--ink:#eef4f8;--muted:#9fb0bd;--line:#304252;--accent:#65d7c0}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#20394a,transparent 38%),var(--bg);color:var(--ink);font:16px/1.55 system-ui,sans-serif}main{max-width:980px;margin:auto;padding:36px 24px}.eyebrow{font:12px monospace;letter-spacing:.18em;color:var(--accent)}h1{font:clamp(42px,8vw,76px)/.95 Georgia,serif;margin:.2em 0}header{border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:24px}.summary{color:var(--muted)}#episodes{display:grid;gap:14px}.episode{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:22px}.episode h2{font:26px/1.15 Georgia,serif;margin:0 0 8px}.date{font:12px monospace;color:var(--accent)}.description{color:var(--muted);white-space:pre-wrap}.episode a{display:inline-block;margin-top:8px;color:var(--accent);font-weight:700}.episode a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}#error{border:1px solid #bf7467;padding:16px;color:#ffd4cc}\n</style>\n</head>\n<body>\n<main><header><div class=\"eyebrow\">SUBFORK / RSS SNAPSHOT</div><h1>Podcast Episodes</h1><p class=\"summary\"><span id=\"count\">0</span> feed entries. Run the graph again to refresh.</p></header><p id=\"error\" role=\"alert\" hidden></p><section id=\"episodes\" aria-label=\"Podcast episodes\"></section></main>\n<script id=\"items\" type=\"application/json\">{{ inputs.items_json }}</script>\n<script>\n\"use strict\";\nconst text=(value)=>String(value??\"\").trim();\nfunction safeUrl(value){try{const url=new URL(text(value));return url.protocol===\"https:\"||url.protocol===\"http:\"?url.href:null}catch{return null}}\ntry{\n const items=JSON.parse(document.getElementById(\"items\").textContent);if(!Array.isArray(items)||items.length>20)throw new Error(\"Expected at most 20 feed entries.\");\n const root=document.getElementById(\"episodes\");\n items.forEach((item,index)=>{\n  const card=document.createElement(\"article\");card.className=\"episode\";\n  const date=document.createElement(\"div\");date.className=\"date\";date.textContent=text(item.published)||`FEED ITEM ${index+1}`;\n  const title=document.createElement(\"h2\");title.textContent=text(item.title)||\"Untitled episode\";\n  const description=document.createElement(\"p\");description.className=\"description\";const summary=text(item.summary);description.textContent=summary.length>600?summary.slice(0,597)+\"...\":summary;card.append(date,title,description);\n  const href=safeUrl(item.url);if(href){const link=document.createElement(\"a\");link.href=href;link.target=\"_blank\";link.rel=\"noopener noreferrer\";link.textContent=\"Open episode page\";card.append(link)}root.append(card);\n });document.getElementById(\"count\").textContent=String(items.length);\n}catch(error){const el=document.getElementById(\"error\");el.hidden=false;el.textContent=error instanceof Error?error.message:\"Unable to render the feed.\"}\n</script>\n</body>\n</html>\n"
+        },
+        "custom_inputs": {"items_json": "str"},
+        "exposed_inputs": ["items_json"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["html"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_html_response",
+        "node_version": "1.0.0",
+        "title": "Episode HTML response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "feed_url", "source_output": "url", "target_node_id": "request", "target_input": "url"},
+      {"source_node_id": "request", "source_output": "body", "target_node_id": "parse", "target_input": "text"},
+      {"source_node_id": "parse", "source_output": "items", "target_node_id": "limit", "target_input": "items"},
+      {"source_node_id": "limit", "source_output": "items", "target_node_id": "encode", "target_input": "value"},
+      {"source_node_id": "encode", "source_output": "text", "target_node_id": "page", "target_input": "items_json"},
+      {"source_node_id": "page", "source_output": "html", "target_node_id": "response", "target_input": "html"}
+    ],
+    "graph_outputs": {
+      "episodes": {"node_instance_id": "limit", "output_name": "items"},
+      "html": {"node_instance_id": "page", "output_name": "html"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "data",
+        "status": "live-public-data",
+        "composite_interface": {
+          "inputs": {"feed_url": {"type": "url", "default_node": "feed_url", "default_param": "url"}},
+          "outputs": {
+            "episodes": {"type": "json", "node_instance_id": "limit", "output_name": "items"},
+            "html": {"type": "html", "node_instance_id": "page", "output_name": "html"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_url_input", "n_fetch_url", "n_rss_parse", "n_limit", "n_json_stringify", "n_html_template", "n_html_response"],
+          "panels": ["html", "table", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "feed_url": {"x": 60, "y": 180},
+          "request": {"x": 320, "y": 180},
+          "parse": {"x": 580, "y": 180},
+          "limit": {"x": 830, "y": 180},
+          "encode": {"x": 1080, "y": 180},
+          "page": {"x": 1340, "y": 180},
+          "response": {"x": 1600, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "html", "binding": {"nodeInstanceId": "page", "outputName": "html"}},
+          {"kind": "table", "binding": {"nodeInstanceId": "limit", "outputName": "items"}}
+        ]
+      }
+    }
+  }
+}

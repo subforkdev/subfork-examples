@@ -1,0 +1,122 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Published Sheet Mail Merge Preview",
+    "description": "Fetches up to 50 rows from a Google Sheet published as CSV and renders personalized, print-friendly message previews without sending email.",
+    "nodes": [
+      {
+        "node_instance_id": "sheet_url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "Published CSV URL",
+        "params": {"url": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_PUBLISHED_SHEET_ID/export?format=csv&gid=0"}
+      },
+      {
+        "node_instance_id": "request",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch published sheet",
+        "params": {
+          "method": "GET",
+          "headers": {"Accept": "text/csv,text/plain;q=0.9"},
+          "timeout_seconds": 20,
+          "max_response_bytes": 1000000
+        },
+        "exposed_inputs": ["url"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["body", "status"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "parse",
+        "node_id": "n_csv_parse",
+        "node_version": "1.0.0",
+        "title": "Parse recipient rows",
+        "params": {"delimiter": ","}
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most 50 previews",
+        "params": {"count": 50}
+      },
+      {
+        "node_instance_id": "encode",
+        "node_id": "n_json_stringify",
+        "node_version": "1.0.0",
+        "title": "HTML-safe recipient data",
+        "params": {"html_safe": true}
+      },
+      {
+        "node_instance_id": "page",
+        "node_id": "n_html_template",
+        "node_version": "1.0.0",
+        "title": "Render message previews",
+        "params": {
+          "template": "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>Mail Merge Preview</title>\n<style>\n:root{color-scheme:light;--ink:#15221d;--muted:#607069;--paper:#fffdf7;--line:#cbd7d0;--accent:#176b4d}*{box-sizing:border-box}body{margin:0;background:#eef3ef;color:var(--ink);font:16px/1.5 system-ui,sans-serif}main{max-width:980px;margin:auto;padding:32px}header{border-bottom:2px solid var(--ink);margin-bottom:24px}.eyebrow{color:var(--accent);font:12px monospace;letter-spacing:.15em}h1{font:clamp(38px,7vw,72px)/1 Georgia,serif;margin:.2em 0}.summary{color:var(--muted)}#previews{display:grid;gap:18px}.preview{background:var(--paper);border:1px solid var(--line);padding:24px;box-shadow:0 4px 14px #20352a14}.meta{display:grid;grid-template-columns:80px 1fr;gap:4px 12px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}.meta b{font:12px monospace;color:var(--muted)}.message{white-space:pre-wrap}#error{border:1px solid #a43c2f;padding:16px;color:#7b241b;background:#fff5f3}@media print{body{background:#fff}main{max-width:none;padding:0}header{margin-bottom:12px}.preview{box-shadow:none;break-inside:avoid;page-break-inside:avoid;margin-bottom:12px}}\n</style>\n</head>\n<body>\n<main>\n<header><div class=\"eyebrow\">SUBFORK / REVIEW BEFORE SENDING</div><h1>Mail Merge Preview</h1><p class=\"summary\"><span id=\"count\">0</span> draft messages. This page does not send email.</p></header>\n<p id=\"error\" role=\"alert\" hidden></p><section id=\"previews\" aria-label=\"Message previews\"></section>\n</main>\n<script id=\"rows\" type=\"application/json\">{{ inputs.rows_json }}</script>\n<script>\n\"use strict\";\nconst text=(value)=>String(value??\"\").trim();\ntry{\n const rows=JSON.parse(document.getElementById(\"rows\").textContent);\n if(!Array.isArray(rows)||rows.length>50)throw new Error(\"Expected at most 50 recipient rows.\");\n const root=document.getElementById(\"previews\");\n rows.forEach((row,index)=>{\n  const first=text(row.first_name)||\"there\",company=text(row.company)||\"your team\";\n  const subject=text(row.subject)||`A note for ${company}`;\n  const message=text(row.message)||`Hello ${first},\\n\\nHere is a short update for ${company}. Review and replace this sample copy before sending.\\n\\nBest,\\nYour team`;\n  const card=document.createElement(\"article\");card.className=\"preview\";\n  const meta=document.createElement(\"div\");meta.className=\"meta\";\n  [[\"ROW\",index+1],[\"TO\",text(row.email)||\"Missing email\"],[\"SUBJECT\",subject]].forEach(([label,value])=>{const b=document.createElement(\"b\"),span=document.createElement(\"span\");b.textContent=label;span.textContent=value;meta.append(b,span)});\n  const body=document.createElement(\"div\");body.className=\"message\";body.textContent=message;card.append(meta,body);root.append(card);\n });\n document.getElementById(\"count\").textContent=String(rows.length);\n}catch(error){const el=document.getElementById(\"error\");el.hidden=false;el.textContent=error instanceof Error?error.message:\"Unable to render previews.\"}\n</script>\n</body>\n</html>\n"
+        },
+        "custom_inputs": {"rows_json": "str"},
+        "exposed_inputs": ["rows_json"],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": ["html"],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_html_response",
+        "node_version": "1.0.0",
+        "title": "Preview HTML response"
+      }
+    ],
+    "edges": [
+      {"source_node_id": "sheet_url", "source_output": "url", "target_node_id": "request", "target_input": "url"},
+      {"source_node_id": "request", "source_output": "body", "target_node_id": "parse", "target_input": "text"},
+      {"source_node_id": "parse", "source_output": "rows", "target_node_id": "limit", "target_input": "items"},
+      {"source_node_id": "limit", "source_output": "items", "target_node_id": "encode", "target_input": "value"},
+      {"source_node_id": "encode", "source_output": "text", "target_node_id": "page", "target_input": "rows_json"},
+      {"source_node_id": "page", "source_output": "html", "target_node_id": "response", "target_input": "html"}
+    ],
+    "graph_outputs": {
+      "rows": {"node_instance_id": "limit", "output_name": "items"},
+      "html": {"node_instance_id": "page", "output_name": "html"},
+      "status": {"node_instance_id": "request", "output_name": "status"},
+      "response": {"node_instance_id": "response", "output_name": "response"}
+    },
+    "metadata": {
+      "template": {
+        "category": "connectors",
+        "status": "read-only-preview",
+        "composite_interface": {
+          "inputs": {"sheet_url": {"type": "url", "default_node": "sheet_url", "default_param": "url"}},
+          "outputs": {
+            "rows": {"type": "json", "node_instance_id": "limit", "output_name": "items"},
+            "html": {"type": "html", "node_instance_id": "page", "output_name": "html"}
+          }
+        },
+        "requires": {
+          "nodes": ["n_url_input", "n_fetch_url", "n_csv_parse", "n_limit", "n_json_stringify", "n_html_template", "n_html_response"],
+          "panels": ["html", "table", "logs"],
+          "capabilities": ["public-http"],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "sheet_url": {"x": 60, "y": 180},
+          "request": {"x": 320, "y": 180},
+          "parse": {"x": 580, "y": 180},
+          "limit": {"x": 830, "y": 180},
+          "encode": {"x": 1080, "y": 180},
+          "page": {"x": 1340, "y": 180},
+          "response": {"x": 1600, "y": 180}
+        },
+        "recommended_panels": [
+          {"kind": "html", "binding": {"nodeInstanceId": "page", "outputName": "html"}},
+          {"kind": "table", "binding": {"nodeInstanceId": "limit", "outputName": "items"}}
+        ]
+      }
+    }
+  }
+}

@@ -7,7 +7,7 @@ two different renderers for the same data without Three.js or a model API.
 
 ## Try It
 
-1. Import `graphs/html/signal-garden.subfork.json` and run it.
+1. Import `graphs/html/visualizations/signal-garden.subfork.json` and run it.
 2. Bind HTML Preview to `view.html` if the recommended layout is not applied.
    Maximize the panel for the full garden; narrow screens can scroll the canvas.
 3. Change the height, size, color, or palette controls. Select a flower or its

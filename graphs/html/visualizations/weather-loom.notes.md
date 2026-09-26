@@ -6,7 +6,7 @@ San Francisco International Airport station, year 2024, including February 29.
 
 ## Try It
 
-1. Import `graphs/html/weather-loom.subfork.json` and run it.
+1. Import `graphs/html/visualizations/weather-loom.subfork.json` and run it.
 2. Bind HTML Preview to `view.html` if the recommended layout is not applied.
 3. Maximize the panel. Select a day or use Inspect date for its measurements.
 4. Change the color variable, palette, rain shaping, wind texture, or units.

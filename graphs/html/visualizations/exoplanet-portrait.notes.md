@@ -6,7 +6,7 @@ spoke length, mark size, color, and clockwise ordering. No Three.js or API key.
 
 ## Try It
 
-1. Import `graphs/html/exoplanet-portrait.subfork.json` and run it.
+1. Import `graphs/html/visualizations/exoplanet-portrait.subfork.json` and run it.
 2. Bind HTML Preview to `view.html` if the recommended layout is not applied.
 3. Maximize the preview, remap the channels, change the palette, and select a
    mark or planet-index button to inspect the measurements. Marks support focus,
