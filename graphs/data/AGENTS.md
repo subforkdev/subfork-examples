@@ -9,3 +9,4 @@
   simulate scheduled data refreshes.
 - Project provider payloads into small table-ready rows while preserving source
   identifiers and links when they help users verify a record.
+- Tag data graphs with data and the subject domain, such as weather, environment, or indicators.

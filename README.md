@@ -33,6 +33,7 @@ external services.
 - [`geo`](graphs/geo/README.md) contains public geographic-data maps and situational views.
 - [`dashboards`](graphs/dashboards/README.md) contains linked, interactive panel layouts.
 - [`3d`](graphs/3d/README.md) contains graph-authored scenes and 3D data visualizations.
+- [`media`](graphs/media/README.md) contains uploaded audio/video inspection and presentation examples.
 - [`ai`](graphs/README.md#ai) contains provider-backed media workflows and design probes.
 - [`events`](graphs/events/README.md) contains calendars and event-driven decision patterns.
 - [`pipes`](graphs/pipes/README.md) contains feed, text, row, and digest transformations.

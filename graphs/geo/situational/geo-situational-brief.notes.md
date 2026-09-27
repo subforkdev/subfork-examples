@@ -2,14 +2,14 @@
 
 This is a deliberately meaty graph template for exercising branching, filters, cross-referencing, and multiple panels.
 
-The default graph fetches live USGS earthquake GeoJSON, reads profile variables for a reference location, filters significant events, finds the nearest earthquake to the reference location, cross-references a small static city list, produces chart buckets, and renders a Markdown brief.
+The default graph fetches live USGS earthquake GeoJSON, uses configured literal inputs for a reference location and bounds, filters significant events, finds the nearest earthquake to the reference location, cross-references a small static city list, produces chart buckets, and renders a Markdown brief.
 
-Default profile variables:
+Configured defaults:
 
-- `USER_LAT`: `37.7749`
-- `USER_LON`: `-122.4194`
-- `MIN_MAGNITUDE`: `4.5`
-- `MAX_EVENTS`: `12`
+- Reference latitude: `37.7749`
+- Reference longitude: `-122.4194`
+- Minimum magnitude: `4.5`
+- Maximum event rows: `12`
 
 High-level shape:
 
@@ -36,13 +36,13 @@ Why this graph exists:
 
 - It exercises remote HTTP data.
 - It fans one dataset into multiple branches.
-- It uses profile variables as stand-ins for future browser geolocation.
+- It uses explicit typed literals as stand-ins for future browser geolocation.
 - It cross-references a static city dataset.
 - It highlights where useful transforms should become first-class primitives later.
 
 Future upgrades:
 
-- Add a Browser Location input primitive that prompts for geolocation and passes `USER_LAT`/`USER_LON` into execution.
+- Add a Browser Location input primitive that prompts for geolocation and provides typed latitude and longitude inputs.
 - Add a Geo Distance / Nearest Feature primitive.
 - Add a GeoJSON Filter primitive.
 - Add map panel configuration for auto-focus behavior, layers, clustering, and marker styling.

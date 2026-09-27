@@ -85,14 +85,54 @@
         "node_id": "n_media_response",
         "node_version": "1.0.0",
         "title": "Media Response"
+      },
+      {
+        "node_instance_id": "text_for_media_b64_json",
+        "node_id": "n_text_template",
+        "node_version": "1.0.0",
+        "title": "Convert b64_json to text",
+        "params": {
+          "template": "{{ inputs.value }}"
+        }
       }
     ],
     "edges": [
-      {"source_node_id": "prompt", "source_output": "text", "target_node_id": "body", "target_input": "prompt"},
-      {"source_node_id": "body", "source_output": "value", "target_node_id": "request", "target_input": "body"},
-      {"source_node_id": "request", "source_output": "json", "target_node_id": "image_data", "target_input": "value"},
-      {"source_node_id": "image_data", "source_output": "value", "target_node_id": "media", "target_input": "b64_json"},
-      {"source_node_id": "media", "source_output": "media", "target_node_id": "response", "target_input": "media"}
+      {
+        "source_node_id": "prompt",
+        "source_output": "text",
+        "target_node_id": "body",
+        "target_input": "prompt"
+      },
+      {
+        "source_node_id": "body",
+        "source_output": "value",
+        "target_node_id": "request",
+        "target_input": "body"
+      },
+      {
+        "source_node_id": "request",
+        "source_output": "json",
+        "target_node_id": "image_data",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "image_data",
+        "source_output": "value",
+        "target_node_id": "text_for_media_b64_json",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "text_for_media_b64_json",
+        "source_output": "text",
+        "target_node_id": "media",
+        "target_input": "b64_json"
+      },
+      {
+        "source_node_id": "media",
+        "source_output": "media",
+        "target_node_id": "response",
+        "target_input": "media"
+      }
     ],
     "graph_outputs": {
       "image": {
@@ -131,22 +171,61 @@
           }
         },
         "requires": {
-          "nodes": ["n_text_value", "n_json_template", "n_fetch_url", "n_json_path", "n_base64_image_to_media", "n_media_response"],
-          "panels": ["image", "json", "logs"],
-          "capabilities": ["public-http"],
-          "secrets": ["OPENAI_API_KEY"]
+          "nodes": [
+            "n_text_value",
+            "n_json_template",
+            "n_fetch_url",
+            "n_json_path",
+            "n_base64_image_to_media",
+            "n_media_response",
+            "n_text_template"
+          ],
+          "panels": [
+            "image",
+            "json",
+            "logs"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
+          "secrets": [
+            "OPENAI_API_KEY"
+          ]
         }
       },
       "canvas": {
         "positions": {
-          "prompt": {"x": 80, "y": 160},
-          "body": {"x": 340, "y": 160},
-          "request": {"x": 620, "y": 160},
-          "image_data": {"x": 900, "y": 160},
-          "media": {"x": 1160, "y": 160},
-          "response": {"x": 1420, "y": 160}
+          "prompt": {
+            "x": 80,
+            "y": 160
+          },
+          "body": {
+            "x": 340,
+            "y": 160
+          },
+          "request": {
+            "x": 620,
+            "y": 160
+          },
+          "image_data": {
+            "x": 900,
+            "y": 160
+          },
+          "media": {
+            "x": 1160,
+            "y": 160
+          },
+          "response": {
+            "x": 1420,
+            "y": 160
+          }
         }
       }
     }
-  }
+  },
+  "tags": [
+    "ai",
+    "image",
+    "openai"
+  ]
 }

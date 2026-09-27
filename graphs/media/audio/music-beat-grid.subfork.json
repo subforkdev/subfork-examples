@@ -1,0 +1,167 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Music Beat Grid",
+    "description": "Uploads a bounded audio file, estimates beats and energy on a media worker, and produces complete edit windows snapped to downbeats.",
+    "nodes": [
+      {
+        "node_instance_id": "audio_file",
+        "node_id": "n_asset",
+        "node_version": "1.0.0",
+        "title": "Upload music",
+        "params": {
+          "artifact_id": ""
+        },
+        "exposed_outputs": [
+          "artifact",
+          "filename",
+          "media_type",
+          "size_bytes"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "analysis",
+        "node_id": "n_music_analysis",
+        "node_version": "1.0.0",
+        "title": "Analyze first 30 seconds",
+        "params": {
+          "start_seconds": 0,
+          "duration_seconds": 30,
+          "max_bytes": 50000000,
+          "timeout_seconds": 60
+        },
+        "exposed_inputs": [
+          "artifact"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "analysis"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "windows",
+        "node_id": "n_edit_windows",
+        "node_version": "1.0.0",
+        "title": "Build downbeat edit windows",
+        "params": {
+          "start_seconds": 0,
+          "duration_seconds": 15,
+          "min_window_seconds": 1,
+          "max_window_seconds": 4,
+          "snap": "downbeats"
+        },
+        "exposed_inputs": [
+          "analysis"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "windows",
+          "info"
+        ],
+        "outputs_visibility_configured": true
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "audio_file",
+        "source_output": "artifact",
+        "target_node_id": "analysis",
+        "target_input": "artifact"
+      },
+      {
+        "source_node_id": "analysis",
+        "source_output": "analysis",
+        "target_node_id": "windows",
+        "target_input": "analysis"
+      }
+    ],
+    "graph_outputs": {
+      "analysis": {
+        "node_instance_id": "analysis",
+        "output_name": "analysis"
+      },
+      "edit_windows": {
+        "node_instance_id": "windows",
+        "output_name": "windows"
+      },
+      "window_info": {
+        "node_instance_id": "windows",
+        "output_name": "info"
+      },
+      "audio": {
+        "node_instance_id": "audio_file",
+        "output_name": "artifact"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "media",
+        "status": "media-worker-probe",
+        "summary": "Analyze an uploaded track and derive bounded edit windows.",
+        "requires": {
+          "nodes": [
+            "n_asset",
+            "n_music_analysis",
+            "n_edit_windows"
+          ],
+          "panels": [
+            "json",
+            "audio",
+            "logs"
+          ],
+          "capabilities": [
+            "artifact-storage",
+            "media-worker"
+          ],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "audio_file": {
+            "x": 40,
+            "y": 180
+          },
+          "analysis": {
+            "x": 360,
+            "y": 180
+          },
+          "windows": {
+            "x": 700,
+            "y": 180
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "analysis",
+              "outputName": "analysis"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "windows",
+              "outputName": "windows"
+            }
+          },
+          {
+            "kind": "audio",
+            "binding": {
+              "nodeInstanceId": "audio_file",
+              "outputName": "media"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "tags": [
+    "media",
+    "audio"
+  ]
+}

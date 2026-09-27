@@ -61,13 +61,18 @@ To validate example node types against production, run:
 python3 scripts/validate_examples.py --node-catalog-url https://subfork.com/api/v1/nodes
 ```
 
-Replace the URL with a local development catalog only when testing unreleased
-nodes.
-This fetches the catalog once with a 15-second socket timeout and a 5 MiB
-response limit; no graph contents or credentials are sent. Missing node types,
-an unavailable API, or an invalid catalog cause a nonzero exit. This check covers
-node type availability, not historical versions, ports, parameters, or execution
-compatibility. Without the flag, validation stays offline, including in CI.
+For an unreleased sibling checkout, validate the complete local contracts:
+
+```sh
+python3 scripts/validate_examples.py --node-catalog-dir ../subfork-new/nodes
+```
+
+The local check validates exact node versions, parameters, custom and exposed
+ports, edge types, literal collisions, and graph outputs. The production URL
+check fetches the catalog once with a 15-second socket timeout and a 5 MiB
+response limit; no graph contents or credentials are sent. It checks released
+node-type availability. Missing node types, an unavailable API, or an invalid
+catalog cause a nonzero exit. Without either flag, validation stays offline.
 
 ## Graph Checklist
 

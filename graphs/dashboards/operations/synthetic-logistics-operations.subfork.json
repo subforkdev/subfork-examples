@@ -1,0 +1,1340 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Synthetic Logistics Operations Dashboard",
+    "description": "Loads a bundled synthetic shipment snapshot, sorts exceptions by delay, and binds ordinary records to linked operational dashboard panels. No network calls or real shipment data.",
+    "nodes": [
+      {
+        "node_instance_id": "fixture",
+        "node_id": "n_static_value",
+        "node_version": "1.0.0",
+        "title": "Synthetic shipment fixture",
+        "params": {
+          "value": {
+            "snapshot_time_ms": 1790438400000,
+            "source": "Bundled synthetic fixture",
+            "shipments": [
+              {
+                "id": "shipment-1042",
+                "shipment": "SF-1042",
+                "status": "in_transit",
+                "priority": "normal",
+                "origin": "Oakland",
+                "destination": "Reno",
+                "facility": "Oakland",
+                "carrier": "Northstar Freight",
+                "latitude": 37.4444,
+                "longitude": -122.7512,
+                "planned_arrival_ms": 1790442000000,
+                "estimated_arrival_ms": 1790442000000,
+                "delay_minutes": 0,
+                "exception": "none",
+                "progress_percent": 18,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1043",
+                "shipment": "SF-1043",
+                "status": "delayed",
+                "priority": "high",
+                "origin": "San Jose",
+                "destination": "Sacramento",
+                "facility": "San Jose",
+                "carrier": "Blue Mesa Logistics",
+                "latitude": 37.1582,
+                "longitude": -122.2063,
+                "planned_arrival_ms": 1790445600000,
+                "estimated_arrival_ms": 1790451300000,
+                "delay_minutes": 95,
+                "exception": "weather hold",
+                "progress_percent": 31,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1044",
+                "shipment": "SF-1044",
+                "status": "in_transit",
+                "priority": "normal",
+                "origin": "Stockton",
+                "destination": "Fresno",
+                "facility": "Stockton",
+                "carrier": "Cinder Rail",
+                "latitude": 37.9577,
+                "longitude": -121.4508,
+                "planned_arrival_ms": 1790449200000,
+                "estimated_arrival_ms": 1790450100000,
+                "delay_minutes": 15,
+                "exception": "none",
+                "progress_percent": 44,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1045",
+                "shipment": "SF-1045",
+                "status": "blocked",
+                "priority": "critical",
+                "origin": "Reno",
+                "destination": "Oakland",
+                "facility": "Reno",
+                "carrier": "Harborline Transport",
+                "latitude": 39.7096,
+                "longitude": -119.8138,
+                "planned_arrival_ms": 1790452800000,
+                "estimated_arrival_ms": 1790465400000,
+                "delay_minutes": 210,
+                "exception": "facility hold",
+                "progress_percent": 57,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1046",
+                "shipment": "SF-1046",
+                "status": "delivered",
+                "priority": "low",
+                "origin": "Sacramento",
+                "destination": "San Jose",
+                "facility": "Sacramento",
+                "carrier": "Northstar Freight",
+                "latitude": 38.9416,
+                "longitude": -121.3344,
+                "planned_arrival_ms": 1790456400000,
+                "estimated_arrival_ms": 1790455200000,
+                "delay_minutes": -20,
+                "exception": "none",
+                "progress_percent": 70,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1047",
+                "shipment": "SF-1047",
+                "status": "delayed",
+                "priority": "high",
+                "origin": "Fresno",
+                "destination": "Stockton",
+                "facility": "Fresno",
+                "carrier": "Blue Mesa Logistics",
+                "latitude": 36.3778,
+                "longitude": -119.4671,
+                "planned_arrival_ms": 1790460000000,
+                "estimated_arrival_ms": 1790463900000,
+                "delay_minutes": 65,
+                "exception": "late departure",
+                "progress_percent": 83,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1048",
+                "shipment": "SF-1048",
+                "status": "in_transit",
+                "priority": "normal",
+                "origin": "Oakland",
+                "destination": "Reno",
+                "facility": "Oakland",
+                "carrier": "Cinder Rail",
+                "latitude": 37.6244,
+                "longitude": -121.7912,
+                "planned_arrival_ms": 1790463600000,
+                "estimated_arrival_ms": 1790463900000,
+                "delay_minutes": 5,
+                "exception": "none",
+                "progress_percent": 96,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1049",
+                "shipment": "SF-1049",
+                "status": "delayed",
+                "priority": "high",
+                "origin": "San Jose",
+                "destination": "Sacramento",
+                "facility": "San Jose",
+                "carrier": "Harborline Transport",
+                "latitude": 37.3382,
+                "longitude": -122.3663,
+                "planned_arrival_ms": 1790467200000,
+                "estimated_arrival_ms": 1790473200000,
+                "delay_minutes": 100,
+                "exception": "weather hold",
+                "progress_percent": 18,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1050",
+                "shipment": "SF-1050",
+                "status": "in_transit",
+                "priority": "normal",
+                "origin": "Stockton",
+                "destination": "Fresno",
+                "facility": "Stockton",
+                "carrier": "Northstar Freight",
+                "latitude": 38.1377,
+                "longitude": -121.6108,
+                "planned_arrival_ms": 1790470800000,
+                "estimated_arrival_ms": 1790472000000,
+                "delay_minutes": 20,
+                "exception": "none",
+                "progress_percent": 31,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1051",
+                "shipment": "SF-1051",
+                "status": "blocked",
+                "priority": "critical",
+                "origin": "Reno",
+                "destination": "Oakland",
+                "facility": "Reno",
+                "carrier": "Blue Mesa Logistics",
+                "latitude": 39.8896,
+                "longitude": -119.9738,
+                "planned_arrival_ms": 1790474400000,
+                "estimated_arrival_ms": 1790487300000,
+                "delay_minutes": 215,
+                "exception": "facility hold",
+                "progress_percent": 44,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1052",
+                "shipment": "SF-1052",
+                "status": "delivered",
+                "priority": "low",
+                "origin": "Sacramento",
+                "destination": "San Jose",
+                "facility": "Sacramento",
+                "carrier": "Cinder Rail",
+                "latitude": 38.2216,
+                "longitude": -121.4944,
+                "planned_arrival_ms": 1790442000000,
+                "estimated_arrival_ms": 1790441100000,
+                "delay_minutes": -15,
+                "exception": "none",
+                "progress_percent": 57,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1053",
+                "shipment": "SF-1053",
+                "status": "delayed",
+                "priority": "high",
+                "origin": "Fresno",
+                "destination": "Stockton",
+                "facility": "Fresno",
+                "carrier": "Harborline Transport",
+                "latitude": 36.5578,
+                "longitude": -119.6271,
+                "planned_arrival_ms": 1790445600000,
+                "estimated_arrival_ms": 1790449800000,
+                "delay_minutes": 70,
+                "exception": "late departure",
+                "progress_percent": 70,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1054",
+                "shipment": "SF-1054",
+                "status": "in_transit",
+                "priority": "normal",
+                "origin": "Oakland",
+                "destination": "Reno",
+                "facility": "Oakland",
+                "carrier": "Northstar Freight",
+                "latitude": 37.8044,
+                "longitude": -121.9512,
+                "planned_arrival_ms": 1790449200000,
+                "estimated_arrival_ms": 1790449800000,
+                "delay_minutes": 10,
+                "exception": "none",
+                "progress_percent": 83,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1055",
+                "shipment": "SF-1055",
+                "status": "delayed",
+                "priority": "high",
+                "origin": "San Jose",
+                "destination": "Sacramento",
+                "facility": "San Jose",
+                "carrier": "Blue Mesa Logistics",
+                "latitude": 37.5182,
+                "longitude": -121.4063,
+                "planned_arrival_ms": 1790452800000,
+                "estimated_arrival_ms": 1790459100000,
+                "delay_minutes": 105,
+                "exception": "weather hold",
+                "progress_percent": 96,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1056",
+                "shipment": "SF-1056",
+                "status": "in_transit",
+                "priority": "normal",
+                "origin": "Stockton",
+                "destination": "Fresno",
+                "facility": "Stockton",
+                "carrier": "Cinder Rail",
+                "latitude": 38.3177,
+                "longitude": -121.7708,
+                "planned_arrival_ms": 1790456400000,
+                "estimated_arrival_ms": 1790457900000,
+                "delay_minutes": 25,
+                "exception": "none",
+                "progress_percent": 18,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1057",
+                "shipment": "SF-1057",
+                "status": "blocked",
+                "priority": "critical",
+                "origin": "Reno",
+                "destination": "Oakland",
+                "facility": "Reno",
+                "carrier": "Harborline Transport",
+                "latitude": 39.1696,
+                "longitude": -120.1338,
+                "planned_arrival_ms": 1790460000000,
+                "estimated_arrival_ms": 1790473200000,
+                "delay_minutes": 220,
+                "exception": "facility hold",
+                "progress_percent": 31,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1058",
+                "shipment": "SF-1058",
+                "status": "delivered",
+                "priority": "low",
+                "origin": "Sacramento",
+                "destination": "San Jose",
+                "facility": "Sacramento",
+                "carrier": "Northstar Freight",
+                "latitude": 38.4016,
+                "longitude": -121.6544,
+                "planned_arrival_ms": 1790463600000,
+                "estimated_arrival_ms": 1790463000000,
+                "delay_minutes": -10,
+                "exception": "none",
+                "progress_percent": 44,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1059",
+                "shipment": "SF-1059",
+                "status": "delayed",
+                "priority": "high",
+                "origin": "Fresno",
+                "destination": "Stockton",
+                "facility": "Fresno",
+                "carrier": "Blue Mesa Logistics",
+                "latitude": 36.7378,
+                "longitude": -119.7871,
+                "planned_arrival_ms": 1790467200000,
+                "estimated_arrival_ms": 1790471700000,
+                "delay_minutes": 75,
+                "exception": "late departure",
+                "progress_percent": 57,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1060",
+                "shipment": "SF-1060",
+                "status": "in_transit",
+                "priority": "normal",
+                "origin": "Oakland",
+                "destination": "Reno",
+                "facility": "Oakland",
+                "carrier": "Cinder Rail",
+                "latitude": 37.9844,
+                "longitude": -122.1112,
+                "planned_arrival_ms": 1790470800000,
+                "estimated_arrival_ms": 1790471700000,
+                "delay_minutes": 15,
+                "exception": "none",
+                "progress_percent": 70,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1061",
+                "shipment": "SF-1061",
+                "status": "delayed",
+                "priority": "high",
+                "origin": "San Jose",
+                "destination": "Sacramento",
+                "facility": "San Jose",
+                "carrier": "Harborline Transport",
+                "latitude": 37.6982,
+                "longitude": -121.5663,
+                "planned_arrival_ms": 1790474400000,
+                "estimated_arrival_ms": 1790481000000,
+                "delay_minutes": 110,
+                "exception": "weather hold",
+                "progress_percent": 83,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1062",
+                "shipment": "SF-1062",
+                "status": "in_transit",
+                "priority": "normal",
+                "origin": "Stockton",
+                "destination": "Fresno",
+                "facility": "Stockton",
+                "carrier": "Northstar Freight",
+                "latitude": 37.5977,
+                "longitude": -120.8108,
+                "planned_arrival_ms": 1790442000000,
+                "estimated_arrival_ms": 1790443800000,
+                "delay_minutes": 30,
+                "exception": "none",
+                "progress_percent": 96,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1063",
+                "shipment": "SF-1063",
+                "status": "blocked",
+                "priority": "critical",
+                "origin": "Reno",
+                "destination": "Oakland",
+                "facility": "Reno",
+                "carrier": "Blue Mesa Logistics",
+                "latitude": 39.3496,
+                "longitude": -120.2938,
+                "planned_arrival_ms": 1790445600000,
+                "estimated_arrival_ms": 1790459100000,
+                "delay_minutes": 225,
+                "exception": "facility hold",
+                "progress_percent": 18,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1064",
+                "shipment": "SF-1064",
+                "status": "delivered",
+                "priority": "low",
+                "origin": "Sacramento",
+                "destination": "San Jose",
+                "facility": "Sacramento",
+                "carrier": "Cinder Rail",
+                "latitude": 38.5816,
+                "longitude": -121.8144,
+                "planned_arrival_ms": 1790449200000,
+                "estimated_arrival_ms": 1790448900000,
+                "delay_minutes": -5,
+                "exception": "none",
+                "progress_percent": 31,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1065",
+                "shipment": "SF-1065",
+                "status": "delayed",
+                "priority": "high",
+                "origin": "Fresno",
+                "destination": "Stockton",
+                "facility": "Fresno",
+                "carrier": "Harborline Transport",
+                "latitude": 36.9178,
+                "longitude": -119.9471,
+                "planned_arrival_ms": 1790452800000,
+                "estimated_arrival_ms": 1790457600000,
+                "delay_minutes": 80,
+                "exception": "late departure",
+                "progress_percent": 44,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1066",
+                "shipment": "SF-1066",
+                "status": "in_transit",
+                "priority": "normal",
+                "origin": "Oakland",
+                "destination": "Reno",
+                "facility": "Oakland",
+                "carrier": "Northstar Freight",
+                "latitude": 38.1644,
+                "longitude": -122.2712,
+                "planned_arrival_ms": 1790456400000,
+                "estimated_arrival_ms": 1790457600000,
+                "delay_minutes": 20,
+                "exception": "none",
+                "progress_percent": 57,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1067",
+                "shipment": "SF-1067",
+                "status": "delayed",
+                "priority": "high",
+                "origin": "San Jose",
+                "destination": "Sacramento",
+                "facility": "San Jose",
+                "carrier": "Blue Mesa Logistics",
+                "latitude": 36.9782,
+                "longitude": -121.7263,
+                "planned_arrival_ms": 1790460000000,
+                "estimated_arrival_ms": 1790466900000,
+                "delay_minutes": 115,
+                "exception": "weather hold",
+                "progress_percent": 70,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1068",
+                "shipment": "SF-1068",
+                "status": "in_transit",
+                "priority": "normal",
+                "origin": "Stockton",
+                "destination": "Fresno",
+                "facility": "Stockton",
+                "carrier": "Cinder Rail",
+                "latitude": 37.7777,
+                "longitude": -120.9708,
+                "planned_arrival_ms": 1790463600000,
+                "estimated_arrival_ms": 1790465700000,
+                "delay_minutes": 35,
+                "exception": "schedule variance",
+                "progress_percent": 83,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1069",
+                "shipment": "SF-1069",
+                "status": "blocked",
+                "priority": "critical",
+                "origin": "Reno",
+                "destination": "Oakland",
+                "facility": "Reno",
+                "carrier": "Harborline Transport",
+                "latitude": 39.5296,
+                "longitude": -119.3338,
+                "planned_arrival_ms": 1790467200000,
+                "estimated_arrival_ms": 1790481000000,
+                "delay_minutes": 230,
+                "exception": "facility hold",
+                "progress_percent": 96,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1070",
+                "shipment": "SF-1070",
+                "status": "delivered",
+                "priority": "low",
+                "origin": "Sacramento",
+                "destination": "San Jose",
+                "facility": "Sacramento",
+                "carrier": "Northstar Freight",
+                "latitude": 38.7616,
+                "longitude": -121.9744,
+                "planned_arrival_ms": 1790470800000,
+                "estimated_arrival_ms": 1790470800000,
+                "delay_minutes": 0,
+                "exception": "none",
+                "progress_percent": 18,
+                "synthetic": true
+              },
+              {
+                "id": "shipment-1071",
+                "shipment": "SF-1071",
+                "status": "delayed",
+                "priority": "high",
+                "origin": "Fresno",
+                "destination": "Stockton",
+                "facility": "Fresno",
+                "carrier": "Blue Mesa Logistics",
+                "latitude": 37.0978,
+                "longitude": -120.1071,
+                "planned_arrival_ms": 1790474400000,
+                "estimated_arrival_ms": 1790479500000,
+                "delay_minutes": 85,
+                "exception": "late departure",
+                "progress_percent": 31,
+                "synthetic": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "node_instance_id": "shipments",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Shipment records",
+        "params": {
+          "path": "shipments"
+        }
+      },
+      {
+        "node_instance_id": "snapshot",
+        "node_id": "n_static_value",
+        "node_version": "1.0.0",
+        "title": "Synthetic snapshot metadata",
+        "params": {
+          "value": {
+            "snapshot_time_ms": 1790438400000,
+            "source": "Bundled synthetic fixture",
+            "synthetic": true
+          }
+        }
+      },
+      {
+        "node_instance_id": "sort",
+        "node_id": "n_sort_rows",
+        "node_version": "1.0.0",
+        "title": "Highest delay first",
+        "params": {
+          "field": "delay_minutes",
+          "direction": "desc"
+        }
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most 40 shipments",
+        "params": {
+          "count": 40
+        }
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Shipment JSON response"
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "fixture",
+        "source_output": "value",
+        "target_node_id": "shipments",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "shipments",
+        "source_output": "value",
+        "target_node_id": "sort",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "sort",
+        "source_output": "items",
+        "target_node_id": "limit",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "limit",
+        "source_output": "items",
+        "target_node_id": "response",
+        "target_input": "value"
+      }
+    ],
+    "graph_outputs": {
+      "shipments": {
+        "node_instance_id": "limit",
+        "output_name": "items"
+      },
+      "snapshot": {
+        "node_instance_id": "snapshot",
+        "output_name": "value"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "category": "dashboards",
+      "template": {
+        "status": "deterministic-example",
+        "summary": "Synthetic logistics records driving linked native panels.",
+        "requires": {
+          "nodes": [
+            "n_static_value",
+            "n_json_path",
+            "n_sort_rows",
+            "n_limit",
+            "n_json_response"
+          ],
+          "panels": [
+            "filters",
+            "metrics",
+            "map",
+            "table",
+            "details"
+          ],
+          "capabilities": [],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "fixture": {
+            "x": 40,
+            "y": 120
+          },
+          "shipments": {
+            "x": 330,
+            "y": 120
+          },
+          "snapshot": {
+            "x": 330,
+            "y": -140
+          },
+          "sort": {
+            "x": 620,
+            "y": 120
+          },
+          "limit": {
+            "x": 910,
+            "y": 120
+          },
+          "response": {
+            "x": 1200,
+            "y": 120
+          }
+        },
+        "recommended_layout": {
+          "kind": "split",
+          "direction": "vertical",
+          "first": {
+            "kind": "filters",
+            "id": "filters",
+            "title": "Shipment Filters",
+            "binding": {
+              "nodeInstanceId": "limit",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "label": "shipment",
+                "latitude": "latitude",
+                "longitude": "longitude",
+                "time": "estimated_arrival_ms",
+                "value": "delay_minutes"
+              },
+              "recordView": {
+                "columns": [
+                  {
+                    "field": "shipment",
+                    "label": "Shipment"
+                  },
+                  {
+                    "field": "status",
+                    "label": "Status"
+                  },
+                  {
+                    "field": "priority",
+                    "label": "Priority"
+                  },
+                  {
+                    "field": "origin",
+                    "label": "Origin"
+                  },
+                  {
+                    "field": "destination",
+                    "label": "Destination"
+                  },
+                  {
+                    "field": "facility",
+                    "label": "Facility"
+                  },
+                  {
+                    "field": "carrier",
+                    "label": "Carrier"
+                  },
+                  {
+                    "field": "planned_arrival_ms",
+                    "label": "Planned arrival"
+                  },
+                  {
+                    "field": "estimated_arrival_ms",
+                    "label": "Estimated arrival"
+                  },
+                  {
+                    "field": "delay_minutes",
+                    "label": "Delay (minutes)"
+                  },
+                  {
+                    "field": "exception",
+                    "label": "Exception"
+                  },
+                  {
+                    "field": "progress_percent",
+                    "label": "Progress (%)"
+                  }
+                ],
+                "sourceName": "Bundled synthetic logistics snapshot",
+                "timestamp": {
+                  "nodeInstanceId": "snapshot",
+                  "outputName": "value",
+                  "path": "snapshot_time_ms"
+                }
+              },
+              "facetFields": [
+                {
+                  "field": "status",
+                  "kind": "values"
+                },
+                {
+                  "field": "priority",
+                  "kind": "values"
+                },
+                {
+                  "field": "facility",
+                  "kind": "values"
+                },
+                {
+                  "field": "carrier",
+                  "kind": "values"
+                },
+                {
+                  "field": "delay_minutes",
+                  "kind": "number"
+                },
+                {
+                  "field": "estimated_arrival_ms",
+                  "kind": "date"
+                }
+              ]
+            }
+          },
+          "second": {
+            "kind": "split",
+            "direction": "vertical",
+            "first": {
+              "kind": "metrics",
+              "id": "metrics",
+              "title": "Operations Metrics",
+              "binding": {
+                "nodeInstanceId": "limit",
+                "outputName": "items"
+              },
+              "settings": {
+                "dataMapping": {
+                  "id": "id",
+                  "time": "estimated_arrival_ms",
+                  "value": "delay_minutes"
+                },
+                "recordView": {
+                  "timestamp": {
+                    "nodeInstanceId": "snapshot",
+                    "outputName": "value",
+                    "path": "snapshot_time_ms"
+                  },
+                  "sourceName": "Bundled synthetic logistics snapshot"
+                }
+              }
+            },
+            "second": {
+              "kind": "split",
+              "direction": "horizontal",
+              "first": {
+                "kind": "map",
+                "id": "map",
+                "title": "Shipment Positions",
+                "binding": {
+                  "nodeInstanceId": "limit",
+                  "outputName": "items"
+                },
+                "settings": {
+                  "dataMapping": {
+                    "id": "id",
+                    "label": "shipment",
+                    "latitude": "latitude",
+                    "longitude": "longitude",
+                    "time": "estimated_arrival_ms",
+                    "value": "delay_minutes"
+                  },
+                  "recordView": {
+                    "timestamp": {
+                      "nodeInstanceId": "snapshot",
+                      "outputName": "value",
+                      "path": "snapshot_time_ms"
+                    }
+                  }
+                }
+              },
+              "second": {
+                "kind": "split",
+                "direction": "vertical",
+                "first": {
+                  "kind": "details",
+                  "id": "details",
+                  "title": "Selected Shipment",
+                  "binding": {
+                    "nodeInstanceId": "limit",
+                    "outputName": "items"
+                  },
+                  "settings": {
+                    "dataMapping": {
+                      "id": "id",
+                      "label": "shipment",
+                      "time": "estimated_arrival_ms"
+                    },
+                    "recordView": {
+                      "columns": [
+                        {
+                          "field": "shipment",
+                          "label": "Shipment"
+                        },
+                        {
+                          "field": "status",
+                          "label": "Status"
+                        },
+                        {
+                          "field": "priority",
+                          "label": "Priority"
+                        },
+                        {
+                          "field": "origin",
+                          "label": "Origin"
+                        },
+                        {
+                          "field": "destination",
+                          "label": "Destination"
+                        },
+                        {
+                          "field": "facility",
+                          "label": "Facility"
+                        },
+                        {
+                          "field": "carrier",
+                          "label": "Carrier"
+                        },
+                        {
+                          "field": "planned_arrival_ms",
+                          "label": "Planned arrival"
+                        },
+                        {
+                          "field": "estimated_arrival_ms",
+                          "label": "Estimated arrival"
+                        },
+                        {
+                          "field": "delay_minutes",
+                          "label": "Delay (minutes)"
+                        },
+                        {
+                          "field": "exception",
+                          "label": "Exception"
+                        },
+                        {
+                          "field": "progress_percent",
+                          "label": "Progress (%)"
+                        }
+                      ],
+                      "sourceName": "Bundled synthetic logistics snapshot",
+                      "timestamp": {
+                        "nodeInstanceId": "snapshot",
+                        "outputName": "value",
+                        "path": "snapshot_time_ms"
+                      }
+                    }
+                  }
+                },
+                "second": {
+                  "kind": "split",
+                  "direction": "vertical",
+                  "first": {
+                    "kind": "table",
+                    "id": "table",
+                    "title": "Shipment Queue",
+                    "binding": {
+                      "nodeInstanceId": "limit",
+                      "outputName": "items"
+                    },
+                    "settings": {
+                      "dataMapping": {
+                        "id": "id",
+                        "time": "estimated_arrival_ms"
+                      },
+                      "recordView": {
+                        "columns": [
+                          {
+                            "field": "shipment",
+                            "label": "Shipment"
+                          },
+                          {
+                            "field": "status",
+                            "label": "Status"
+                          },
+                          {
+                            "field": "priority",
+                            "label": "Priority"
+                          },
+                          {
+                            "field": "origin",
+                            "label": "Origin"
+                          },
+                          {
+                            "field": "destination",
+                            "label": "Destination"
+                          },
+                          {
+                            "field": "facility",
+                            "label": "Facility"
+                          },
+                          {
+                            "field": "carrier",
+                            "label": "Carrier"
+                          },
+                          {
+                            "field": "planned_arrival_ms",
+                            "label": "Planned arrival"
+                          },
+                          {
+                            "field": "estimated_arrival_ms",
+                            "label": "Estimated arrival"
+                          },
+                          {
+                            "field": "delay_minutes",
+                            "label": "Delay (minutes)"
+                          },
+                          {
+                            "field": "exception",
+                            "label": "Exception"
+                          },
+                          {
+                            "field": "progress_percent",
+                            "label": "Progress (%)"
+                          }
+                        ],
+                        "sourceName": "Bundled synthetic logistics snapshot",
+                        "timestamp": {
+                          "nodeInstanceId": "snapshot",
+                          "outputName": "value",
+                          "path": "snapshot_time_ms"
+                        }
+                      }
+                    }
+                  },
+                  "second": {
+                    "kind": "graph",
+                    "id": "graph",
+                    "title": "Graph"
+                  },
+                  "firstPercent": 76
+                },
+                "firstPercent": 34
+              },
+              "firstPercent": 56
+            },
+            "firstPercent": 22
+          },
+          "firstPercent": 24
+        },
+        "recommended_panels": [
+          {
+            "kind": "filters",
+            "id": "filters",
+            "title": "Shipment Filters",
+            "binding": {
+              "nodeInstanceId": "limit",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "label": "shipment",
+                "latitude": "latitude",
+                "longitude": "longitude",
+                "time": "estimated_arrival_ms",
+                "value": "delay_minutes"
+              },
+              "recordView": {
+                "columns": [
+                  {
+                    "field": "shipment",
+                    "label": "Shipment"
+                  },
+                  {
+                    "field": "status",
+                    "label": "Status"
+                  },
+                  {
+                    "field": "priority",
+                    "label": "Priority"
+                  },
+                  {
+                    "field": "origin",
+                    "label": "Origin"
+                  },
+                  {
+                    "field": "destination",
+                    "label": "Destination"
+                  },
+                  {
+                    "field": "facility",
+                    "label": "Facility"
+                  },
+                  {
+                    "field": "carrier",
+                    "label": "Carrier"
+                  },
+                  {
+                    "field": "planned_arrival_ms",
+                    "label": "Planned arrival"
+                  },
+                  {
+                    "field": "estimated_arrival_ms",
+                    "label": "Estimated arrival"
+                  },
+                  {
+                    "field": "delay_minutes",
+                    "label": "Delay (minutes)"
+                  },
+                  {
+                    "field": "exception",
+                    "label": "Exception"
+                  },
+                  {
+                    "field": "progress_percent",
+                    "label": "Progress (%)"
+                  }
+                ],
+                "sourceName": "Bundled synthetic logistics snapshot",
+                "timestamp": {
+                  "nodeInstanceId": "snapshot",
+                  "outputName": "value",
+                  "path": "snapshot_time_ms"
+                }
+              },
+              "facetFields": [
+                {
+                  "field": "status",
+                  "kind": "values"
+                },
+                {
+                  "field": "priority",
+                  "kind": "values"
+                },
+                {
+                  "field": "facility",
+                  "kind": "values"
+                },
+                {
+                  "field": "carrier",
+                  "kind": "values"
+                },
+                {
+                  "field": "delay_minutes",
+                  "kind": "number"
+                },
+                {
+                  "field": "estimated_arrival_ms",
+                  "kind": "date"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "metrics",
+            "id": "metrics",
+            "title": "Operations Metrics",
+            "binding": {
+              "nodeInstanceId": "limit",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "time": "estimated_arrival_ms",
+                "value": "delay_minutes"
+              },
+              "recordView": {
+                "timestamp": {
+                  "nodeInstanceId": "snapshot",
+                  "outputName": "value",
+                  "path": "snapshot_time_ms"
+                },
+                "sourceName": "Bundled synthetic logistics snapshot"
+              }
+            }
+          },
+          {
+            "kind": "map",
+            "id": "map",
+            "title": "Shipment Positions",
+            "binding": {
+              "nodeInstanceId": "limit",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "label": "shipment",
+                "latitude": "latitude",
+                "longitude": "longitude",
+                "time": "estimated_arrival_ms",
+                "value": "delay_minutes"
+              },
+              "recordView": {
+                "timestamp": {
+                  "nodeInstanceId": "snapshot",
+                  "outputName": "value",
+                  "path": "snapshot_time_ms"
+                }
+              }
+            }
+          },
+          {
+            "kind": "table",
+            "id": "table",
+            "title": "Shipment Queue",
+            "binding": {
+              "nodeInstanceId": "limit",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "time": "estimated_arrival_ms"
+              },
+              "recordView": {
+                "columns": [
+                  {
+                    "field": "shipment",
+                    "label": "Shipment"
+                  },
+                  {
+                    "field": "status",
+                    "label": "Status"
+                  },
+                  {
+                    "field": "priority",
+                    "label": "Priority"
+                  },
+                  {
+                    "field": "origin",
+                    "label": "Origin"
+                  },
+                  {
+                    "field": "destination",
+                    "label": "Destination"
+                  },
+                  {
+                    "field": "facility",
+                    "label": "Facility"
+                  },
+                  {
+                    "field": "carrier",
+                    "label": "Carrier"
+                  },
+                  {
+                    "field": "planned_arrival_ms",
+                    "label": "Planned arrival"
+                  },
+                  {
+                    "field": "estimated_arrival_ms",
+                    "label": "Estimated arrival"
+                  },
+                  {
+                    "field": "delay_minutes",
+                    "label": "Delay (minutes)"
+                  },
+                  {
+                    "field": "exception",
+                    "label": "Exception"
+                  },
+                  {
+                    "field": "progress_percent",
+                    "label": "Progress (%)"
+                  }
+                ],
+                "sourceName": "Bundled synthetic logistics snapshot",
+                "timestamp": {
+                  "nodeInstanceId": "snapshot",
+                  "outputName": "value",
+                  "path": "snapshot_time_ms"
+                }
+              }
+            }
+          },
+          {
+            "kind": "details",
+            "id": "details",
+            "title": "Selected Shipment",
+            "binding": {
+              "nodeInstanceId": "limit",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "label": "shipment",
+                "time": "estimated_arrival_ms"
+              },
+              "recordView": {
+                "columns": [
+                  {
+                    "field": "shipment",
+                    "label": "Shipment"
+                  },
+                  {
+                    "field": "status",
+                    "label": "Status"
+                  },
+                  {
+                    "field": "priority",
+                    "label": "Priority"
+                  },
+                  {
+                    "field": "origin",
+                    "label": "Origin"
+                  },
+                  {
+                    "field": "destination",
+                    "label": "Destination"
+                  },
+                  {
+                    "field": "facility",
+                    "label": "Facility"
+                  },
+                  {
+                    "field": "carrier",
+                    "label": "Carrier"
+                  },
+                  {
+                    "field": "planned_arrival_ms",
+                    "label": "Planned arrival"
+                  },
+                  {
+                    "field": "estimated_arrival_ms",
+                    "label": "Estimated arrival"
+                  },
+                  {
+                    "field": "delay_minutes",
+                    "label": "Delay (minutes)"
+                  },
+                  {
+                    "field": "exception",
+                    "label": "Exception"
+                  },
+                  {
+                    "field": "progress_percent",
+                    "label": "Progress (%)"
+                  }
+                ],
+                "sourceName": "Bundled synthetic logistics snapshot",
+                "timestamp": {
+                  "nodeInstanceId": "snapshot",
+                  "outputName": "value",
+                  "path": "snapshot_time_ms"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "tags": [
+    "dashboards",
+    "operations"
+  ]
+}

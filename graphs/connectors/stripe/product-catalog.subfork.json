@@ -13,7 +13,10 @@
         "params": {
           "url": "https://api.stripe.com/v1/products",
           "method": "GET",
-          "query": {"active": "true", "limit": 10},
+          "query": {
+            "active": "true",
+            "limit": 10
+          },
           "headers": {
             "Authorization": "Bearer {{ secrets.STRIPE_RESTRICTED_KEY }}",
             "Accept": "application/json"
@@ -23,7 +26,10 @@
         },
         "exposed_inputs": [],
         "inputs_visibility_configured": true,
-        "exposed_outputs": ["json", "status"],
+        "exposed_outputs": [
+          "json",
+          "status"
+        ],
         "outputs_visibility_configured": true
       },
       {
@@ -31,7 +37,9 @@
         "node_id": "n_json_path",
         "node_version": "1.0.0",
         "title": "Product rows",
-        "params": {"path": "data"}
+        "params": {
+          "path": "data"
+        }
       },
       {
         "node_instance_id": "response",
@@ -41,13 +49,32 @@
       }
     ],
     "edges": [
-      {"source_node_id": "request", "source_output": "json", "target_node_id": "products", "target_input": "value"},
-      {"source_node_id": "products", "source_output": "value", "target_node_id": "response", "target_input": "value"}
+      {
+        "source_node_id": "request",
+        "source_output": "json",
+        "target_node_id": "products",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "products",
+        "source_output": "value",
+        "target_node_id": "response",
+        "target_input": "value"
+      }
     ],
     "graph_outputs": {
-      "products": {"node_instance_id": "products", "output_name": "value"},
-      "status": {"node_instance_id": "request", "output_name": "status"},
-      "response": {"node_instance_id": "response", "output_name": "response"}
+      "products": {
+        "node_instance_id": "products",
+        "output_name": "value"
+      },
+      "status": {
+        "node_instance_id": "request",
+        "output_name": "status"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      }
     },
     "metadata": {
       "template": {
@@ -56,28 +83,73 @@
         "composite_interface": {
           "inputs": {},
           "outputs": {
-            "products": {"type": "json", "node_instance_id": "products", "output_name": "value"},
-            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"}
+            "products": {
+              "type": "json",
+              "node_instance_id": "products",
+              "output_name": "value"
+            },
+            "status": {
+              "type": "int",
+              "node_instance_id": "request",
+              "output_name": "status"
+            }
           }
         },
         "requires": {
-          "nodes": ["n_fetch_url", "n_json_path", "n_json_response"],
-          "panels": ["table", "json", "logs"],
-          "capabilities": ["public-http"],
-          "secrets": ["STRIPE_RESTRICTED_KEY"]
+          "nodes": [
+            "n_fetch_url",
+            "n_json_path",
+            "n_json_response"
+          ],
+          "panels": [
+            "table",
+            "json",
+            "logs"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
+          "secrets": [
+            "STRIPE_RESTRICTED_KEY"
+          ]
         }
       },
       "canvas": {
         "positions": {
-          "request": {"x": 160, "y": 180},
-          "products": {"x": 480, "y": 180},
-          "response": {"x": 800, "y": 180}
+          "request": {
+            "x": 160,
+            "y": 180
+          },
+          "products": {
+            "x": 480,
+            "y": 180
+          },
+          "response": {
+            "x": 800,
+            "y": 180
+          }
         },
         "recommended_panels": [
-          {"kind": "table", "binding": {"nodeInstanceId": "products", "outputName": "value"}},
-          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+          {
+            "kind": "table",
+            "binding": {
+              "nodeInstanceId": "products",
+              "outputName": "value"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "response",
+              "outputName": "response"
+            }
+          }
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "connectors",
+    "stripe"
+  ]
 }

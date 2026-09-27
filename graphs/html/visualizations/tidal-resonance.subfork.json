@@ -158,15 +158,15 @@
         "custom_inputs": {
           "sf_payload": "json",
           "sf_status": "int",
-          "sf_url": "str",
+          "sf_url": "url",
           "sf_headers": "json",
           "seattle_payload": "json",
           "seattle_status": "int",
-          "seattle_url": "str",
+          "seattle_url": "url",
           "seattle_headers": "json",
           "ny_payload": "json",
           "ny_status": "int",
-          "ny_url": "str",
+          "ny_url": "url",
           "ny_headers": "json"
         },
         "exposed_inputs": [
@@ -480,5 +480,9 @@
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "html",
+    "visualizations"
+  ]
 }

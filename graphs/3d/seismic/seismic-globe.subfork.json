@@ -17310,7 +17310,10 @@
             "kind": "scene3d",
             "settings": {
               "interactions": {
-                "source": { "nodeInstanceId": "sample", "outputName": "items" },
+                "source": {
+                  "nodeInstanceId": "sample",
+                  "outputName": "items"
+                },
                 "id": "id",
                 "selection": true,
                 "focus": true
@@ -17338,5 +17341,9 @@
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "3d",
+    "seismic"
+  ]
 }

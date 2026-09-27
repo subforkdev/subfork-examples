@@ -1,0 +1,224 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Data Aquarium",
+    "description": "Turns up to 100 rows from an uploaded UTF-8 CSV into a deterministic local Canvas specimen-finding game. The upload is read only from Subfork artifact storage; gameplay makes no network calls.",
+    "nodes": [
+      {
+        "node_instance_id": "file",
+        "node_id": "n_asset",
+        "node_version": "1.0.0",
+        "title": "Upload aquarium CSV",
+        "params": {
+          "artifact_id": ""
+        },
+        "exposed_outputs": [
+          "artifact",
+          "filename",
+          "media_type",
+          "size_bytes"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "parse",
+        "node_id": "n_csv_parse",
+        "node_version": "1.0.0",
+        "title": "Parse specimen rows",
+        "params": {
+          "delimiter": ",",
+          "max_bytes": 1000000
+        },
+        "exposed_inputs": [
+          "artifact"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most 100 specimens",
+        "params": {
+          "count": 100
+        }
+      },
+      {
+        "node_instance_id": "encode",
+        "node_id": "n_json_stringify",
+        "node_version": "1.0.0",
+        "title": "HTML-safe specimen data",
+        "params": {
+          "html_safe": true
+        }
+      },
+      {
+        "node_instance_id": "page",
+        "node_id": "n_html_template",
+        "node_version": "1.0.0",
+        "title": "Render Data Aquarium",
+        "params": {
+          "template": "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Data Aquarium</title>\n<style>*{box-sizing:border-box}body{margin:0;background:#04131b;color:#dff9ff;font:15px/1.4 system-ui,sans-serif}main{min-height:100vh;display:grid;grid-template-rows:auto 1fr;background:radial-gradient(circle at 25% 15%,#0d5266 0,#062837 38%,#03131c 75%)}header{display:flex;gap:18px;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #7fe9ff35;background:#021017d9}h1{font-size:20px;margin:0;letter-spacing:.08em;text-transform:uppercase}.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}label,.status{font:12px ui-monospace,monospace;color:#a8e9f3}select,button{background:#092936;color:#e9fcff;border:1px solid #58c8dc66;border-radius:6px;padding:7px 10px}button{cursor:pointer}.tank{position:relative;min-height:520px}canvas{width:100%;height:100%;display:block;touch-action:manipulation;cursor:crosshair}.hud{position:absolute;left:16px;top:16px;max-width:min(430px,calc(100% - 32px));background:#02141de8;border:1px solid #5bd6eb55;border-radius:9px;padding:12px;box-shadow:0 12px 34px #0008}.target{font-size:17px;margin:4px 0}.record{font:12px ui-monospace,monospace;color:#b8eaf2;white-space:pre-wrap;max-height:120px;overflow:auto}.error{color:#ffb4a8} @media(max-width:700px){header{align-items:flex-start;flex-direction:column}.tank{min-height:600px}}</style></head>\n<body><main><header><div><h1>Data Aquarium</h1><div class=\"status\"><span id=\"count\">0</span> specimens · click the requested fish</div></div><div class=\"controls\"><label>Label field <select id=\"field\"></select></label><button id=\"restart\" type=\"button\">New expedition</button><strong id=\"score\">0 / 0</strong></div></header><section class=\"tank\"><canvas id=\"tank\" aria-label=\"Interactive aquarium generated from CSV rows\"></canvas><aside class=\"hud\"><div class=\"status\" id=\"round\">EXPEDITION READY</div><div class=\"target\" id=\"target\">Upload a CSV and run the graph.</div><div class=\"status\">Match this value to a fish label.</div><div class=\"record\" id=\"record\"></div></aside></section></main>\n<script id=\"rows\" type=\"application/json\">{{ inputs.rows_json }}</script>\n<script>\n\"use strict\";\nconst canvas=document.getElementById(\"tank\"),ctx=canvas.getContext(\"2d\"),fieldSelect=document.getElementById(\"field\"),scoreEl=document.getElementById(\"score\"),targetEl=document.getElementById(\"target\"),roundEl=document.getElementById(\"round\"),recordEl=document.getElementById(\"record\");\nlet rows=[],fish=[],mission=[],step=0,score=0,misses=0,width=0,height=0,last=0;\nconst text=v=>String(v??\"\").trim(), hash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0};\nfunction fields(){const out=[];rows.slice(0,30).forEach(r=>Object.keys(r&&typeof r===\"object\"?r:{}).forEach(k=>{if(!out.includes(k)&&out.length<20)out.push(k)}));return out}\nfunction label(row,index){return text(row?.[fieldSelect.value])||text(Object.values(row||{}).find(v=>text(v)))||`row ${index+1}`}\nfunction resize(){const box=canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);width=Math.max(320,box.width);height=Math.max(420,box.height);canvas.width=Math.round(width*d);canvas.height=Math.round(height*d);ctx.setTransform(d,0,0,d,0,0)}\nfunction createFish(){fish=rows.map((row,index)=>{const h=hash(JSON.stringify(row));return{index,x:50+(h%Math.max(120,width-100)),y:90+((h>>>8)%Math.max(160,height-180)),vx:22+((h>>>16)%30),vy:-8+((h>>>24)%17),size:14+(h%11),hue:h%360}})}\nfunction restart(){const key=fieldSelect.value;mission=rows.map((_,i)=>i).sort((a,b)=>hash(key+JSON.stringify(rows[a]))-hash(key+JSON.stringify(rows[b]))).slice(0,Math.min(10,rows.length));step=score=misses=0;createFish();updateHud()}\nfunction updateHud(){scoreEl.textContent=`${score} / ${mission.length}`;if(!mission.length){roundEl.textContent=\"NO RECORDS\";targetEl.textContent=\"The CSV did not contain data rows.\";return}if(step>=mission.length){roundEl.textContent=`EXPEDITION COMPLETE · ${misses} misses`;targetEl.textContent=\"All requested specimens found.\";recordEl.textContent=\"Select New expedition to replay.\";return}const i=mission[step];roundEl.textContent=`SPECIMEN ${step+1} OF ${mission.length}`;targetEl.textContent=`Find: ${label(rows[i],i)}`;recordEl.textContent=\"\"}\nfunction drawFish(f){ctx.save();ctx.translate(f.x,f.y);if(f.vx<0)ctx.scale(-1,1);ctx.fillStyle=`hsl(${f.hue} 72% 52%)`;ctx.beginPath();ctx.ellipse(0,0,f.size*1.45,f.size*.72,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(-f.size*1.2,0);ctx.lineTo(-f.size*2,-f.size*.75);ctx.lineTo(-f.size*2,f.size*.75);ctx.closePath();ctx.fill();ctx.fillStyle=\"#e9ffff\";ctx.beginPath();ctx.arc(f.size*.7,-f.size*.16,2.3,0,Math.PI*2);ctx.fill();ctx.restore()}\nfunction drawLabel(f){const full=label(rows[f.index],f.index),caption=full.length>18?full.slice(0,17)+\"…\":full;ctx.save();ctx.font=\"600 11px ui-monospace,monospace\";ctx.textAlign=\"center\";ctx.textBaseline=\"middle\";const w=ctx.measureText(caption).width+10,x=Math.max(w/2+2,Math.min(width-w/2-2,f.x)),y=Math.min(height-10,f.y+f.size+13);ctx.fillStyle=\"#02141ddd\";ctx.fillRect(x-w/2,y-9,w,18);ctx.fillStyle=\"#e9fcff\";ctx.fillText(caption,x,y);ctx.restore()}\nfunction frame(t){const dt=Math.min(.04,(t-last)/1000||0);last=t;ctx.clearRect(0,0,width,height);const g=ctx.createLinearGradient(0,0,0,height);g.addColorStop(0,\"#0a5166\");g.addColorStop(1,\"#031923\");ctx.fillStyle=g;ctx.fillRect(0,0,width,height);ctx.fillStyle=\"#9ef6ff22\";for(let i=0;i<24;i++){const x=(i*83+t*.012*(1+i%3))%width,y=height-((i*97+t*.025)%height);ctx.beginPath();ctx.arc(x,y,1+(i%4),0,Math.PI*2);ctx.fill()}fish.forEach(f=>{f.x+=f.vx*dt;f.y+=f.vy*dt;if(f.x>width+45)f.x=-45;if(f.x<-45)f.x=width+45;if(f.y<70||f.y>height-35)f.vy*=-1;drawFish(f)});fish.forEach(drawLabel);requestAnimationFrame(frame)}\ncanvas.addEventListener(\"pointerdown\",event=>{if(step>=mission.length)return;const r=canvas.getBoundingClientRect(),x=event.clientX-r.left,y=event.clientY-r.top;let hit=null,best=Infinity;fish.forEach(f=>{const d=Math.hypot(x-f.x,y-f.y);if(d<f.size*2&&d<best){hit=f;best=d}});if(!hit)return;if(hit.index===mission[step]){score++;recordEl.textContent=JSON.stringify(rows[hit.index],null,2);step++}else{misses++;recordEl.textContent=`Not this specimen: ${label(rows[hit.index],hit.index)}`};updateHud()});\nfieldSelect.addEventListener(\"change\",restart);document.getElementById(\"restart\").addEventListener(\"click\",restart);new ResizeObserver(()=>{resize();createFish()}).observe(canvas);\ntry{rows=JSON.parse(document.getElementById(\"rows\").textContent);if(!Array.isArray(rows)||rows.length>100)throw new Error(\"Expected at most 100 CSV rows.\");const fs=fields();if(!fs.length)throw new Error(\"The CSV has no usable columns.\");fs.forEach(k=>{const o=document.createElement(\"option\");o.value=k;o.textContent=k;fieldSelect.append(o)});document.getElementById(\"count\").textContent=String(rows.length);resize();restart();requestAnimationFrame(frame)}catch(error){roundEl.textContent=\"CANNOT START\";roundEl.className=\"status error\";targetEl.textContent=error instanceof Error?error.message:\"Unable to read aquarium data.\"}\n</script></body></html>"
+        },
+        "custom_inputs": {
+          "rows_json": "str"
+        },
+        "exposed_inputs": [
+          "rows_json"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "html"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_html_response",
+        "node_version": "1.0.0",
+        "title": "Aquarium HTML response"
+      },
+      {
+        "node_instance_id": "data_response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Specimen JSON response"
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "file",
+        "source_output": "artifact",
+        "target_node_id": "parse",
+        "target_input": "artifact"
+      },
+      {
+        "source_node_id": "parse",
+        "source_output": "rows",
+        "target_node_id": "limit",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "limit",
+        "source_output": "items",
+        "target_node_id": "encode",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "encode",
+        "source_output": "text",
+        "target_node_id": "page",
+        "target_input": "rows_json"
+      },
+      {
+        "source_node_id": "page",
+        "source_output": "html",
+        "target_node_id": "response",
+        "target_input": "html"
+      },
+      {
+        "source_node_id": "limit",
+        "source_output": "items",
+        "target_node_id": "data_response",
+        "target_input": "value"
+      }
+    ],
+    "graph_outputs": {
+      "html": {
+        "node_instance_id": "page",
+        "output_name": "html"
+      },
+      "rows": {
+        "node_instance_id": "limit",
+        "output_name": "items"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      },
+      "data_response": {
+        "node_instance_id": "data_response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "games",
+        "status": "prototype",
+        "summary": "Uploaded CSV rows become a deterministic local Canvas game.",
+        "requires": {
+          "nodes": [
+            "n_asset",
+            "n_csv_parse",
+            "n_limit",
+            "n_json_stringify",
+            "n_html_template",
+            "n_html_response",
+            "n_json_response"
+          ],
+          "panels": [
+            "html",
+            "json"
+          ],
+          "capabilities": [
+            "artifact-storage"
+          ],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "file": {
+            "x": 40,
+            "y": 160
+          },
+          "parse": {
+            "x": 620,
+            "y": 160
+          },
+          "limit": {
+            "x": 910,
+            "y": 160
+          },
+          "encode": {
+            "x": 1200,
+            "y": 80
+          },
+          "page": {
+            "x": 1490,
+            "y": 80
+          },
+          "response": {
+            "x": 1780,
+            "y": 80
+          },
+          "data_response": {
+            "x": 1200,
+            "y": 360
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "html",
+            "binding": {
+              "nodeInstanceId": "page",
+              "outputName": "html"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "limit",
+              "outputName": "items"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "tags": [
+    "games",
+    "data"
+  ]
+}

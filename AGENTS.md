@@ -23,6 +23,7 @@ to examples, their documentation, and repository validation.
   generated media, or local absolute paths.
 - Keep secrets in graph-scoped execution profiles and reference them by name.
 - Pair every runnable `<name>.subfork.json` with `<name>.notes.md`.
+- Give every graph envelope 2-6 curated tags. Reuse the repository's existing lowercase vocabulary and include both a capability or modality and a purpose, provider, or domain; do not derive noisy tags mechanically from every path segment.
 - Document network calls, provider requirements, costs, limits, and destructive
   or externally visible side effects.
 - Prefer deterministic, keyless examples. Keep remote requests bounded by

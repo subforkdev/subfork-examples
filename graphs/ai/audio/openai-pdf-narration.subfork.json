@@ -3,42 +3,20 @@
   "definition": {
     "version": "0.1.0",
     "name": "OpenAI PDF Narration",
-    "description": "Upload a short PDF and give a prompt to generate a narration transcript and MP3. Requires File Asset support and a provider-reachable artifact URL. Paid OpenAI calls; AI-generated voice.",
+    "description": "Provide a public PDF URL and prompt to generate a narration transcript and MP3. Paid OpenAI calls; AI-generated voice.",
     "nodes": [
       {
         "node_instance_id": "file",
-        "node_id": "n_file_asset",
+        "node_id": "n_url_input",
         "node_version": "1.0.0",
-        "title": "Upload PDF",
+        "title": "Public PDF URL",
         "params": {
-          "artifact_id": ""
+          "url": ""
         },
         "exposed_outputs": [
-          "url",
-          "media_type",
-          "filename"
+          "url"
         ],
         "outputs_visibility_configured": true
-      },
-      {
-        "node_instance_id": "file_check",
-        "node_id": "n_text_match",
-        "node_version": "1.0.0",
-        "title": "Require PDF document",
-        "params": {
-          "pattern": "\\Aapplication/pdf\\Z",
-          "flags": "",
-          "operation": "extract"
-        }
-      },
-      {
-        "node_instance_id": "file_check_value",
-        "node_id": "n_json_path",
-        "node_version": "1.0.0",
-        "title": "Validated PDF type",
-        "params": {
-          "path": "0"
-        }
       },
       {
         "node_instance_id": "prompt",
@@ -53,7 +31,7 @@
         "node_instance_id": "prompt_check",
         "node_id": "n_text_match",
         "node_version": "1.0.0",
-        "title": "Require prompt of 1\u20132000 characters",
+        "title": "Require prompt of 1–2000 characters",
         "params": {
           "pattern": "\\A(?=[\\s\\S]*\\S)[\\s\\S]{1,2000}\\Z",
           "flags": "",
@@ -64,7 +42,7 @@
         "node_instance_id": "prompt_check_value",
         "node_id": "n_json_path",
         "node_version": "1.0.0",
-        "title": "Require prompt of 1\u20132000 characters value",
+        "title": "Require prompt of 1–2000 characters value",
         "params": {
           "path": "0"
         }
@@ -99,12 +77,10 @@
         },
         "custom_inputs": {
           "file_url": "url",
-          "document_type": "str",
-          "prompt": "str"
+          "prompt": "json"
         },
         "exposed_inputs": [
           "file_url",
-          "document_type",
           "prompt"
         ],
         "inputs_visibility_configured": true
@@ -266,10 +242,10 @@
           }
         },
         "custom_inputs": {
-          "script": "str",
-          "delivery": "str",
-          "voice": "str",
-          "completion": "str"
+          "script": "json",
+          "delivery": "json",
+          "voice": "json",
+          "completion": "json"
         },
         "exposed_inputs": [
           "script",
@@ -355,21 +331,27 @@
           "operation": "equals",
           "equals": "output_text"
         }
+      },
+      {
+        "node_instance_id": "text_for_finish_check_text",
+        "node_id": "n_text_template",
+        "node_version": "1.0.0",
+        "title": "Convert text to text",
+        "params": {
+          "template": "{{ inputs.value }}"
+        }
+      },
+      {
+        "node_instance_id": "text_for_script_check_text",
+        "node_id": "n_text_template",
+        "node_version": "1.0.0",
+        "title": "Convert text to text",
+        "params": {
+          "template": "{{ inputs.value }}"
+        }
       }
     ],
     "edges": [
-      {
-        "source_node_id": "file",
-        "source_output": "media_type",
-        "target_node_id": "file_check",
-        "target_input": "text"
-      },
-      {
-        "source_node_id": "file_check",
-        "source_output": "matches",
-        "target_node_id": "file_check_value",
-        "target_input": "value"
-      },
       {
         "source_node_id": "prompt",
         "source_output": "text",
@@ -381,12 +363,6 @@
         "source_output": "matches",
         "target_node_id": "prompt_check_value",
         "target_input": "value"
-      },
-      {
-        "source_node_id": "file_check_value",
-        "source_output": "value",
-        "target_node_id": "narration_body",
-        "target_input": "document_type"
       },
       {
         "source_node_id": "prompt_check_value",
@@ -409,6 +385,12 @@
       {
         "source_node_id": "finish",
         "source_output": "value",
+        "target_node_id": "text_for_finish_check_text",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "text_for_finish_check_text",
+        "source_output": "text",
         "target_node_id": "finish_check",
         "target_input": "text"
       },
@@ -421,6 +403,12 @@
       {
         "source_node_id": "script",
         "source_output": "value",
+        "target_node_id": "text_for_script_check_text",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "text_for_script_check_text",
+        "source_output": "text",
         "target_node_id": "script_check",
         "target_input": "text"
       },
@@ -553,30 +541,13 @@
       "template": {
         "category": "ai",
         "status": "provider-backed-probe",
-        "summary": "Upload a short PDF and give a prompt to generate a narration transcript and MP3. Requires File Asset support and a provider-reachable artifact URL. Paid OpenAI calls; AI-generated voice.",
-        "requires": {
-          "nodes": [
-            "n_fetch_url",
-            "n_file_asset",
-            "n_filter_rows",
-            "n_json_path",
-            "n_json_template",
-            "n_media_response",
-            "n_text_match",
-            "n_text_value"
-          ],
-          "panels": [
-            "audio",
-            "json",
-            "logs"
-          ],
-          "capabilities": [
-            "public-http"
-          ],
-          "secrets": [
-            "OPENAI_API_KEY"
-          ]
-        }
+        "summary": "Provide a public PDF URL and prompt to generate a narration transcript and MP3. Paid OpenAI calls; AI-generated voice.",
+        "requires": [
+          "nodes",
+          "panels",
+          "capabilities",
+          "secrets"
+        ]
       },
       "canvas": {
         "positions": {
@@ -707,5 +678,10 @@
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "ai",
+    "audio",
+    "openai"
+  ]
 }

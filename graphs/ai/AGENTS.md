@@ -12,3 +12,4 @@
 - Prefer generic HTTP, job, and artifact primitives over provider-specific core
   behavior when the graph remains understandable.
 - Keep optional media inputs optional and validate provider-facing URLs.
+- Tag AI graphs with ai, the output modality, and the provider when the graph is provider-specific.

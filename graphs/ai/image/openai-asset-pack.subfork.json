@@ -41,7 +41,9 @@
         "custom_inputs": {
           "prompt": "str"
         },
-        "exposed_inputs": ["prompt"],
+        "exposed_inputs": [
+          "prompt"
+        ],
         "inputs_visibility_configured": true
       },
       {
@@ -60,7 +62,9 @@
         "custom_inputs": {
           "script": "str"
         },
-        "exposed_inputs": ["script"],
+        "exposed_inputs": [
+          "script"
+        ],
         "inputs_visibility_configured": true
       },
       {
@@ -78,9 +82,13 @@
           "timeout_seconds": 90,
           "max_response_bytes": 20000000
         },
-        "exposed_inputs": ["body"],
+        "exposed_inputs": [
+          "body"
+        ],
         "inputs_visibility_configured": true,
-        "exposed_outputs": ["json"],
+        "exposed_outputs": [
+          "json"
+        ],
         "outputs_visibility_configured": true
       },
       {
@@ -99,9 +107,15 @@
           "timeout_seconds": 120,
           "max_response_bytes": 25000000
         },
-        "exposed_inputs": ["body"],
+        "exposed_inputs": [
+          "body"
+        ],
         "inputs_visibility_configured": true,
-        "exposed_outputs": ["media", "status", "headers"],
+        "exposed_outputs": [
+          "media",
+          "status",
+          "headers"
+        ],
         "outputs_visibility_configured": true
       },
       {
@@ -122,7 +136,10 @@
           "content_type": "image/jpeg",
           "filename": "asset-pack-image.jpg"
         },
-        "exposed_outputs": ["media", "url"],
+        "exposed_outputs": [
+          "media",
+          "url"
+        ],
         "outputs_visibility_configured": true
       },
       {
@@ -150,7 +167,14 @@
           "image_status": "int",
           "speech_status": "int"
         },
-        "exposed_inputs": ["prompt", "script", "image", "audio", "image_status", "speech_status"],
+        "exposed_inputs": [
+          "prompt",
+          "script",
+          "image",
+          "audio",
+          "image_status",
+          "speech_status"
+        ],
         "inputs_visibility_configured": true
       },
       {
@@ -196,26 +220,126 @@
         "node_id": "n_json_response",
         "node_version": "1.0.0",
         "title": "Metadata Response"
+      },
+      {
+        "node_instance_id": "text_for_image_media_b64_json",
+        "node_id": "n_text_template",
+        "node_version": "1.0.0",
+        "title": "Convert b64_json to text",
+        "params": {
+          "template": "{{ inputs.value }}"
+        }
       }
     ],
     "edges": [
-      {"source_node_id": "prompt", "source_output": "text", "target_node_id": "image_body", "target_input": "prompt"},
-      {"source_node_id": "voice_script", "source_output": "text", "target_node_id": "speech_body", "target_input": "script"},
-      {"source_node_id": "image_body", "source_output": "value", "target_node_id": "image_request", "target_input": "body"},
-      {"source_node_id": "speech_body", "source_output": "value", "target_node_id": "speech_request", "target_input": "body"},
-      {"source_node_id": "image_request", "source_output": "json", "target_node_id": "image_b64", "target_input": "value"},
-      {"source_node_id": "image_b64", "source_output": "value", "target_node_id": "image_media", "target_input": "b64_json"},
-      {"source_node_id": "prompt", "source_output": "text", "target_node_id": "metadata", "target_input": "prompt"},
-      {"source_node_id": "voice_script", "source_output": "text", "target_node_id": "metadata", "target_input": "script"},
-      {"source_node_id": "image_media", "source_output": "media", "target_node_id": "metadata", "target_input": "image"},
-      {"source_node_id": "speech_request", "source_output": "media", "target_node_id": "metadata", "target_input": "audio"},
-      {"source_node_id": "image_request", "source_output": "status", "target_node_id": "metadata", "target_input": "image_status"},
-      {"source_node_id": "speech_request", "source_output": "status", "target_node_id": "metadata", "target_input": "speech_status"},
-      {"source_node_id": "metadata", "source_output": "value", "target_node_id": "campaign_brief", "target_input": "value"},
-      {"source_node_id": "image_media", "source_output": "media", "target_node_id": "image_response", "target_input": "media"},
-      {"source_node_id": "speech_request", "source_output": "media", "target_node_id": "audio_response", "target_input": "media"},
-      {"source_node_id": "campaign_brief", "source_output": "value", "target_node_id": "brief_response", "target_input": "text"},
-      {"source_node_id": "metadata", "source_output": "value", "target_node_id": "metadata_response", "target_input": "value"}
+      {
+        "source_node_id": "prompt",
+        "source_output": "text",
+        "target_node_id": "image_body",
+        "target_input": "prompt"
+      },
+      {
+        "source_node_id": "voice_script",
+        "source_output": "text",
+        "target_node_id": "speech_body",
+        "target_input": "script"
+      },
+      {
+        "source_node_id": "image_body",
+        "source_output": "value",
+        "target_node_id": "image_request",
+        "target_input": "body"
+      },
+      {
+        "source_node_id": "speech_body",
+        "source_output": "value",
+        "target_node_id": "speech_request",
+        "target_input": "body"
+      },
+      {
+        "source_node_id": "image_request",
+        "source_output": "json",
+        "target_node_id": "image_b64",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "image_b64",
+        "source_output": "value",
+        "target_node_id": "text_for_image_media_b64_json",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "text_for_image_media_b64_json",
+        "source_output": "text",
+        "target_node_id": "image_media",
+        "target_input": "b64_json"
+      },
+      {
+        "source_node_id": "prompt",
+        "source_output": "text",
+        "target_node_id": "metadata",
+        "target_input": "prompt"
+      },
+      {
+        "source_node_id": "voice_script",
+        "source_output": "text",
+        "target_node_id": "metadata",
+        "target_input": "script"
+      },
+      {
+        "source_node_id": "image_media",
+        "source_output": "media",
+        "target_node_id": "metadata",
+        "target_input": "image"
+      },
+      {
+        "source_node_id": "speech_request",
+        "source_output": "media",
+        "target_node_id": "metadata",
+        "target_input": "audio"
+      },
+      {
+        "source_node_id": "image_request",
+        "source_output": "status",
+        "target_node_id": "metadata",
+        "target_input": "image_status"
+      },
+      {
+        "source_node_id": "speech_request",
+        "source_output": "status",
+        "target_node_id": "metadata",
+        "target_input": "speech_status"
+      },
+      {
+        "source_node_id": "metadata",
+        "source_output": "value",
+        "target_node_id": "campaign_brief",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "image_media",
+        "source_output": "media",
+        "target_node_id": "image_response",
+        "target_input": "media"
+      },
+      {
+        "source_node_id": "speech_request",
+        "source_output": "media",
+        "target_node_id": "audio_response",
+        "target_input": "media"
+      },
+      {
+        "source_node_id": "campaign_brief",
+        "source_output": "value",
+        "target_node_id": "brief_response",
+        "target_input": "text"
+      },
+      {
+        "source_node_id": "metadata",
+        "source_output": "value",
+        "target_node_id": "metadata_response",
+        "target_input": "value"
+      }
     ],
     "graph_outputs": {
       "image": {
@@ -245,36 +369,127 @@
         "status": "provider-backed-branching-probe",
         "summary": "One prompt fans out into image generation, speech generation, metadata assembly, and markdown reporting.",
         "requires": {
-          "nodes": ["n_text_value", "n_json_template", "n_fetch_url", "n_json_path", "n_base64_image_to_media", "n_text_template", "n_media_response", "n_text_response", "n_json_response"],
-          "panels": ["image", "audio", "markdown", "json", "logs"],
-          "capabilities": ["public-http"],
-          "secrets": ["OPENAI_API_KEY"]
+          "nodes": [
+            "n_text_value",
+            "n_json_template",
+            "n_fetch_url",
+            "n_json_path",
+            "n_base64_image_to_media",
+            "n_text_template",
+            "n_media_response",
+            "n_text_response",
+            "n_json_response"
+          ],
+          "panels": [
+            "image",
+            "audio",
+            "markdown",
+            "json",
+            "logs"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
+          "secrets": [
+            "OPENAI_API_KEY"
+          ]
         }
       },
       "canvas": {
         "positions": {
-          "prompt": {"x": 60, "y": 120},
-          "voice_script": {"x": 60, "y": 360},
-          "image_body": {"x": 340, "y": 100},
-          "speech_body": {"x": 340, "y": 360},
-          "image_request": {"x": 620, "y": 100},
-          "speech_request": {"x": 620, "y": 360},
-          "image_b64": {"x": 900, "y": 100},
-          "image_media": {"x": 1160, "y": 100},
-          "metadata": {"x": 1160, "y": 340},
-          "campaign_brief": {"x": 1440, "y": 340},
-          "image_response": {"x": 1440, "y": 80},
-          "audio_response": {"x": 900, "y": 500},
-          "brief_response": {"x": 1720, "y": 320},
-          "metadata_response": {"x": 1440, "y": 520}
+          "prompt": {
+            "x": 60,
+            "y": 120
+          },
+          "voice_script": {
+            "x": 60,
+            "y": 360
+          },
+          "image_body": {
+            "x": 340,
+            "y": 100
+          },
+          "speech_body": {
+            "x": 340,
+            "y": 360
+          },
+          "image_request": {
+            "x": 620,
+            "y": 100
+          },
+          "speech_request": {
+            "x": 620,
+            "y": 360
+          },
+          "image_b64": {
+            "x": 900,
+            "y": 100
+          },
+          "image_media": {
+            "x": 1160,
+            "y": 100
+          },
+          "metadata": {
+            "x": 1160,
+            "y": 340
+          },
+          "campaign_brief": {
+            "x": 1440,
+            "y": 340
+          },
+          "image_response": {
+            "x": 1440,
+            "y": 80
+          },
+          "audio_response": {
+            "x": 900,
+            "y": 500
+          },
+          "brief_response": {
+            "x": 1720,
+            "y": 320
+          },
+          "metadata_response": {
+            "x": 1440,
+            "y": 520
+          }
         },
         "recommended_panels": [
-          {"kind": "image", "binding": {"nodeInstanceId": "image_media", "outputName": "media"}},
-          {"kind": "audio", "binding": {"nodeInstanceId": "speech_request", "outputName": "media"}},
-          {"kind": "markdown", "binding": {"nodeInstanceId": "campaign_brief", "outputName": "value"}},
-          {"kind": "json", "binding": {"nodeInstanceId": "metadata", "outputName": "value"}}
+          {
+            "kind": "image",
+            "binding": {
+              "nodeInstanceId": "image_media",
+              "outputName": "media"
+            }
+          },
+          {
+            "kind": "audio",
+            "binding": {
+              "nodeInstanceId": "speech_request",
+              "outputName": "media"
+            }
+          },
+          {
+            "kind": "markdown",
+            "binding": {
+              "nodeInstanceId": "campaign_brief",
+              "outputName": "value"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "metadata",
+              "outputName": "value"
+            }
+          }
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "ai",
+    "image",
+    "openai"
+  ]
 }

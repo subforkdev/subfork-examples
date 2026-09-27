@@ -2,6 +2,10 @@
 
 These examples produce interactive 3D scenes and geoscience visualizations.
 
+## Music
+
+- [Pulse Orbit](music/pulse-orbit.notes.md) · [Download graph](music/pulse-orbit.subfork.json)
+
 ## Scenes
 
 - [Orbit Field](scenes/orbit-field.notes.md) · <a href="scenes/orbit-field.subfork.json" download="orbit-field.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>

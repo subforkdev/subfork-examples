@@ -11,6 +11,7 @@ used only while testing unreleased changes.
 ```json
 {
   "format": "subfork.graph/1",
+  "tags": ["example", "text"],
   "definition": {
     "version": "0.1.0",
     "name": "Example name",
@@ -40,6 +41,11 @@ used only while testing unreleased changes.
 Keep the envelope and exported field names exactly as shown. Start from the
 closest existing example or a fresh Subfork export when possible. Do not invent
 node IDs, parameter names, ports, or versions from memory.
+
+`tags` is envelope metadata carried by export and import. Use at most 12 unique,
+lowercase slugs of 1–32 letters, numbers, hyphens, or underscores. Tags describe
+the example’s durable category and capabilities; imports apply them when creating
+a graph, while merge and replace preserve the destination graph’s existing tags.
 
 ## Definition Fields
 
@@ -125,13 +131,16 @@ arbitrary URL that could receive the credential.
    ```sh
    python3 scripts/validate_examples.py
    python3 scripts/validate_examples.py \
+     --node-catalog-dir ../subfork-new/nodes
+   python3 scripts/validate_examples.py \
      --node-catalog-url https://subfork.com/api/v1/nodes
    ```
 
 9. Import the result into a fresh graph in local development, then inspect it
    and run the documented happy path before describing it as tested.
 
-Repository validation checks the envelope, references, common credential
-patterns, and production node-type availability. It does not prove that parameters,
-ports, provider behavior, costs, or side effects are correct. The target catalog,
-a fresh import, and an appropriate manual run remain required for that evidence.
+Repository validation checks the envelope, references, and common credential
+patterns. The local catalog option also checks versions, parameters, exposed and
+custom ports, edge types, literal collisions, and graph outputs. The production
+catalog option checks released node-type availability. Provider behavior, costs,
+and side effects still require a fresh import and an appropriate manual run.

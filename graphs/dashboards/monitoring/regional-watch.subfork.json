@@ -1996,5 +1996,9 @@
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "dashboards",
+    "monitoring"
+  ]
 }

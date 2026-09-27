@@ -10,16 +10,26 @@
         "node_id": "n_text_value",
         "node_version": "1.0.0",
         "title": "Message to send",
-        "params": {"text": "Subfork connector test"}
+        "params": {
+          "text": "Subfork connector test"
+        }
       },
       {
         "node_instance_id": "body",
         "node_id": "n_json_template",
         "node_version": "1.0.0",
         "title": "Slack message body",
-        "params": {"template": {"text": "{{ inputs.message }}"}},
-        "custom_inputs": {"message": "str"},
-        "exposed_inputs": ["message"],
+        "params": {
+          "template": {
+            "text": "{{ inputs.message }}"
+          }
+        },
+        "custom_inputs": {
+          "message": "str"
+        },
+        "exposed_inputs": [
+          "message"
+        ],
         "inputs_visibility_configured": true
       },
       {
@@ -30,13 +40,20 @@
         "params": {
           "url": "{{ secrets.SLACK_WEBHOOK_URL }}",
           "method": "POST",
-          "headers": {"Content-Type": "application/json"},
+          "headers": {
+            "Content-Type": "application/json"
+          },
           "timeout_seconds": 20,
           "max_response_bytes": 64000
         },
-        "exposed_inputs": ["body"],
+        "exposed_inputs": [
+          "body"
+        ],
         "inputs_visibility_configured": true,
-        "exposed_outputs": ["body", "status"],
+        "exposed_outputs": [
+          "body",
+          "status"
+        ],
         "outputs_visibility_configured": true
       },
       {
@@ -47,41 +64,108 @@
       }
     ],
     "edges": [
-      {"source_node_id": "message", "source_output": "text", "target_node_id": "body", "target_input": "message"},
-      {"source_node_id": "body", "source_output": "value", "target_node_id": "request", "target_input": "body"},
-      {"source_node_id": "request", "source_output": "body", "target_node_id": "response", "target_input": "text"}
+      {
+        "source_node_id": "message",
+        "source_output": "text",
+        "target_node_id": "body",
+        "target_input": "message"
+      },
+      {
+        "source_node_id": "body",
+        "source_output": "value",
+        "target_node_id": "request",
+        "target_input": "body"
+      },
+      {
+        "source_node_id": "request",
+        "source_output": "body",
+        "target_node_id": "response",
+        "target_input": "text"
+      }
     ],
     "graph_outputs": {
-      "status": {"node_instance_id": "request", "output_name": "status"},
-      "provider_response": {"node_instance_id": "request", "output_name": "body"},
-      "response": {"node_instance_id": "response", "output_name": "response"}
+      "status": {
+        "node_instance_id": "request",
+        "output_name": "status"
+      },
+      "provider_response": {
+        "node_instance_id": "request",
+        "output_name": "body"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      }
     },
     "metadata": {
       "template": {
         "category": "connectors",
         "status": "provider-backed-probe",
         "composite_interface": {
-          "inputs": {"message": {"type": "str", "default_node": "message", "default_param": "text"}},
+          "inputs": {
+            "message": {
+              "type": "str",
+              "default_node": "message",
+              "default_param": "text"
+            }
+          },
           "outputs": {
-            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"},
-            "provider_response": {"type": "str", "node_instance_id": "request", "output_name": "body"}
+            "status": {
+              "type": "int",
+              "node_instance_id": "request",
+              "output_name": "status"
+            },
+            "provider_response": {
+              "type": "str",
+              "node_instance_id": "request",
+              "output_name": "body"
+            }
           }
         },
         "requires": {
-          "nodes": ["n_text_value", "n_json_template", "n_fetch_url", "n_text_response"],
-          "panels": ["text", "logs"],
-          "capabilities": ["public-http", "external-write"],
-          "secrets": ["SLACK_WEBHOOK_URL"]
+          "nodes": [
+            "n_text_value",
+            "n_json_template",
+            "n_fetch_url",
+            "n_text_response"
+          ],
+          "panels": [
+            "text",
+            "logs"
+          ],
+          "capabilities": [
+            "public-http",
+            "external-write"
+          ],
+          "secrets": [
+            "SLACK_WEBHOOK_URL"
+          ]
         }
       },
       "canvas": {
         "positions": {
-          "message": {"x": 80, "y": 180},
-          "body": {"x": 340, "y": 180},
-          "request": {"x": 620, "y": 180},
-          "response": {"x": 900, "y": 180}
+          "message": {
+            "x": 80,
+            "y": 180
+          },
+          "body": {
+            "x": 340,
+            "y": 180
+          },
+          "request": {
+            "x": 620,
+            "y": 180
+          },
+          "response": {
+            "x": 900,
+            "y": 180
+          }
         }
       }
     }
-  }
+  },
+  "tags": [
+    "connectors",
+    "slack"
+  ]
 }

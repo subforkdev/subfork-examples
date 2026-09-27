@@ -23,13 +23,18 @@
             "timezone": "UTC",
             "forecast_days": 1
           },
-          "headers": {"Accept": "application/json"},
+          "headers": {
+            "Accept": "application/json"
+          },
           "timeout_seconds": 20,
           "max_response_bytes": 200000
         },
         "exposed_inputs": [],
         "inputs_visibility_configured": true,
-        "exposed_outputs": ["json", "status"],
+        "exposed_outputs": [
+          "json",
+          "status"
+        ],
         "outputs_visibility_configured": true
       },
       {
@@ -37,7 +42,9 @@
         "node_id": "n_json_path",
         "node_version": "1.0.0",
         "title": "Current conditions",
-        "params": {"path": "current"}
+        "params": {
+          "path": "current"
+        }
       },
       {
         "node_instance_id": "project",
@@ -64,14 +71,38 @@
       }
     ],
     "edges": [
-      {"source_node_id": "request", "source_output": "json", "target_node_id": "current", "target_input": "value"},
-      {"source_node_id": "current", "source_output": "value", "target_node_id": "project", "target_input": "value"},
-      {"source_node_id": "project", "source_output": "items", "target_node_id": "response", "target_input": "value"}
+      {
+        "source_node_id": "request",
+        "source_output": "json",
+        "target_node_id": "current",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "current",
+        "source_output": "value",
+        "target_node_id": "project",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "project",
+        "source_output": "items",
+        "target_node_id": "response",
+        "target_input": "value"
+      }
     ],
     "graph_outputs": {
-      "conditions": {"node_instance_id": "project", "output_name": "items"},
-      "status": {"node_instance_id": "request", "output_name": "status"},
-      "response": {"node_instance_id": "response", "output_name": "response"}
+      "conditions": {
+        "node_instance_id": "project",
+        "output_name": "items"
+      },
+      "status": {
+        "node_instance_id": "request",
+        "output_name": "status"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      }
     },
     "metadata": {
       "template": {
@@ -80,29 +111,76 @@
         "composite_interface": {
           "inputs": {},
           "outputs": {
-            "conditions": {"type": "json", "node_instance_id": "project", "output_name": "items"},
-            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"}
+            "conditions": {
+              "type": "json",
+              "node_instance_id": "project",
+              "output_name": "items"
+            },
+            "status": {
+              "type": "int",
+              "node_instance_id": "request",
+              "output_name": "status"
+            }
           }
         },
         "requires": {
-          "nodes": ["n_fetch_url", "n_json_path", "n_map_fields", "n_json_response"],
-          "panels": ["table", "json", "logs"],
-          "capabilities": ["public-http"],
+          "nodes": [
+            "n_fetch_url",
+            "n_json_path",
+            "n_map_fields",
+            "n_json_response"
+          ],
+          "panels": [
+            "table",
+            "json",
+            "logs"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
           "secrets": []
         }
       },
       "canvas": {
         "positions": {
-          "request": {"x": 100, "y": 180},
-          "current": {"x": 410, "y": 180},
-          "project": {"x": 720, "y": 180},
-          "response": {"x": 1030, "y": 180}
+          "request": {
+            "x": 100,
+            "y": 180
+          },
+          "current": {
+            "x": 410,
+            "y": 180
+          },
+          "project": {
+            "x": 720,
+            "y": 180
+          },
+          "response": {
+            "x": 1030,
+            "y": 180
+          }
         },
         "recommended_panels": [
-          {"kind": "table", "binding": {"nodeInstanceId": "project", "outputName": "items"}},
-          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+          {
+            "kind": "table",
+            "binding": {
+              "nodeInstanceId": "project",
+              "outputName": "items"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "response",
+              "outputName": "response"
+            }
+          }
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "data",
+    "weather"
+  ]
 }

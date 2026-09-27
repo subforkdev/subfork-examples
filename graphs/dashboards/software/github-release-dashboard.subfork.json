@@ -1,0 +1,600 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "GitHub Release Dashboard",
+    "description": "Fetches one bounded page of public GitHub releases, normalizes release records, and binds them to linked dashboard panels. Read-only and keyless with unauthenticated rate limits.",
+    "nodes": [
+      {
+        "node_instance_id": "url",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "GitHub releases URL",
+        "params": {
+          "url": "https://api.github.com/repos/cli/cli/releases"
+        }
+      },
+      {
+        "node_instance_id": "fetch",
+        "node_id": "n_fetch_url",
+        "node_version": "1.0.0",
+        "title": "Fetch public releases",
+        "params": {
+          "method": "GET",
+          "query": {
+            "per_page": 30,
+            "page": 1
+          },
+          "headers": {
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2026-03-10"
+          },
+          "timeout_seconds": 20,
+          "max_response_bytes": 1000000
+        },
+        "exposed_inputs": [
+          "url"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "json",
+          "status"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "limit",
+        "node_id": "n_limit",
+        "node_version": "1.0.0",
+        "title": "At most 30 releases",
+        "params": {
+          "count": 30
+        }
+      },
+      {
+        "node_instance_id": "normalize",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Normalize release records",
+        "params": {
+          "mapping": {
+            "id": "id",
+            "tag": "tag_name",
+            "title": "name",
+            "author": "author.login",
+            "published_at": "published_at",
+            "created_at": "created_at",
+            "url": "html_url",
+            "prerelease": "prerelease",
+            "draft": "draft",
+            "body": "body"
+          }
+        }
+      },
+      {
+        "node_instance_id": "sort",
+        "node_id": "n_sort_rows",
+        "node_version": "1.0.0",
+        "title": "Newest published first",
+        "params": {
+          "field": "published_at",
+          "direction": "desc"
+        }
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_json_response",
+        "node_version": "1.0.0",
+        "title": "Release JSON response"
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "url",
+        "source_output": "url",
+        "target_node_id": "fetch",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "fetch",
+        "source_output": "json",
+        "target_node_id": "limit",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "limit",
+        "source_output": "items",
+        "target_node_id": "normalize",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "normalize",
+        "source_output": "items",
+        "target_node_id": "sort",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "sort",
+        "source_output": "items",
+        "target_node_id": "response",
+        "target_input": "value"
+      }
+    ],
+    "graph_outputs": {
+      "releases": {
+        "node_instance_id": "sort",
+        "output_name": "items"
+      },
+      "status": {
+        "node_instance_id": "fetch",
+        "output_name": "status"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      }
+    },
+    "metadata": {
+      "category": "dashboards",
+      "template": {
+        "status": "provider-backed-example",
+        "summary": "Bounded public GitHub release records driving linked native panels.",
+        "requires": {
+          "nodes": [
+            "n_url_input",
+            "n_fetch_url",
+            "n_limit",
+            "n_map_fields",
+            "n_sort_rows",
+            "n_json_response"
+          ],
+          "panels": [
+            "filters",
+            "metrics",
+            "table",
+            "details"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "url": {
+            "x": 40,
+            "y": 120
+          },
+          "fetch": {
+            "x": 330,
+            "y": 120
+          },
+          "limit": {
+            "x": 620,
+            "y": 120
+          },
+          "normalize": {
+            "x": 910,
+            "y": 120
+          },
+          "sort": {
+            "x": 1200,
+            "y": 120
+          },
+          "response": {
+            "x": 1490,
+            "y": 120
+          }
+        },
+        "recommended_layout": {
+          "kind": "split",
+          "direction": "vertical",
+          "first": {
+            "kind": "filters",
+            "id": "filters",
+            "title": "Release Filters",
+            "binding": {
+              "nodeInstanceId": "sort",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "label": "tag",
+                "time": "published_at",
+                "url": "url"
+              },
+              "recordView": {
+                "columns": [
+                  {
+                    "field": "tag",
+                    "label": "Tag"
+                  },
+                  {
+                    "field": "title",
+                    "label": "Release"
+                  },
+                  {
+                    "field": "author",
+                    "label": "Author"
+                  },
+                  {
+                    "field": "published_at",
+                    "label": "Published"
+                  },
+                  {
+                    "field": "prerelease",
+                    "label": "Prerelease"
+                  },
+                  {
+                    "field": "draft",
+                    "label": "Draft"
+                  },
+                  {
+                    "field": "url",
+                    "label": "GitHub URL"
+                  }
+                ],
+                "sourceName": "GitHub public releases",
+                "sourceUrl": "https://api.github.com/"
+              },
+              "facetFields": [
+                {
+                  "field": "author",
+                  "kind": "values"
+                },
+                {
+                  "field": "prerelease",
+                  "kind": "values"
+                },
+                {
+                  "field": "published_at",
+                  "kind": "date"
+                }
+              ]
+            }
+          },
+          "second": {
+            "kind": "split",
+            "direction": "vertical",
+            "first": {
+              "kind": "metrics",
+              "id": "metrics",
+              "title": "Release Metrics",
+              "binding": {
+                "nodeInstanceId": "sort",
+                "outputName": "items"
+              },
+              "settings": {
+                "dataMapping": {
+                  "id": "id",
+                  "time": "published_at"
+                },
+                "recordView": {
+                  "sourceName": "GitHub public releases",
+                  "sourceUrl": "https://api.github.com/"
+                }
+              }
+            },
+            "second": {
+              "kind": "split",
+              "direction": "horizontal",
+              "first": {
+                "kind": "table",
+                "id": "table",
+                "title": "Releases",
+                "binding": {
+                  "nodeInstanceId": "sort",
+                  "outputName": "items"
+                },
+                "settings": {
+                  "dataMapping": {
+                    "id": "id",
+                    "time": "published_at"
+                  },
+                  "recordView": {
+                    "columns": [
+                      {
+                        "field": "tag",
+                        "label": "Tag"
+                      },
+                      {
+                        "field": "title",
+                        "label": "Release"
+                      },
+                      {
+                        "field": "author",
+                        "label": "Author"
+                      },
+                      {
+                        "field": "published_at",
+                        "label": "Published"
+                      },
+                      {
+                        "field": "prerelease",
+                        "label": "Prerelease"
+                      },
+                      {
+                        "field": "draft",
+                        "label": "Draft"
+                      },
+                      {
+                        "field": "url",
+                        "label": "GitHub URL"
+                      }
+                    ],
+                    "sourceName": "GitHub public releases",
+                    "sourceUrl": "https://api.github.com/"
+                  }
+                }
+              },
+              "second": {
+                "kind": "split",
+                "direction": "vertical",
+                "first": {
+                  "kind": "details",
+                  "id": "details",
+                  "title": "Selected Release",
+                  "binding": {
+                    "nodeInstanceId": "sort",
+                    "outputName": "items"
+                  },
+                  "settings": {
+                    "dataMapping": {
+                      "id": "id",
+                      "label": "tag",
+                      "time": "published_at",
+                      "url": "url"
+                    },
+                    "recordView": {
+                      "columns": [
+                        {
+                          "field": "tag",
+                          "label": "Tag"
+                        },
+                        {
+                          "field": "title",
+                          "label": "Release"
+                        },
+                        {
+                          "field": "author",
+                          "label": "Author"
+                        },
+                        {
+                          "field": "published_at",
+                          "label": "Published"
+                        },
+                        {
+                          "field": "prerelease",
+                          "label": "Prerelease"
+                        },
+                        {
+                          "field": "draft",
+                          "label": "Draft"
+                        },
+                        {
+                          "field": "url",
+                          "label": "GitHub URL"
+                        },
+                        {
+                          "field": "body",
+                          "label": "Release notes"
+                        }
+                      ],
+                      "sourceName": "GitHub public releases",
+                      "sourceUrl": "https://api.github.com/"
+                    }
+                  }
+                },
+                "second": {
+                  "kind": "graph",
+                  "id": "graph",
+                  "title": "Graph"
+                },
+                "firstPercent": 72
+              },
+              "firstPercent": 64
+            },
+            "firstPercent": 24
+          },
+          "firstPercent": 25
+        },
+        "recommended_panels": [
+          {
+            "kind": "filters",
+            "id": "filters",
+            "title": "Release Filters",
+            "binding": {
+              "nodeInstanceId": "sort",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "label": "tag",
+                "time": "published_at",
+                "url": "url"
+              },
+              "recordView": {
+                "columns": [
+                  {
+                    "field": "tag",
+                    "label": "Tag"
+                  },
+                  {
+                    "field": "title",
+                    "label": "Release"
+                  },
+                  {
+                    "field": "author",
+                    "label": "Author"
+                  },
+                  {
+                    "field": "published_at",
+                    "label": "Published"
+                  },
+                  {
+                    "field": "prerelease",
+                    "label": "Prerelease"
+                  },
+                  {
+                    "field": "draft",
+                    "label": "Draft"
+                  },
+                  {
+                    "field": "url",
+                    "label": "GitHub URL"
+                  }
+                ],
+                "sourceName": "GitHub public releases",
+                "sourceUrl": "https://api.github.com/"
+              },
+              "facetFields": [
+                {
+                  "field": "author",
+                  "kind": "values"
+                },
+                {
+                  "field": "prerelease",
+                  "kind": "values"
+                },
+                {
+                  "field": "published_at",
+                  "kind": "date"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "metrics",
+            "id": "metrics",
+            "title": "Release Metrics",
+            "binding": {
+              "nodeInstanceId": "sort",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "time": "published_at"
+              },
+              "recordView": {
+                "sourceName": "GitHub public releases",
+                "sourceUrl": "https://api.github.com/"
+              }
+            }
+          },
+          {
+            "kind": "table",
+            "id": "table",
+            "title": "Releases",
+            "binding": {
+              "nodeInstanceId": "sort",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "time": "published_at"
+              },
+              "recordView": {
+                "columns": [
+                  {
+                    "field": "tag",
+                    "label": "Tag"
+                  },
+                  {
+                    "field": "title",
+                    "label": "Release"
+                  },
+                  {
+                    "field": "author",
+                    "label": "Author"
+                  },
+                  {
+                    "field": "published_at",
+                    "label": "Published"
+                  },
+                  {
+                    "field": "prerelease",
+                    "label": "Prerelease"
+                  },
+                  {
+                    "field": "draft",
+                    "label": "Draft"
+                  },
+                  {
+                    "field": "url",
+                    "label": "GitHub URL"
+                  }
+                ],
+                "sourceName": "GitHub public releases",
+                "sourceUrl": "https://api.github.com/"
+              }
+            }
+          },
+          {
+            "kind": "details",
+            "id": "details",
+            "title": "Selected Release",
+            "binding": {
+              "nodeInstanceId": "sort",
+              "outputName": "items"
+            },
+            "settings": {
+              "dataMapping": {
+                "id": "id",
+                "label": "tag",
+                "time": "published_at",
+                "url": "url"
+              },
+              "recordView": {
+                "columns": [
+                  {
+                    "field": "tag",
+                    "label": "Tag"
+                  },
+                  {
+                    "field": "title",
+                    "label": "Release"
+                  },
+                  {
+                    "field": "author",
+                    "label": "Author"
+                  },
+                  {
+                    "field": "published_at",
+                    "label": "Published"
+                  },
+                  {
+                    "field": "prerelease",
+                    "label": "Prerelease"
+                  },
+                  {
+                    "field": "draft",
+                    "label": "Draft"
+                  },
+                  {
+                    "field": "url",
+                    "label": "GitHub URL"
+                  },
+                  {
+                    "field": "body",
+                    "label": "Release notes"
+                  }
+                ],
+                "sourceName": "GitHub public releases",
+                "sourceUrl": "https://api.github.com/"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "tags": [
+    "dashboards",
+    "software"
+  ]
+}

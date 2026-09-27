@@ -15,15 +15,6 @@
         }
       },
       {
-        "node_instance_id": "length",
-        "node_id": "n_static_value",
-        "node_version": "1.0.0",
-        "title": "Course length / 5–60 gates",
-        "params": {
-          "value": 30
-        }
-      },
-      {
         "node_instance_id": "indices",
         "node_id": "n_number_sequence",
         "node_version": "1.0.0",
@@ -35,7 +26,10 @@
         "exposed_inputs": [
           "count"
         ],
-        "inputs_visibility_configured": true
+        "inputs_visibility_configured": true,
+        "literal_inputs": {
+          "count": 30
+        }
       },
       {
         "node_instance_id": "lanes",
@@ -50,7 +44,11 @@
           "seed",
           "count"
         ],
-        "inputs_visibility_configured": true
+        "inputs_visibility_configured": true,
+        "literal_inputs": {
+          "seed": 7,
+          "count": 30
+        }
       },
       {
         "node_instance_id": "zip",
@@ -248,24 +246,6 @@
     ],
     "edges": [
       {
-        "source_node_id": "seed",
-        "source_output": "value",
-        "target_node_id": "lanes",
-        "target_input": "seed"
-      },
-      {
-        "source_node_id": "length",
-        "source_output": "value",
-        "target_node_id": "lanes",
-        "target_input": "count"
-      },
-      {
-        "source_node_id": "length",
-        "source_output": "value",
-        "target_node_id": "indices",
-        "target_input": "count"
-      },
-      {
         "source_node_id": "indices",
         "source_output": "items",
         "target_node_id": "zip",
@@ -409,10 +389,6 @@
             "x": 60,
             "y": 60
           },
-          "length": {
-            "x": 60,
-            "y": 280
-          },
           "lanes": {
             "x": 370,
             "y": 60
@@ -488,5 +464,9 @@
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "games",
+    "arcade"
+  ]
 }

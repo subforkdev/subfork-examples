@@ -1,0 +1,749 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Pulse Orbit",
+    "description": "Analyzes the first 30 seconds of an uploaded track and turns its energy and downbeats into reusable 3D transform keyframes for a procedural orbit sculpture.",
+    "nodes": [
+      {
+        "node_instance_id": "audio_file",
+        "node_id": "n_asset",
+        "node_version": "1.0.0",
+        "title": "Upload music",
+        "params": {
+          "artifact_id": ""
+        },
+        "exposed_outputs": [
+          "artifact",
+          "filename",
+          "media_type",
+          "size_bytes"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "analysis",
+        "node_id": "n_music_analysis",
+        "node_version": "1.0.0",
+        "title": "Analyze first 30 seconds",
+        "params": {
+          "start_seconds": 0,
+          "duration_seconds": 30,
+          "max_bytes": 50000000,
+          "timeout_seconds": 60
+        }
+      },
+      {
+        "node_instance_id": "energy",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Select energy envelope",
+        "params": {
+          "path": "energy"
+        }
+      },
+      {
+        "node_instance_id": "lift",
+        "node_id": "n_compute_field",
+        "node_version": "1.0.0",
+        "title": "Energy to vertical lift",
+        "params": {
+          "operation": "multiply_add",
+          "operand": 0.7,
+          "offset": -0.35,
+          "minimum": 0,
+          "maximum": 1,
+          "source_field": "value",
+          "destination_field": "lift",
+          "overwrite": false
+        }
+      },
+      {
+        "node_instance_id": "pulse_scale",
+        "node_id": "n_compute_field",
+        "node_version": "1.0.0",
+        "title": "Energy to pulse scale",
+        "params": {
+          "operation": "multiply_add",
+          "operand": 0.65,
+          "offset": 1,
+          "minimum": 0,
+          "maximum": 1,
+          "source_field": "value",
+          "destination_field": "pulse_scale",
+          "overwrite": false
+        }
+      },
+      {
+        "node_instance_id": "pulse_rows",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Shape pulse TRS rows",
+        "params": {
+          "mapping": {
+            "time_seconds": "time_seconds",
+            "position.x": 0,
+            "position.y": "lift",
+            "position.z": 0,
+            "scale.x": "pulse_scale",
+            "scale.y": "pulse_scale",
+            "scale.z": "pulse_scale"
+          }
+        }
+      },
+      {
+        "node_instance_id": "pulse_keyframes",
+        "node_id": "n_scene_keyframes",
+        "node_version": "1.0.0",
+        "title": "Pulse keyframes",
+        "params": {
+          "interpolation": "linear"
+        }
+      },
+      {
+        "node_instance_id": "downbeats",
+        "node_id": "n_json_path",
+        "node_version": "1.0.0",
+        "title": "Select downbeats",
+        "params": {
+          "path": "downbeats"
+        }
+      },
+      {
+        "node_instance_id": "yaw",
+        "node_id": "n_compute_field",
+        "node_version": "1.0.0",
+        "title": "Downbeats to yaw",
+        "params": {
+          "operation": "multiply",
+          "operand": 0.1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "source_field": "beat_index",
+          "destination_field": "yaw",
+          "overwrite": false
+        }
+      },
+      {
+        "node_instance_id": "turn_rows",
+        "node_id": "n_map_fields",
+        "node_version": "1.0.0",
+        "title": "Shape turn TRS rows",
+        "params": {
+          "mapping": {
+            "time_seconds": "time_seconds",
+            "rotation.x": 0,
+            "rotation.y": "yaw",
+            "rotation.z": 0
+          }
+        }
+      },
+      {
+        "node_instance_id": "turn_keyframes",
+        "node_id": "n_scene_keyframes",
+        "node_version": "1.0.0",
+        "title": "Downbeat turn keyframes",
+        "params": {
+          "interpolation": "step"
+        }
+      },
+      {
+        "node_instance_id": "core_geometry",
+        "node_id": "n_scene_geometry",
+        "node_version": "1.0.0",
+        "title": "Sphere geometry",
+        "params": {
+          "kind": "sphere",
+          "segments": 24
+        }
+      },
+      {
+        "node_instance_id": "core_material",
+        "node_id": "n_scene_material",
+        "node_version": "1.0.0",
+        "title": "Electric core material",
+        "params": {
+          "color": "#ee48b8",
+          "roughness": 0.22,
+          "metalness": 0.65
+        }
+      },
+      {
+        "node_instance_id": "core",
+        "node_id": "n_scene_object",
+        "node_version": "1.0.0",
+        "title": "Electric core",
+        "params": {}
+      },
+      {
+        "node_instance_id": "orbit_geometry",
+        "node_id": "n_scene_geometry",
+        "node_version": "1.0.0",
+        "title": "Orbit box geometry",
+        "params": {
+          "kind": "box"
+        }
+      },
+      {
+        "node_instance_id": "orbit_material",
+        "node_id": "n_scene_material",
+        "node_version": "1.0.0",
+        "title": "Cyan orbit material",
+        "params": {
+          "color": "#38e8df",
+          "roughness": 0.32,
+          "metalness": 0.45
+        }
+      },
+      {
+        "node_instance_id": "orbit",
+        "node_id": "n_scene_object",
+        "node_version": "1.0.0",
+        "title": "Instanced orbit",
+        "params": {
+          "instanced": true,
+          "instances": [
+            {
+              "position": [
+                3,
+                0,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ],
+              "scale": [
+                0.28,
+                0.7,
+                0.28
+              ]
+            },
+            {
+              "position": [
+                2.12,
+                0.35,
+                2.12
+              ],
+              "rotation": [
+                0,
+                0.79,
+                0
+              ],
+              "scale": [
+                0.28,
+                0.9,
+                0.28
+              ]
+            },
+            {
+              "position": [
+                0,
+                0,
+                3
+              ],
+              "rotation": [
+                0,
+                1.57,
+                0
+              ],
+              "scale": [
+                0.28,
+                0.7,
+                0.28
+              ]
+            },
+            {
+              "position": [
+                -2.12,
+                -0.35,
+                2.12
+              ],
+              "rotation": [
+                0,
+                2.36,
+                0
+              ],
+              "scale": [
+                0.28,
+                0.9,
+                0.28
+              ]
+            },
+            {
+              "position": [
+                -3,
+                0,
+                0
+              ],
+              "rotation": [
+                0,
+                3.14,
+                0
+              ],
+              "scale": [
+                0.28,
+                0.7,
+                0.28
+              ]
+            },
+            {
+              "position": [
+                -2.12,
+                0.35,
+                -2.12
+              ],
+              "rotation": [
+                0,
+                3.93,
+                0
+              ],
+              "scale": [
+                0.28,
+                0.9,
+                0.28
+              ]
+            },
+            {
+              "position": [
+                0,
+                0,
+                -3
+              ],
+              "rotation": [
+                0,
+                4.71,
+                0
+              ],
+              "scale": [
+                0.28,
+                0.7,
+                0.28
+              ]
+            },
+            {
+              "position": [
+                2.12,
+                -0.35,
+                -2.12
+              ],
+              "rotation": [
+                0,
+                5.5,
+                0
+              ],
+              "scale": [
+                0.28,
+                0.9,
+                0.28
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "node_instance_id": "sculpture",
+        "node_id": "n_scene_group",
+        "node_version": "1.0.0",
+        "title": "Orbit sculpture",
+        "params": {},
+        "custom_inputs": {
+          "core": "json",
+          "orbit": "json"
+        },
+        "exposed_inputs": [
+          "core",
+          "orbit"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "pulse_motion",
+        "node_id": "n_scene_transform",
+        "node_version": "1.0.0",
+        "title": "Apply energy pulse",
+        "params": {}
+      },
+      {
+        "node_instance_id": "turn_motion",
+        "node_id": "n_scene_transform",
+        "node_version": "1.0.0",
+        "title": "Apply downbeat turns",
+        "params": {}
+      },
+      {
+        "node_instance_id": "camera",
+        "node_id": "n_scene_camera",
+        "node_version": "1.0.0",
+        "title": "Stage camera",
+        "params": {
+          "position": [
+            8,
+            5.5,
+            10
+          ],
+          "target": [
+            0,
+            0,
+            0
+          ],
+          "fov": 45
+        }
+      },
+      {
+        "node_instance_id": "compose",
+        "node_id": "n_scene_compose",
+        "node_version": "1.0.0",
+        "title": "Compose pulse orbit",
+        "params": {
+          "background": "#05020d",
+          "duration": 30,
+          "lighting": [
+            {
+              "kind": "ambient",
+              "color": "#48246e",
+              "intensity": 1.2,
+              "position": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "kind": "directional",
+              "color": "#7efcf4",
+              "intensity": 4,
+              "position": [
+                6,
+                8,
+                7
+              ]
+            },
+            {
+              "kind": "directional",
+              "color": "#ff4fb8",
+              "intensity": 2.5,
+              "position": [
+                -6,
+                3,
+                -4
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "audio_file",
+        "source_output": "artifact",
+        "target_node_id": "analysis",
+        "target_input": "artifact"
+      },
+      {
+        "source_node_id": "analysis",
+        "source_output": "analysis",
+        "target_node_id": "energy",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "energy",
+        "source_output": "value",
+        "target_node_id": "lift",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "lift",
+        "source_output": "items",
+        "target_node_id": "pulse_scale",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "pulse_scale",
+        "source_output": "items",
+        "target_node_id": "pulse_rows",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "pulse_rows",
+        "source_output": "items",
+        "target_node_id": "pulse_keyframes",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "analysis",
+        "source_output": "analysis",
+        "target_node_id": "downbeats",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "downbeats",
+        "source_output": "value",
+        "target_node_id": "yaw",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "yaw",
+        "source_output": "items",
+        "target_node_id": "turn_rows",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "turn_rows",
+        "source_output": "items",
+        "target_node_id": "turn_keyframes",
+        "target_input": "items"
+      },
+      {
+        "source_node_id": "core_geometry",
+        "source_output": "geometry",
+        "target_node_id": "core",
+        "target_input": "geometry"
+      },
+      {
+        "source_node_id": "core_material",
+        "source_output": "material",
+        "target_node_id": "core",
+        "target_input": "material"
+      },
+      {
+        "source_node_id": "orbit_geometry",
+        "source_output": "geometry",
+        "target_node_id": "orbit",
+        "target_input": "geometry"
+      },
+      {
+        "source_node_id": "orbit_material",
+        "source_output": "material",
+        "target_node_id": "orbit",
+        "target_input": "material"
+      },
+      {
+        "source_node_id": "core",
+        "source_output": "object",
+        "target_node_id": "sculpture",
+        "target_input": "core"
+      },
+      {
+        "source_node_id": "orbit",
+        "source_output": "object",
+        "target_node_id": "sculpture",
+        "target_input": "orbit"
+      },
+      {
+        "source_node_id": "sculpture",
+        "source_output": "object",
+        "target_node_id": "pulse_motion",
+        "target_input": "object"
+      },
+      {
+        "source_node_id": "pulse_keyframes",
+        "source_output": "animation",
+        "target_node_id": "pulse_motion",
+        "target_input": "animation"
+      },
+      {
+        "source_node_id": "pulse_motion",
+        "source_output": "object",
+        "target_node_id": "turn_motion",
+        "target_input": "object"
+      },
+      {
+        "source_node_id": "turn_keyframes",
+        "source_output": "animation",
+        "target_node_id": "turn_motion",
+        "target_input": "animation"
+      },
+      {
+        "source_node_id": "turn_motion",
+        "source_output": "object",
+        "target_node_id": "compose",
+        "target_input": "object"
+      },
+      {
+        "source_node_id": "camera",
+        "source_output": "camera",
+        "target_node_id": "compose",
+        "target_input": "camera"
+      }
+    ],
+    "graph_outputs": {
+      "scene": {
+        "node_instance_id": "compose",
+        "output_name": "scene"
+      },
+      "audio": {
+        "node_instance_id": "audio_file",
+        "output_name": "artifact"
+      },
+      "analysis": {
+        "node_instance_id": "analysis",
+        "output_name": "analysis"
+      },
+      "pulse_animation": {
+        "node_instance_id": "pulse_keyframes",
+        "output_name": "animation"
+      },
+      "turn_animation": {
+        "node_instance_id": "turn_keyframes",
+        "output_name": "animation"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "3d",
+        "status": "media-worker-probe",
+        "summary": "Turn music energy and downbeats into a reusable animated 3D sculpture.",
+        "requires": {
+          "nodes": [
+            "n_asset",
+            "n_music_analysis",
+            "n_json_path",
+            "n_compute_field",
+            "n_map_fields",
+            "n_scene_keyframes",
+            "n_scene_geometry",
+            "n_scene_material",
+            "n_scene_object",
+            "n_scene_group",
+            "n_scene_transform",
+            "n_scene_camera",
+            "n_scene_compose"
+          ],
+          "panels": [
+            "scene3d",
+            "audio",
+            "json",
+            "logs"
+          ],
+          "capabilities": [
+            "artifact-storage",
+            "media-worker"
+          ],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "audio_file": {
+            "x": 40,
+            "y": 160
+          },
+          "analysis": {
+            "x": 310,
+            "y": 160
+          },
+          "energy": {
+            "x": 580,
+            "y": 20
+          },
+          "lift": {
+            "x": 850,
+            "y": 20
+          },
+          "pulse_scale": {
+            "x": 1120,
+            "y": 20
+          },
+          "pulse_rows": {
+            "x": 1390,
+            "y": 20
+          },
+          "pulse_keyframes": {
+            "x": 1660,
+            "y": 20
+          },
+          "downbeats": {
+            "x": 1930,
+            "y": 300
+          },
+          "yaw": {
+            "x": 2200,
+            "y": 300
+          },
+          "turn_rows": {
+            "x": 2470,
+            "y": 300
+          },
+          "turn_keyframes": {
+            "x": 2740,
+            "y": 300
+          },
+          "core_geometry": {
+            "x": 620,
+            "y": 600
+          },
+          "core_material": {
+            "x": 620,
+            "y": 800
+          },
+          "core": {
+            "x": 900,
+            "y": 690
+          },
+          "orbit_geometry": {
+            "x": 620,
+            "y": 1040
+          },
+          "orbit_material": {
+            "x": 620,
+            "y": 1240
+          },
+          "orbit": {
+            "x": 900,
+            "y": 1130
+          },
+          "sculpture": {
+            "x": 1190,
+            "y": 760
+          },
+          "pulse_motion": {
+            "x": 1980,
+            "y": 300
+          },
+          "turn_motion": {
+            "x": 2260,
+            "y": 300
+          },
+          "camera": {
+            "x": 2260,
+            "y": 620
+          },
+          "compose": {
+            "x": 2540,
+            "y": 300
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "scene3d",
+            "binding": {
+              "nodeInstanceId": "compose",
+              "outputName": "scene"
+            }
+          },
+          {
+            "kind": "audio",
+            "binding": {
+              "nodeInstanceId": "audio_file",
+              "outputName": "media"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "analysis",
+              "outputName": "analysis"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "tags": [
+    "3d",
+    "music"
+  ]
+}

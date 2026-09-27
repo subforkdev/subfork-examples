@@ -10,3 +10,4 @@
   a feed is suitable for operational or safety-critical decisions.
 - Treat HTTP examples as snapshots. MQTT subscriptions, device commands, and
   scheduled ingestion require separate runtime capabilities.
+- Tag IoT graphs with iot and the telemetry or device domain they demonstrate.

@@ -190,13 +190,13 @@
         },
         "custom_inputs": {
           "hn": "json",
-          "hn_url": "str",
+          "hn_url": "url",
           "hn_headers": "json",
           "ars": "json",
-          "ars_url": "str",
+          "ars_url": "url",
           "ars_headers": "json",
           "github": "json",
-          "github_url": "str",
+          "github_url": "url",
           "github_headers": "json"
         },
         "exposed_inputs": [
@@ -520,5 +520,9 @@
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "html",
+    "visualizations"
+  ]
 }

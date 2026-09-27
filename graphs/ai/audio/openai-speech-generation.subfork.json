@@ -74,9 +74,24 @@
       }
     ],
     "edges": [
-      {"source_node_id": "script", "source_output": "text", "target_node_id": "body", "target_input": "script"},
-      {"source_node_id": "body", "source_output": "value", "target_node_id": "request", "target_input": "body"},
-      {"source_node_id": "request", "source_output": "media", "target_node_id": "response", "target_input": "media"}
+      {
+        "source_node_id": "script",
+        "source_output": "text",
+        "target_node_id": "body",
+        "target_input": "script"
+      },
+      {
+        "source_node_id": "body",
+        "source_output": "value",
+        "target_node_id": "request",
+        "target_input": "body"
+      },
+      {
+        "source_node_id": "request",
+        "source_output": "media",
+        "target_node_id": "response",
+        "target_input": "media"
+      }
     ],
     "graph_outputs": {
       "audio": {
@@ -115,20 +130,50 @@
           }
         },
         "requires": {
-          "nodes": ["n_text_value", "n_json_template", "n_fetch_url", "n_media_response"],
-          "panels": ["audio", "json", "logs"],
-          "capabilities": ["public-http"],
-          "secrets": ["OPENAI_API_KEY"]
+          "nodes": [
+            "n_text_value",
+            "n_json_template",
+            "n_fetch_url",
+            "n_media_response"
+          ],
+          "panels": [
+            "audio",
+            "json",
+            "logs"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
+          "secrets": [
+            "OPENAI_API_KEY"
+          ]
         }
       },
       "canvas": {
         "positions": {
-          "script": {"x": 80, "y": 160},
-          "body": {"x": 340, "y": 160},
-          "request": {"x": 620, "y": 160},
-          "response": {"x": 900, "y": 160}
+          "script": {
+            "x": 80,
+            "y": 160
+          },
+          "body": {
+            "x": 340,
+            "y": 160
+          },
+          "request": {
+            "x": 620,
+            "y": 160
+          },
+          "response": {
+            "x": 900,
+            "y": 160
+          }
         }
       }
     }
-  }
+  },
+  "tags": [
+    "ai",
+    "audio",
+    "openai"
+  ]
 }

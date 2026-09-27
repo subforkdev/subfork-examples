@@ -1,0 +1,243 @@
+{
+  "format": "subfork.graph/1",
+  "definition": {
+    "version": "0.1.0",
+    "name": "Cut Timeline Renderer",
+    "description": "Uploads two video clips and a soundtrack, builds a bounded declarative cut timeline, and renders one six-second MP4 on a media worker.",
+    "nodes": [
+      {
+        "node_instance_id": "clip_a",
+        "node_id": "n_asset",
+        "node_version": "1.0.0",
+        "title": "Upload first video",
+        "params": {
+          "artifact_id": ""
+        },
+        "exposed_outputs": [
+          "artifact",
+          "filename",
+          "media_type",
+          "size_bytes"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "clip_b",
+        "node_id": "n_asset",
+        "node_version": "1.0.0",
+        "title": "Upload second video",
+        "params": {
+          "artifact_id": ""
+        },
+        "exposed_outputs": [
+          "artifact",
+          "filename",
+          "media_type",
+          "size_bytes"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "soundtrack",
+        "node_id": "n_asset",
+        "node_version": "1.0.0",
+        "title": "Upload soundtrack",
+        "params": {
+          "artifact_id": ""
+        },
+        "exposed_outputs": [
+          "artifact",
+          "filename",
+          "media_type",
+          "size_bytes"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "timeline",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Build six-second cut timeline",
+        "params": {
+          "template": {
+            "width": 1280,
+            "height": 720,
+            "fps": 30,
+            "clips": [
+              {
+                "artifact": "{{ inputs.clip_a }}",
+                "source_start_seconds": 0,
+                "duration_seconds": 3
+              },
+              {
+                "artifact": "{{ inputs.clip_b }}",
+                "source_start_seconds": 0,
+                "duration_seconds": 3
+              }
+            ],
+            "audio": {
+              "artifact": "{{ inputs.soundtrack }}",
+              "source_start_seconds": 0,
+              "gain": 1
+            }
+          }
+        },
+        "custom_inputs": {
+          "clip_a": "artifact",
+          "clip_b": "artifact",
+          "soundtrack": "artifact"
+        },
+        "exposed_inputs": [
+          "clip_a",
+          "clip_b",
+          "soundtrack"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "value"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "render",
+        "node_id": "n_media_timeline_render",
+        "node_version": "1.0.0",
+        "title": "Render MP4 on media worker",
+        "params": {
+          "max_source_bytes": 250000000,
+          "max_output_bytes": 100000000,
+          "timeout_seconds": 300
+        },
+        "exposed_inputs": [
+          "timeline"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "media",
+          "artifact",
+          "info"
+        ],
+        "outputs_visibility_configured": true
+      }
+    ],
+    "edges": [
+      {
+        "source_node_id": "clip_a",
+        "source_output": "artifact",
+        "target_node_id": "timeline",
+        "target_input": "clip_a"
+      },
+      {
+        "source_node_id": "clip_b",
+        "source_output": "artifact",
+        "target_node_id": "timeline",
+        "target_input": "clip_b"
+      },
+      {
+        "source_node_id": "soundtrack",
+        "source_output": "artifact",
+        "target_node_id": "timeline",
+        "target_input": "soundtrack"
+      },
+      {
+        "source_node_id": "timeline",
+        "source_output": "value",
+        "target_node_id": "render",
+        "target_input": "timeline"
+      }
+    ],
+    "graph_outputs": {
+      "video": {
+        "node_instance_id": "render",
+        "output_name": "media"
+      },
+      "artifact": {
+        "node_instance_id": "render",
+        "output_name": "artifact"
+      },
+      "render_info": {
+        "node_instance_id": "render",
+        "output_name": "info"
+      },
+      "timeline": {
+        "node_instance_id": "timeline",
+        "output_name": "value"
+      }
+    },
+    "metadata": {
+      "template": {
+        "category": "media",
+        "status": "media-worker-probe",
+        "summary": "Render two uploaded clips and one soundtrack as a bounded MP4 timeline.",
+        "requires": {
+          "nodes": [
+            "n_asset",
+            "n_json_template",
+            "n_media_timeline_render"
+          ],
+          "panels": [
+            "video",
+            "json",
+            "logs"
+          ],
+          "capabilities": [
+            "artifact-storage",
+            "media-worker"
+          ],
+          "secrets": []
+        }
+      },
+      "canvas": {
+        "positions": {
+          "clip_a": {
+            "x": 40,
+            "y": 40
+          },
+          "clip_b": {
+            "x": 40,
+            "y": 260
+          },
+          "soundtrack": {
+            "x": 40,
+            "y": 480
+          },
+          "timeline": {
+            "x": 400,
+            "y": 220
+          },
+          "render": {
+            "x": 760,
+            "y": 220
+          }
+        },
+        "recommended_panels": [
+          {
+            "kind": "video",
+            "binding": {
+              "nodeInstanceId": "render",
+              "outputName": "media"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "render",
+              "outputName": "info"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "timeline",
+              "outputName": "value"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "tags": [
+    "media",
+    "video"
+  ]
+}

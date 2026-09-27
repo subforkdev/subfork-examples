@@ -54,9 +54,24 @@
       }
     ],
     "edges": [
-      {"source_node_id": "feed_url", "source_output": "url", "target_node_id": "fetch", "target_input": "url"},
-      {"source_node_id": "fetch", "source_output": "json", "target_node_id": "features", "target_input": "value"},
-      {"source_node_id": "fetch", "source_output": "json", "target_node_id": "response", "target_input": "value"}
+      {
+        "source_node_id": "feed_url",
+        "source_output": "url",
+        "target_node_id": "fetch",
+        "target_input": "url"
+      },
+      {
+        "source_node_id": "fetch",
+        "source_output": "json",
+        "target_node_id": "features",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "fetch",
+        "source_output": "json",
+        "target_node_id": "response",
+        "target_input": "value"
+      }
     ],
     "graph_outputs": {
       "geojson": {
@@ -78,25 +93,71 @@
         "status": "provider-backed-probe",
         "summary": "Remote public GeoJSON fetch that can be bound directly to Map Preview, Table, and JSON panels.",
         "requires": {
-          "nodes": ["n_url_input", "n_fetch_url", "n_json_path", "n_json_response"],
-          "panels": ["map", "table", "json", "logs"],
-          "capabilities": ["public-http"],
+          "nodes": [
+            "n_url_input",
+            "n_fetch_url",
+            "n_json_path",
+            "n_json_response"
+          ],
+          "panels": [
+            "map",
+            "table",
+            "json",
+            "logs"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
           "secrets": []
         }
       },
       "canvas": {
         "positions": {
-          "feed_url": {"x": 80, "y": 180},
-          "fetch": {"x": 360, "y": 180},
-          "features": {"x": 640, "y": 90},
-          "response": {"x": 640, "y": 250}
+          "feed_url": {
+            "x": 80,
+            "y": 180
+          },
+          "fetch": {
+            "x": 360,
+            "y": 180
+          },
+          "features": {
+            "x": 640,
+            "y": 90
+          },
+          "response": {
+            "x": 640,
+            "y": 250
+          }
         },
         "recommended_panels": [
-          {"kind": "map", "binding": {"nodeInstanceId": "fetch", "outputName": "json"}},
-          {"kind": "table", "binding": {"nodeInstanceId": "features", "outputName": "value"}},
-          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+          {
+            "kind": "map",
+            "binding": {
+              "nodeInstanceId": "fetch",
+              "outputName": "json"
+            }
+          },
+          {
+            "kind": "table",
+            "binding": {
+              "nodeInstanceId": "features",
+              "outputName": "value"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "response",
+              "outputName": "response"
+            }
+          }
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "geo",
+    "earthquakes"
+  ]
 }

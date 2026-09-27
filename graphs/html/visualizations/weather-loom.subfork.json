@@ -19,19 +19,13 @@
       },
       {
         "node_instance_id": "url",
-        "node_id": "n_text_template",
+        "node_id": "n_url_builder",
         "node_version": "1.0.0",
         "title": "NOAA station file",
         "params": {
-          "template": "https://www.ncei.noaa.gov/data/global-summary-of-the-day/access/{{ inputs.config.year }}/{{ inputs.config.station }}.csv"
-        },
-        "custom_inputs": {
-          "config": "json"
-        },
-        "exposed_inputs": [
-          "config"
-        ],
-        "inputs_visibility_configured": true
+          "segments": [],
+          "query": {}
+        }
       },
       {
         "node_instance_id": "fetch",
@@ -99,7 +93,7 @@
         },
         "custom_inputs": {
           "config": "json",
-          "url": "str",
+          "url": "url",
           "rows": "json"
         },
         "exposed_inputs": [
@@ -147,18 +141,45 @@
         "node_version": "1.0.0",
         "title": "Weather dataset response",
         "params": {}
+      },
+      {
+        "node_instance_id": "url_base",
+        "node_id": "n_url_input",
+        "node_version": "1.0.0",
+        "title": "API base URL",
+        "params": {
+          "url": "https://www.ncei.noaa.gov"
+        }
+      },
+      {
+        "node_instance_id": "url_segments",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "API path segments",
+        "params": {
+          "template": [
+            "data",
+            "global-summary-of-the-day",
+            "access",
+            "{{ inputs.config.year }}",
+            "{{ inputs.config.station }}.csv"
+          ]
+        },
+        "custom_inputs": {
+          "config": "json"
+        }
       }
     ],
     "edges": [
       {
         "source_node_id": "config",
         "source_output": "value",
-        "target_node_id": "url",
+        "target_node_id": "url_segments",
         "target_input": "config"
       },
       {
         "source_node_id": "url",
-        "source_output": "text",
+        "source_output": "url",
         "target_node_id": "fetch",
         "target_input": "url"
       },
@@ -182,7 +203,7 @@
       },
       {
         "source_node_id": "url",
-        "source_output": "text",
+        "source_output": "url",
         "target_node_id": "dataset",
         "target_input": "url"
       },
@@ -215,6 +236,18 @@
         "source_output": "value",
         "target_node_id": "data_response",
         "target_input": "value"
+      },
+      {
+        "source_node_id": "url_base",
+        "source_output": "url",
+        "target_node_id": "url",
+        "target_input": "base"
+      },
+      {
+        "source_node_id": "url_segments",
+        "source_output": "value",
+        "target_node_id": "url",
+        "target_input": "segments"
       }
     ],
     "graph_outputs": {
@@ -255,7 +288,9 @@
             "n_json_stringify",
             "n_html_template",
             "n_html_response",
-            "n_json_response"
+            "n_json_response",
+            "n_url_input",
+            "n_url_builder"
           ],
           "panels": [
             "html",
@@ -336,5 +371,9 @@
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "html",
+    "visualizations"
+  ]
 }

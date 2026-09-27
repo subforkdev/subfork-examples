@@ -37,6 +37,9 @@ uses network access, provider credentials, or paid services.
 
 [Browse dashboard examples](dashboards/README.md).
 
+- [Synthetic Logistics Operations Dashboard](dashboards/operations/synthetic-logistics-operations.notes.md) · <a href="dashboards/operations/synthetic-logistics-operations.subfork.json" download="synthetic-logistics-operations.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [GitHub Release Dashboard](dashboards/software/github-release-dashboard.notes.md) · <a href="dashboards/software/github-release-dashboard.subfork.json" download="github-release-dashboard.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+
 - [Regional Watch](dashboards/monitoring/regional-watch.notes.md) · <a href="dashboards/monitoring/regional-watch.subfork.json" download="regional-watch.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 
 ## 3D
@@ -47,6 +50,14 @@ uses network access, provider credentials, or paid services.
 - [Seismic Depth Field](3d/seismic/seismic-depth-field.notes.md) · <a href="3d/seismic/seismic-depth-field.subfork.json" download="seismic-depth-field.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 - [Seismic Globe](3d/seismic/seismic-globe.notes.md) · <a href="3d/seismic/seismic-globe.subfork.json" download="seismic-globe.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 - [USD Pyramid](3d/scenes/usd-pyramid.notes.md) · <a href="3d/scenes/usd-pyramid.subfork.json" download="usd-pyramid.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+
+## Media
+
+[Browse media examples](media/README.md).
+
+- [Music Visualizer](media/audio/music-visualizer.notes.md) · <a href="media/audio/music-visualizer.subfork.json" download="music-visualizer.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Music Beat Grid](media/audio/music-beat-grid.notes.md) · <a href="media/audio/music-beat-grid.subfork.json" download="music-beat-grid.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
+- [Cut Timeline Renderer](media/video/cut-timeline-renderer.notes.md) · <a href="media/video/cut-timeline-renderer.subfork.json" download="cut-timeline-renderer.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 
 ## AI
 
@@ -130,5 +141,7 @@ uses network access, provider credentials, or paid services.
 ## Games
 
 [Browse game examples](games/README.md).
+
+- [Data Aquarium](games/data/data-aquarium.notes.md) · <a href="games/data/data-aquarium.subfork.json" download="data-aquarium.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 
 - [Signal Runner](games/arcade/signal-runner.notes.md) · <a href="games/arcade/signal-runner.subfork.json" download="signal-runner.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>

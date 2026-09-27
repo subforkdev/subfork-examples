@@ -13,9 +13,7 @@ The composite surface should expose:
 - `prompt`: required text prompt.
 - `image_url`: optional image reference. This may be a fully qualified image URL or a base64-encoded `data:image/...` URL.
 
-For an uploaded reference image, add an `Image Asset` node and connect its `url`
-output to `image_url`. Provider URL handoff requires a publicly reachable Subfork
-deployment; `subfork.localhost` cannot be fetched by OpenAI.
+For a reference image, provide an explicitly public HTTPS URL. Generic HTTP nodes do not turn private Subfork artifacts into provider URLs; provider-specific artifact delivery requires a dedicated adapter.
 
 The `Status URL` node constructs `/v1/videos/{id}` from the submitted job ID. After the poll node reaches `completed`, `Video content URL` constructs `/v1/videos/{id}/content`, and `Fetch video content` retrieves the authenticated video bytes as a `video/*` media payload for the Video Preview panel.
 
@@ -76,4 +74,4 @@ an execution artifact; this graph does not publish or delete the resulting video
 
 [OpenAI reference-image requirements](https://developers.openai.com/api/docs/guides/video-generation#use-image-references)
 
-For automatic reference-image fitting, import [OpenAI Image to Video Job](openai-image-to-video-job.notes.md). Its shared size input drives both Image Resize and the video request. This base example keeps the image input optional and does not resize it.
+For a required reference-image variant, import [OpenAI Image to Video Job](openai-image-to-video-job.notes.md). Both examples require the supplied image to already meet the provider's size requirements.

@@ -107,9 +107,9 @@
           }
         },
         "custom_inputs": {
-          "script": "str",
-          "delivery": "str",
-          "voice": "str"
+          "script": "json",
+          "delivery": "json",
+          "voice": "json"
         },
         "exposed_inputs": [
           "script",
@@ -338,5 +338,10 @@
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "ai",
+    "audio",
+    "openai"
+  ]
 }

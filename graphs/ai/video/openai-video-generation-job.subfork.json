@@ -97,19 +97,13 @@
       },
       {
         "node_instance_id": "status_url",
-        "node_id": "n_json_template",
+        "node_id": "n_url_builder",
         "node_version": "1.0.0",
-        "title": "Status URL",
+        "title": "Build video status URL",
         "params": {
-          "template": "https://api.openai.com/v1/videos/{{ inputs.video_id }}"
-        },
-        "custom_inputs": {
-          "video_id": "str"
-        },
-        "exposed_inputs": [
-          "video_id"
-        ],
-        "inputs_visibility_configured": true
+          "segments": [],
+          "query": {}
+        }
       },
       {
         "node_instance_id": "poll",
@@ -144,21 +138,13 @@
       },
       {
         "node_instance_id": "content_url",
-        "node_id": "n_json_template",
+        "node_id": "n_url_builder",
         "node_version": "1.0.0",
-        "title": "Video content URL",
+        "title": "Build video content URL",
         "params": {
-          "template": "https://api.openai.com/v1/videos/{{ inputs.video_id }}/content"
-        },
-        "custom_inputs": {
-          "video_id": "str",
-          "status": "str"
-        },
-        "exposed_inputs": [
-          "video_id",
-          "status"
-        ],
-        "inputs_visibility_configured": true
+          "segments": [],
+          "query": {}
+        }
       },
       {
         "node_instance_id": "fetch_video",
@@ -188,6 +174,36 @@
         "node_id": "n_json_response",
         "node_version": "1.0.0",
         "title": "Job JSON Response"
+      },
+      {
+        "node_instance_id": "status_segments",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Video status path",
+        "params": {
+          "template": [
+            "{{ inputs.video_id }}"
+          ]
+        },
+        "custom_inputs": {
+          "video_id": "json"
+        }
+      },
+      {
+        "node_instance_id": "content_segments",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Video content path",
+        "params": {
+          "template": [
+            "{{ inputs.video_id }}",
+            "content"
+          ]
+        },
+        "custom_inputs": {
+          "video_id": "json",
+          "status": "str"
+        }
       }
     ],
     "edges": [
@@ -216,40 +232,10 @@
         "target_input": "value"
       },
       {
-        "source_node_id": "video_id",
-        "source_output": "value",
-        "target_node_id": "status_url",
-        "target_input": "video_id"
-      },
-      {
         "source_node_id": "submit",
         "source_output": "remote_job",
         "target_node_id": "poll",
         "target_input": "remote_job"
-      },
-      {
-        "source_node_id": "status_url",
-        "source_output": "value",
-        "target_node_id": "poll",
-        "target_input": "status_url"
-      },
-      {
-        "source_node_id": "video_id",
-        "source_output": "value",
-        "target_node_id": "content_url",
-        "target_input": "video_id"
-      },
-      {
-        "source_node_id": "poll",
-        "source_output": "status",
-        "target_node_id": "content_url",
-        "target_input": "status"
-      },
-      {
-        "source_node_id": "content_url",
-        "source_output": "value",
-        "target_node_id": "fetch_video",
-        "target_input": "url"
       },
       {
         "source_node_id": "poll",
@@ -262,6 +248,60 @@
         "source_output": "text",
         "target_node_id": "body",
         "target_input": "size"
+      },
+      {
+        "source_node_id": "video_id",
+        "source_output": "value",
+        "target_node_id": "status_segments",
+        "target_input": "video_id"
+      },
+      {
+        "source_node_id": "status_segments",
+        "source_output": "value",
+        "target_node_id": "status_url",
+        "target_input": "segments"
+      },
+      {
+        "source_node_id": "submit_url",
+        "source_output": "url",
+        "target_node_id": "status_url",
+        "target_input": "base"
+      },
+      {
+        "source_node_id": "status_url",
+        "source_output": "url",
+        "target_node_id": "poll",
+        "target_input": "status_url"
+      },
+      {
+        "source_node_id": "video_id",
+        "source_output": "value",
+        "target_node_id": "content_segments",
+        "target_input": "video_id"
+      },
+      {
+        "source_node_id": "poll",
+        "source_output": "status",
+        "target_node_id": "content_segments",
+        "target_input": "status"
+      },
+      {
+        "source_node_id": "content_segments",
+        "source_output": "value",
+        "target_node_id": "content_url",
+        "target_input": "segments"
+      },
+      {
+        "source_node_id": "submit_url",
+        "source_output": "url",
+        "target_node_id": "content_url",
+        "target_input": "base"
+      },
+      {
+        "source_node_id": "content_url",
+        "source_output": "url",
+        "target_node_id": "fetch_video",
+        "target_input": "url"
       }
     ],
     "graph_outputs": {
@@ -333,7 +373,8 @@
             "n_http_poll_job",
             "n_json_path",
             "n_fetch_url",
-            "n_json_response"
+            "n_json_response",
+            "n_url_builder"
           ],
           "panels": [
             "video",
@@ -398,5 +439,10 @@
         }
       }
     }
-  }
+  },
+  "tags": [
+    "ai",
+    "video",
+    "openai"
+  ]
 }

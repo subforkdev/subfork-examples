@@ -13,7 +13,10 @@
         "params": {
           "url": "https://api.airtable.com/v0/{{ vars.AIRTABLE_BASE_ID }}/{{ vars.AIRTABLE_TABLE_ID }}",
           "method": "GET",
-          "query": {"maxRecords": 25, "pageSize": 25},
+          "query": {
+            "maxRecords": 25,
+            "pageSize": 25
+          },
           "headers": {
             "Authorization": "Bearer {{ secrets.AIRTABLE_ACCESS_TOKEN }}",
             "Accept": "application/json"
@@ -23,7 +26,10 @@
         },
         "exposed_inputs": [],
         "inputs_visibility_configured": true,
-        "exposed_outputs": ["json", "status"],
+        "exposed_outputs": [
+          "json",
+          "status"
+        ],
         "outputs_visibility_configured": true
       },
       {
@@ -31,7 +37,9 @@
         "node_id": "n_json_path",
         "node_version": "1.0.0",
         "title": "Record rows",
-        "params": {"path": "records"}
+        "params": {
+          "path": "records"
+        }
       },
       {
         "node_instance_id": "response",
@@ -41,13 +49,32 @@
       }
     ],
     "edges": [
-      {"source_node_id": "request", "source_output": "json", "target_node_id": "records", "target_input": "value"},
-      {"source_node_id": "records", "source_output": "value", "target_node_id": "response", "target_input": "value"}
+      {
+        "source_node_id": "request",
+        "source_output": "json",
+        "target_node_id": "records",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "records",
+        "source_output": "value",
+        "target_node_id": "response",
+        "target_input": "value"
+      }
     ],
     "graph_outputs": {
-      "records": {"node_instance_id": "records", "output_name": "value"},
-      "status": {"node_instance_id": "request", "output_name": "status"},
-      "response": {"node_instance_id": "response", "output_name": "response"}
+      "records": {
+        "node_instance_id": "records",
+        "output_name": "value"
+      },
+      "status": {
+        "node_instance_id": "request",
+        "output_name": "status"
+      },
+      "response": {
+        "node_instance_id": "response",
+        "output_name": "response"
+      }
     },
     "metadata": {
       "template": {
@@ -56,29 +83,77 @@
         "composite_interface": {
           "inputs": {},
           "outputs": {
-            "records": {"type": "json", "node_instance_id": "records", "output_name": "value"},
-            "status": {"type": "int", "node_instance_id": "request", "output_name": "status"}
+            "records": {
+              "type": "json",
+              "node_instance_id": "records",
+              "output_name": "value"
+            },
+            "status": {
+              "type": "int",
+              "node_instance_id": "request",
+              "output_name": "status"
+            }
           }
         },
         "requires": {
-          "nodes": ["n_fetch_url", "n_json_path", "n_json_response"],
-          "panels": ["table", "json", "logs"],
-          "capabilities": ["public-http"],
-          "secrets": ["AIRTABLE_ACCESS_TOKEN"],
-          "variables": ["AIRTABLE_BASE_ID", "AIRTABLE_TABLE_ID"]
+          "nodes": [
+            "n_fetch_url",
+            "n_json_path",
+            "n_json_response"
+          ],
+          "panels": [
+            "table",
+            "json",
+            "logs"
+          ],
+          "capabilities": [
+            "public-http"
+          ],
+          "secrets": [
+            "AIRTABLE_ACCESS_TOKEN"
+          ],
+          "variables": [
+            "AIRTABLE_BASE_ID",
+            "AIRTABLE_TABLE_ID"
+          ]
         }
       },
       "canvas": {
         "positions": {
-          "request": {"x": 160, "y": 180},
-          "records": {"x": 480, "y": 180},
-          "response": {"x": 800, "y": 180}
+          "request": {
+            "x": 160,
+            "y": 180
+          },
+          "records": {
+            "x": 480,
+            "y": 180
+          },
+          "response": {
+            "x": 800,
+            "y": 180
+          }
         },
         "recommended_panels": [
-          {"kind": "table", "binding": {"nodeInstanceId": "records", "outputName": "value"}},
-          {"kind": "json", "binding": {"nodeInstanceId": "response", "outputName": "response"}}
+          {
+            "kind": "table",
+            "binding": {
+              "nodeInstanceId": "records",
+              "outputName": "value"
+            }
+          },
+          {
+            "kind": "json",
+            "binding": {
+              "nodeInstanceId": "response",
+              "outputName": "response"
+            }
+          }
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "connectors",
+    "airtable"
+  ]
 }

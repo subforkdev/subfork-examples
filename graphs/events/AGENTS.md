@@ -8,3 +8,4 @@
   document retries and duplication risks and never run them during validation.
 - Calendar examples must state timezone and recurrence limitations and must not
   embed private calendar URLs or credentials.
+- Tag event graphs with events and their trigger or domain, such as calendar or automation.

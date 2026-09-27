@@ -7,15 +7,17 @@
     "nodes": [
       {
         "node_instance_id": "image",
-        "node_id": "n_image_asset",
+        "node_id": "n_asset",
         "node_version": "1.0.0",
-        "title": "Upload reference image",
+        "title": "Reference image",
         "params": {
           "artifact_id": ""
         },
         "exposed_outputs": [
-          "url",
-          "info"
+          "artifact",
+          "filename",
+          "media_type",
+          "size_bytes"
         ],
         "outputs_visibility_configured": true
       },
@@ -23,20 +25,39 @@
         "node_instance_id": "resize",
         "node_id": "n_image_resize",
         "node_version": "1.0.0",
-        "title": "Fit reference image to video",
+        "title": "Fit reference image",
         "params": {
+          "size": "1280x720",
           "mode": "pad",
           "background": "#000000"
         },
         "exposed_inputs": [
-          "url",
+          "artifact",
           "size"
         ],
         "inputs_visibility_configured": true,
         "exposed_outputs": [
-          "url",
-          "media",
+          "artifact",
           "info"
+        ],
+        "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "image_url",
+        "node_id": "n_artifact_url",
+        "node_version": "1.0.0",
+        "title": "Create provider image URL",
+        "params": {
+          "ttl_seconds": 900
+        },
+        "exposed_inputs": [
+          "artifact"
+        ],
+        "inputs_visibility_configured": true,
+        "exposed_outputs": [
+          "url",
+          "access",
+          "expires_at"
         ],
         "outputs_visibility_configured": true
       },
@@ -132,19 +153,13 @@
       },
       {
         "node_instance_id": "status_url",
-        "node_id": "n_json_template",
+        "node_id": "n_url_builder",
         "node_version": "1.0.0",
-        "title": "Status URL",
+        "title": "Build video status URL",
         "params": {
-          "template": "https://api.openai.com/v1/videos/{{ inputs.video_id }}"
-        },
-        "custom_inputs": {
-          "video_id": "str"
-        },
-        "exposed_inputs": [
-          "video_id"
-        ],
-        "inputs_visibility_configured": true
+          "segments": [],
+          "query": {}
+        }
       },
       {
         "node_instance_id": "poll",
@@ -179,21 +194,13 @@
       },
       {
         "node_instance_id": "content_url",
-        "node_id": "n_json_template",
+        "node_id": "n_url_builder",
         "node_version": "1.0.0",
-        "title": "Video content URL",
+        "title": "Build video content URL",
         "params": {
-          "template": "https://api.openai.com/v1/videos/{{ inputs.video_id }}/content"
-        },
-        "custom_inputs": {
-          "video_id": "str",
-          "status": "str"
-        },
-        "exposed_inputs": [
-          "video_id",
-          "status"
-        ],
-        "inputs_visibility_configured": true
+          "segments": [],
+          "query": {}
+        }
       },
       {
         "node_instance_id": "fetch_video",
@@ -223,6 +230,36 @@
         "node_id": "n_json_response",
         "node_version": "1.0.0",
         "title": "Job JSON Response"
+      },
+      {
+        "node_instance_id": "status_segments",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Video status path",
+        "params": {
+          "template": [
+            "{{ inputs.video_id }}"
+          ]
+        },
+        "custom_inputs": {
+          "video_id": "json"
+        }
+      },
+      {
+        "node_instance_id": "content_segments",
+        "node_id": "n_json_template",
+        "node_version": "1.0.0",
+        "title": "Video content path",
+        "params": {
+          "template": [
+            "{{ inputs.video_id }}",
+            "content"
+          ]
+        },
+        "custom_inputs": {
+          "video_id": "json",
+          "status": "str"
+        }
       }
     ],
     "edges": [
@@ -251,40 +288,10 @@
         "target_input": "value"
       },
       {
-        "source_node_id": "video_id",
-        "source_output": "value",
-        "target_node_id": "status_url",
-        "target_input": "video_id"
-      },
-      {
         "source_node_id": "submit",
         "source_output": "remote_job",
         "target_node_id": "poll",
         "target_input": "remote_job"
-      },
-      {
-        "source_node_id": "status_url",
-        "source_output": "value",
-        "target_node_id": "poll",
-        "target_input": "status_url"
-      },
-      {
-        "source_node_id": "video_id",
-        "source_output": "value",
-        "target_node_id": "content_url",
-        "target_input": "video_id"
-      },
-      {
-        "source_node_id": "poll",
-        "source_output": "status",
-        "target_node_id": "content_url",
-        "target_input": "status"
-      },
-      {
-        "source_node_id": "content_url",
-        "source_output": "value",
-        "target_node_id": "fetch_video",
-        "target_input": "url"
       },
       {
         "source_node_id": "poll",
@@ -300,9 +307,9 @@
       },
       {
         "source_node_id": "image",
-        "source_output": "url",
+        "source_output": "artifact",
         "target_node_id": "resize",
-        "target_input": "url"
+        "target_input": "artifact"
       },
       {
         "source_node_id": "video_size",
@@ -312,9 +319,69 @@
       },
       {
         "source_node_id": "resize",
+        "source_output": "artifact",
+        "target_node_id": "image_url",
+        "target_input": "artifact"
+      },
+      {
+        "source_node_id": "image_url",
         "source_output": "url",
         "target_node_id": "body",
         "target_input": "image_url"
+      },
+      {
+        "source_node_id": "video_id",
+        "source_output": "value",
+        "target_node_id": "status_segments",
+        "target_input": "video_id"
+      },
+      {
+        "source_node_id": "status_segments",
+        "source_output": "value",
+        "target_node_id": "status_url",
+        "target_input": "segments"
+      },
+      {
+        "source_node_id": "submit_url",
+        "source_output": "url",
+        "target_node_id": "status_url",
+        "target_input": "base"
+      },
+      {
+        "source_node_id": "status_url",
+        "source_output": "url",
+        "target_node_id": "poll",
+        "target_input": "status_url"
+      },
+      {
+        "source_node_id": "video_id",
+        "source_output": "value",
+        "target_node_id": "content_segments",
+        "target_input": "video_id"
+      },
+      {
+        "source_node_id": "poll",
+        "source_output": "status",
+        "target_node_id": "content_segments",
+        "target_input": "status"
+      },
+      {
+        "source_node_id": "content_segments",
+        "source_output": "value",
+        "target_node_id": "content_url",
+        "target_input": "segments"
+      },
+      {
+        "source_node_id": "submit_url",
+        "source_output": "url",
+        "target_node_id": "content_url",
+        "target_input": "base"
+      },
+      {
+        "source_node_id": "content_url",
+        "source_output": "url",
+        "target_node_id": "fetch_video",
+        "target_input": "url"
       }
     ],
     "graph_outputs": {
@@ -334,17 +401,9 @@
         "node_instance_id": "json_response",
         "output_name": "response"
       },
-      "reference_image": {
-        "node_instance_id": "resize",
-        "output_name": "media"
-      },
-      "image_info": {
-        "node_instance_id": "image",
-        "output_name": "info"
-      },
-      "resized_info": {
-        "node_instance_id": "resize",
-        "output_name": "info"
+      "reference_image_url": {
+        "node_instance_id": "image_url",
+        "output_name": "url"
       }
     },
     "metadata": {
@@ -362,8 +421,10 @@
             "n_json_path",
             "n_fetch_url",
             "n_json_response",
-            "n_image_asset",
-            "n_image_resize"
+            "n_asset",
+            "n_image_resize",
+            "n_artifact_url",
+            "n_url_builder"
           ],
           "panels": [
             "video",
@@ -373,7 +434,9 @@
           ],
           "capabilities": [
             "public-http",
-            "async-execution"
+            "async-execution",
+            "artifact-storage",
+            "external-provider-access"
           ],
           "secrets": [
             "OPENAI_API_KEY"
@@ -387,39 +450,39 @@
             "y": 600
           },
           "body": {
-            "x": 700,
+            "x": 1000,
             "y": 200
           },
           "submit_url": {
-            "x": 700,
+            "x": 1000,
             "y": 40
           },
           "submit": {
-            "x": 1000,
+            "x": 1300,
             "y": 160
           },
           "video_id": {
-            "x": 1300,
+            "x": 1600,
             "y": 100
           },
           "status_url": {
-            "x": 1580,
+            "x": 1880,
             "y": 100
           },
           "poll": {
-            "x": 1580,
+            "x": 1880,
             "y": 360
           },
           "content_url": {
-            "x": 1880,
-            "y": 100
-          },
-          "fetch_video": {
             "x": 2180,
             "y": 100
           },
+          "fetch_video": {
+            "x": 2480,
+            "y": 100
+          },
           "json_response": {
-            "x": 1880,
+            "x": 2180,
             "y": 360
           },
           "video_size": {
@@ -433,6 +496,10 @@
           "resize": {
             "x": 390,
             "y": 80
+          },
+          "image_url": {
+            "x": 700,
+            "y": 40
           }
         },
         "recommended_panels": [
@@ -440,7 +507,7 @@
             "kind": "image",
             "binding": {
               "nodeInstanceId": "resize",
-              "outputName": "media"
+              "outputName": "artifact"
             }
           },
           {
@@ -460,5 +527,11 @@
         ]
       }
     }
-  }
+  },
+  "tags": [
+    "ai",
+    "video",
+    "openai",
+    "image"
+  ]
 }

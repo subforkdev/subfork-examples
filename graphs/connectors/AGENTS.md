@@ -12,3 +12,4 @@
   understandable. Record OAuth, pagination, signing, or multipart gaps explicitly.
 - Give composite-ready connectors a small typed interface and preserve raw provider
   responses only when they are useful for inspection.
+- Tag connector graphs with connectors and the provider or protocol they demonstrate.
