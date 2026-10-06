@@ -3,7 +3,7 @@
   "definition": {
     "version": "0.1.0",
     "name": "Seismic Globe",
-    "description": "Live USGS earthquakes as outward-facing spikes on a graph-authored globe. Magnitude controls height; depth controls color. Sampled coastline and graticule provide geographic context.",
+    "description": "Fetches the USGS M2.5+ seven-day feed and builds a bounded 3D globe plus a self-contained animated HTML Response with a 30-second earthquake replay, timed spikes, surface rings, controls, and live event metadata for a fork.io site.",
     "nodes": [
       {
         "node_instance_id": "feed",
@@ -16698,7 +16698,7 @@
         "title": "Seismic Globe",
         "params": {
           "background": "#080f18",
-          "duration": 120,
+          "duration": 30,
           "lighting": [
             {
               "kind": "ambient",
@@ -16738,7 +16738,7 @@
         "node_version": "1.0.0",
         "title": "Legend / what the spikes mean",
         "params": {
-          "text": "# Seismic Globe\n\nUSGS M2.5+ earthquakes / past seven days / at most 1,000 newest valid events.\n\n**Spike height = magnitude. Color = depth.**\n\n- Mint: depth <70 km\n- Amber: depth 70 to <300 km\n- Rose: depth 300+ km\n\nSpikes start at the globe surface and extend outward. They are symbols, not literal earthquake height, rupture size, or depth. Height = 0.25 x magnitude - 0.5 scene units; globe radius = 3. This linear visual encoding is not an energy scale.\n\nDrag to orbit, scroll to zoom, right-drag to pan. Use panel settings > Play for slow rotation; playback does not replay event times or refresh the feed. Run again for a new snapshot.\n\nThe Data Table retains ID, place, magnitude, depth, timestamp (Unix milliseconds) and event URL. No per-spike picking yet. Empty depth bands produce no spikes.\n\nThe dotted graticule is spaced at 30 degrees. Coastline dots are a sampled reference, not a detailed basemap.\n\nCoordinates: +Y north, +X at longitude 0 on the equator, -Z at longitude 90 east. Camera starts over the eastern Pacific. All positions and rotations are authored by the graph, not earthquake-specific renderer code.\n\n[USGS feed format](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php) | [Natural Earth coastline / public domain](https://www.naturalearthdata.com/about/terms-of-use/)\n"
+          "text": "# Seismic Globe\n\nUSGS M2.5+ earthquakes / past seven days / at most 1,000 newest valid events.\n\n**Spike height = magnitude. Color = depth.**\n\n- Mint: depth <70 km\n- Amber: depth 70 to <300 km\n- Rose: depth 300+ km\n\nSpikes start at the globe surface and extend outward. They are symbols, not literal earthquake height, rupture size, or depth. Height = 0.25 x magnitude - 0.5 scene units; globe radius = 3. This linear visual encoding is not an energy scale.\n\nDrag to orbit, scroll to zoom, right-drag to pan. The HTML Response starts automatically and compresses event timestamps into 30 seconds. Its controls pause, replay, reset, or select a 15/30/60-second duration. Each arrival pulses its spike, emits concentric surface rings, and updates the event metadata card. The native 3D panel keeps the bounded scene and slow globe rotation, but displays the earthquake snapshot statically. Run again for a new snapshot.\n\nThe Data Table retains ID, place, magnitude, depth, timestamp (Unix milliseconds) and event URL. Spikes remain linked to the table for selection and inspection. Empty depth bands produce no spikes.\n\nThe dotted graticule is spaced at 30 degrees. Coastline dots are a sampled reference, not a detailed basemap.\n\nCoordinates: +Y north, +X at longitude 0 on the equator, -Z at longitude 90 east. Camera starts over the eastern Pacific. All positions and rotations are authored by the graph, not earthquake-specific renderer code.\n\n[USGS feed format](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php) | [Natural Earth coastline / public domain](https://www.naturalearthdata.com/about/terms-of-use/)\n"
         },
         "exposed_inputs": [],
         "inputs_visibility_configured": true,
@@ -16746,6 +16746,49 @@
           "text"
         ],
         "outputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "scene_json",
+        "node_id": "n_json_stringify",
+        "node_version": "1.0.0",
+        "title": "HTML-safe scene",
+        "params": {
+          "html_safe": true
+        }
+      },
+      {
+        "node_instance_id": "events_json",
+        "node_id": "n_json_stringify",
+        "node_version": "1.0.0",
+        "title": "HTML-safe events",
+        "params": {
+          "html_safe": true
+        }
+      },
+      {
+        "node_instance_id": "site",
+        "node_id": "n_html_template",
+        "node_version": "1.0.0",
+        "title": "Animated seismic globe site",
+        "params": {
+          "template": "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Seismic Globe</title>\n<style>\n:root{color-scheme:dark;--bg:#080f18;--panel:#101b28e8;--ink:#eaf6ff;--muted:#8fa9ba;--line:#294052;--accent:#7de1ff}*{box-sizing:border-box}html,body,main,canvas{width:100%;height:100%;margin:0}body{overflow:hidden;background:var(--bg);color:var(--ink);font:13px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace}canvas{display:block}header{position:fixed;z-index:2;top:24px;left:28px;pointer-events:none}h1{margin:0;font-size:clamp(24px,4vw,48px);letter-spacing:-.05em}header p{margin:.35rem 0;color:var(--muted)}aside{position:fixed;z-index:2;top:22px;right:22px;width:min(330px,calc(100vw - 44px));max-height:calc(100vh - 110px);overflow:auto;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);box-shadow:0 14px 40px #0009;backdrop-filter:blur(10px)}aside>span{color:var(--accent);font-size:10px;letter-spacing:.16em;text-transform:uppercase}aside h2{margin:.35rem 0 .8rem;font:700 15px/1.3 system-ui,sans-serif}dl{display:grid;gap:5px;margin:0}dl div{display:grid;grid-template-columns:90px 1fr;gap:8px}dt{color:var(--muted);text-transform:capitalize}dd{margin:0;text-align:right;overflow-wrap:anywhere}a{display:inline-block;margin-top:10px;color:var(--accent)}.controls{position:fixed;z-index:3;right:22px;bottom:22px;display:flex;gap:6px;padding:6px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}button,select{border:1px solid var(--line);border-radius:6px;background:#162534;color:var(--ink);padding:8px 11px;font:inherit}button{cursor:pointer}button:hover,button:focus-visible,select:focus-visible{border-color:var(--accent);outline:none}.legend{position:fixed;left:28px;bottom:24px;color:var(--muted);font-size:11px}.dot{display:inline-block;width:8px;height:8px;margin:0 4px 0 10px;border-radius:50%}@media(max-width:700px){aside{top:auto;bottom:72px;max-height:38vh}.legend{display:none}header{top:16px;left:16px}.controls{right:16px;bottom:16px}}</style></head>\n<body><main><canvas id=\"globe\" aria-label=\"Animated globe replaying recent earthquakes\"></canvas></main><header><h1>Seismic Globe</h1><p>USGS M2.5+ / seven-day replay</p></header>\n<aside id=\"meta\" aria-live=\"polite\"><span>Now playing</span><h2>Waiting for the first event\u2026</h2><dl></dl></aside>\n<div class=\"legend\">DEPTH <i class=\"dot\" style=\"background:#6ed8bf\"></i>&lt;70 km <i class=\"dot\" style=\"background:#f2b66d\"></i>70\u2013300 km <i class=\"dot\" style=\"background:#ee7d9a\"></i>300+ km</div>\n<div class=\"controls\"><button id=\"play\" type=\"button\">Pause</button><button id=\"replay\" type=\"button\">Replay</button><label>Replay <select id=\"duration\"><option value=\"15\">15 s</option><option value=\"30\" selected>30 s</option><option value=\"60\">60 s</option></select></label></div>\n<script id=\"scene-data\" type=\"application/json\">{{ inputs.scene_json }}</script><script id=\"event-data\" type=\"application/json\">{{ inputs.events_json }}</script>\n<script>(()=>{\"use strict\";const scene=JSON.parse(document.getElementById(\"scene-data\").textContent),events=JSON.parse(document.getElementById(\"event-data\").textContent),byId=new Map(events.map(x=>[String(x.id),x]));const canvas=document.getElementById(\"globe\"),ctx=canvas.getContext(\"2d\"),play=document.getElementById(\"play\"),duration=document.getElementById(\"duration\"),meta=document.getElementById(\"meta\");let running=!matchMedia(\"(prefers-reduced-motion: reduce)\").matches,start=performance.now(),elapsed=0,loopAt=0,lastId=\"\",drag=false,dragX=0,userYaw=0;const layers=[],markers=[];function walk(o){if(o.kind===\"group\")return o.children.forEach(walk);if(o.kind!==\"object\")return;if(o.geometry.kind===\"points\")layers.push({points:o.geometry.positions,color:o.material.color,size:o.material.size});for(const i of o.instances||[]){const event=byId.get(String(i.record_id)),timeline_time=Number(i.timeline_time??event?.time_ms);if(Number.isFinite(timeline_time))markers.push({...i,timeline_time,color:o.material.color,pulse:.55,rings:true,ringSeconds:1.4})}}walk(scene.object);markers.sort((a,b)=>a.timeline_time-b.timeline_time);const firstTime=markers[0]?.timeline_time??0,lastTime=markers.at(-1)?.timeline_time??firstTime,timelineSpan=Math.max(0,lastTime-firstTime);for(const marker of markers)marker.replayOffset=timelineSpan?(marker.timeline_time-firstTime)/timelineSpan:0;function rot(p,yaw,pitch=.18){const c=Math.cos(yaw),s=Math.sin(yaw),x=c*p[0]+s*p[2],z=-s*p[0]+c*p[2],cp=Math.cos(pitch),sp=Math.sin(pitch);return[x,cp*p[1]-sp*z,sp*p[1]+cp*z]}function resize(){const d=Math.min(devicePixelRatio||1,1.5);canvas.width=innerWidth*d;canvas.height=innerHeight*d;canvas.style.width=innerWidth+\"px\";canvas.style.height=innerHeight+\"px\";ctx.setTransform(d,0,0,d,0,0)}function show(m){const e=byId.get(String(m.record_id));if(!e||String(e.id)===lastId)return;lastId=String(e.id);const fields=[\"magnitude\",\"time_ms\",\"depth_km\",\"latitude\",\"longitude\",\"id\"];meta.querySelector(\"h2\").textContent=e.place||\"Unknown location\";meta.querySelector(\"dl\").innerHTML=fields.map(k=>`<div><dt>${k.replace(\"_\",\" \")}</dt><dd>${k===\"time_ms\"?new Date(e[k]).toLocaleString():e[k]??\"--\"}</dd></div>`).join(\"\");let a=meta.querySelector(\"a\");if(a)a.remove();try{const u=new URL(e.url);if(/^https?:$/.test(u.protocol)){a=document.createElement(\"a\");a.href=u.href;a.target=\"_blank\";a.rel=\"noreferrer\";a.textContent=\"USGS event \u2197\";meta.append(a)}}catch{}}if(markers[0])show(markers[0]);function draw(now){const seconds=+duration.value;let playTime=Math.min(seconds,elapsed+(running?(now-start)/1000:0));if(running&&playTime>=seconds){if(!loopAt)loopAt=now;if(now-loopAt>=2000){elapsed=0;start=now;loopAt=0;lastId=\"\";playTime=0}}else loopAt=0;const progress=seconds?playTime/seconds:1,yaw=userYaw+playTime*.08;ctx.clearRect(0,0,innerWidth,innerHeight);const cx=innerWidth*.5,cy=innerHeight*.52,R=Math.min(innerWidth,innerHeight)*.34,scale=R/3;const g=ctx.createRadialGradient(cx-R*.35,cy-R*.35,R*.05,cx,cy,R*1.1);g.addColorStop(0,\"#23445a\");g.addColorStop(.55,\"#102536\");g.addColorStop(1,\"#07111c\");ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();ctx.save();ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.clip();for(const l of layers){ctx.fillStyle=l.color;for(const p of l.points){const q=rot(p,yaw);if(q[2]<0)continue;ctx.globalAlpha=.28+.5*q[2]/3;ctx.fillRect(cx+q[0]*scale,cy-q[1]*scale,Math.max(1,l.size*scale),Math.max(1,l.size*scale))}}ctx.restore();ctx.globalAlpha=1;const drawables=[];let activeMarker=null;for(const m of markers){const at=m.replayOffset*Math.max(0,seconds-m.pulse),age=playTime-at;if(age<0)continue;activeMarker=m;const q=rot(m.position,yaw),n=rot((()=>{const v=m.position,L=Math.hypot(...v)||1;return v.map(x=>x/L*3.01)})(),yaw);drawables.push({m,q,n,age})}drawables.sort((a,b)=>a.q[2]-b.q[2]);for(const d of drawables){const {m,q,n,age}=d;if(q[2]<-.2)continue;const pulse=age<m.pulse?Math.min(1,age/m.pulse*4)*(1+.35*Math.sin(Math.PI*age/m.pulse)):1;ctx.strokeStyle=m.color;ctx.lineWidth=Math.max(1.5,3*pulse);ctx.globalAlpha=.35+.65*Math.max(0,q[2]/4);ctx.beginPath();ctx.moveTo(cx+n[0]*scale,cy-n[1]*scale);ctx.lineTo(cx+(n[0]+(q[0]-n[0])*pulse)*scale,cy-(n[1]+(q[1]-n[1])*pulse)*scale);ctx.stroke();if(m.rings&&age<m.ringSeconds){for(let w=0;w<3;w++){const rp=age/m.ringSeconds-w*.18;if(rp<0||rp>=1)continue;ctx.globalAlpha=(1-rp)*.7;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(cx+n[0]*scale,cy-n[1]*scale,(8+rp*42),Math.max(2,(8+rp*42)*(.25+.65*Math.abs(n[2]/3))),0,0,Math.PI*2);ctx.stroke()}}}if(activeMarker)show(activeMarker);ctx.globalAlpha=1;requestAnimationFrame(draw)}play.onclick=()=>{if(running){elapsed=Math.min(+duration.value,elapsed+(performance.now()-start)/1000);running=false;loopAt=0;play.textContent=\"Play\"}else{if(elapsed>=+duration.value)elapsed=0;start=performance.now();loopAt=0;running=true;play.textContent=\"Pause\"}};document.getElementById(\"replay\").onclick=()=>{elapsed=0;start=performance.now();loopAt=0;running=true;lastId=\"\";play.textContent=\"Pause\"};duration.onchange=()=>{elapsed=0;start=performance.now();loopAt=0;lastId=\"\"};canvas.onpointerdown=e=>{drag=true;dragX=e.clientX;canvas.setPointerCapture(e.pointerId)};canvas.onpointermove=e=>{if(drag){userYaw+=(e.clientX-dragX)*.008;dragX=e.clientX}};canvas.onpointerup=()=>drag=false;addEventListener(\"resize\",resize);resize();play.textContent=running?\"Pause\":\"Play\";draw(performance.now())})();</script></body></html>\n"
+        },
+        "custom_inputs": {
+          "scene_json": "str",
+          "events_json": "str"
+        },
+        "exposed_inputs": [
+          "scene_json",
+          "events_json"
+        ],
+        "inputs_visibility_configured": true
+      },
+      {
+        "node_instance_id": "response",
+        "node_id": "n_html_response",
+        "node_version": "1.0.0",
+        "title": "Seismic globe response",
+        "params": {}
       }
     ],
     "edges": [
@@ -17072,6 +17115,36 @@
         "source_output": "camera",
         "target_node_id": "compose",
         "target_input": "camera"
+      },
+      {
+        "source_node_id": "compose",
+        "source_output": "scene",
+        "target_node_id": "scene_json",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "sample",
+        "source_output": "items",
+        "target_node_id": "events_json",
+        "target_input": "value"
+      },
+      {
+        "source_node_id": "scene_json",
+        "source_output": "text",
+        "target_node_id": "site",
+        "target_input": "scene_json"
+      },
+      {
+        "source_node_id": "events_json",
+        "source_output": "text",
+        "target_node_id": "site",
+        "target_input": "events_json"
+      },
+      {
+        "source_node_id": "site",
+        "source_output": "html",
+        "target_node_id": "response",
+        "target_input": "html"
       }
     ],
     "graph_outputs": {
@@ -17090,6 +17163,10 @@
       "legend": {
         "node_instance_id": "legend",
         "output_name": "text"
+      },
+      "site": {
+        "node_instance_id": "response",
+        "output_name": "response"
       }
     },
     "metadata": {
@@ -17303,6 +17380,22 @@
           "legend": {
             "x": 4160,
             "y": 1600
+          },
+          "scene_json": {
+            "x": 4940,
+            "y": 480
+          },
+          "events_json": {
+            "x": 2340,
+            "y": -220
+          },
+          "site": {
+            "x": 5200,
+            "y": 480
+          },
+          "response": {
+            "x": 5460,
+            "y": 480
           }
         },
         "recommended_panels": [

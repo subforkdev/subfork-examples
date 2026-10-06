@@ -83,3 +83,26 @@ Coordinate filters retain longitude -180..180, latitude -90..90, depth -10..800 
 and magnitude 2.5..10. Reference geometry remains visible when no valid events
 are present. Future additions should be generic scene features: picking metadata,
 labels, line geometry and per-instance color, not special-case seismic code.
+
+
+## Animated HTML Replay And Site Output
+
+The native 3D scene remains compatible with the released Scene Object and
+Compose Scene contracts: its spike instances preserve transforms and
+`record_id`, while event time remains in `sample.items.time_ms`. The native 3D
+panel rotates the bounded snapshot and supports linked selection; it does not
+perform per-instance playback.
+
+The graph exposes `site`, an HTML Response intended for both HTML Preview and
+fork.io. It embeds the bounded scene and event snapshot as HTML-safe JSON. The
+self-contained Canvas renderer joins each scene instance to its event record by
+`record_id`, then preserves the source `time_ms` for display and normalizes playback to a relative 0..1 offset. The oldest event is offset 0 and fires on the first animation frame; the newest event lands before the selected duration ends. This keeps
+timeline, pulse, and ring behavior in the example instead of requiring new
+scene-runtime fields.
+
+The page uses no remote scripts, fonts, images, or per-frame requests. It
+autoplays unless the visitor prefers reduced motion, offers 15/30/60-second
+replay durations, Play/Pause and Replay controls, holds the final event for two
+seconds and then loops automatically, drag rotation, animated
+spikes and concentric rings, and an upper-right active-event metadata card.
+Rerun the graph to refresh the USGS snapshot before publishing a newer response.
