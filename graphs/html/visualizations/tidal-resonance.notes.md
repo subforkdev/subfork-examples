@@ -1,5 +1,8 @@
 # Tidal Resonance
 
+![Tidal Resonance example thumbnail](tidal-resonance.thumbnail.jpg)
+
+
 NOAA tide predictions from San Francisco (9414290), Seattle (9447130), and
 The Battery, New York (8518750) become three flowing SVG ribbons. A shared time
 scrubber reveals how their predicted heights differ throughout one returned UTC

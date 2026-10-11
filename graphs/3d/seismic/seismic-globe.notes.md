@@ -1,5 +1,7 @@
 # Seismic Globe
 
+![Seismic Globe example thumbnail](seismic-globe.thumbnail.jpg)
+
 ## Linked Selection And Columns
 
 The three instance mappings preserve each event's `id` as `record_id`. The

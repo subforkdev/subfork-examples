@@ -12,6 +12,12 @@ new graph first if the current graph contains work you want to keep.
 6. Configure any documented execution-profile variables or secrets.
 7. Save the imported graph, run it, and inspect its panels and outputs.
 
+Example packages may include an optional embedded thumbnail. To attach it to a
+new graph, use **Profile → My graphs → Import graph**; the import preview shows
+the image and the importer attaches it as the graph thumbnail. It is separate from the Screenshots collection; adding a screenshot makes the first screenshot the graph-card cover, replacing the standalone thumbnail. Importing from
+Graph Settings currently replaces the editor's graph definition locally and does
+not attach package thumbnails.
+
 ## Trust And Secrets
 
 Graph JSON is executable configuration. Only import files you trust, and review

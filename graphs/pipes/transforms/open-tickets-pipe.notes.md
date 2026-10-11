@@ -1,5 +1,8 @@
 # Open Tickets Pipe
 
+![Open Tickets Pipe example thumbnail](open-tickets-pipe.thumbnail.jpg)
+
+
 ## What This Template Proves
 
 This is the smallest runnable row-processing pipeline: JSON rows flow through filter, sort, limit, and response nodes.

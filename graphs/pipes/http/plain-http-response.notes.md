@@ -1,5 +1,8 @@
 # Plain HTTP Response
 
+![Plain HTTP Response example thumbnail](plain-http-response.thumbnail.jpg)
+
+
 ## What This Template Proves
 
 This probes the generic response-envelope contract. A graph can store status,

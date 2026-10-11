@@ -1,5 +1,8 @@
 # RSS News Digest
 
+![RSS News Digest example thumbnail](rss-news-digest.thumbnail.jpg)
+
+
 ## What This Template Proves
 
 This is the simplest Yahoo Pipes-style digest path: collect rows, filter by topic, sort by rank, limit, and expose a response.

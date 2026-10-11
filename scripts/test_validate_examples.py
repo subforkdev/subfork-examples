@@ -12,6 +12,21 @@ import validate_examples as validator
 
 
 class CatalogValidationTests(unittest.TestCase):
+    def test_embedded_thumbnail_is_validated_and_size_bounded(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            graphs = root / "graphs"
+            graphs.mkdir()
+            document = {"format": "subfork.graph/1", "tags": [], "thumbnail": "data:image/jpeg;base64,aGVsbG8=", "definition": {"name": "Test", "nodes": [{"node_instance_id": "source", "node_id": "n_text_value"}], "edges": []}}
+            graph_path = graphs / "test.subfork.json"
+            graph_path.write_text(json.dumps(document))
+            (graphs / "test.notes.md").write_text("Test notes")
+            with patch.object(validator, "ROOT", root):
+                self.assertEqual(validator.validate(graph_path), [])
+                document["thumbnail"] = "data:image/svg+xml;base64,PHN2Zz4="
+                graph_path.write_text(json.dumps(document))
+                self.assertTrue(any("base64 data URL" in error for error in validator.validate(graph_path)))
+
     def test_fetch_is_bounded_and_parses_catalog(self):
         response = io.BytesIO(b'[{"node_id":"n_text_value"}]')
         with patch.object(validator, "urlopen", return_value=response) as fetch:
@@ -44,7 +59,7 @@ class CatalogValidationTests(unittest.TestCase):
             root = Path(directory)
             graphs = root / "graphs"
             graphs.mkdir()
-            document = {"format": "subfork.graph/1", "definition": {"name": "Test", "nodes": [{"node_instance_id": "source", "node_id": "n_text_value"}], "edges": []}}
+            document = {"format": "subfork.graph/1", "tags": [], "definition": {"name": "Test", "nodes": [{"node_instance_id": "source", "node_id": "n_text_value"}], "edges": []}}
             (graphs / "test.subfork.json").write_text(json.dumps(document))
             (graphs / "test.notes.md").write_text("Test notes")
             with patch.object(validator, "ROOT", root), patch.object(validator, "GRAPH_ROOT", graphs):

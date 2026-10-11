@@ -1,5 +1,7 @@
 # OpenAI Asset Pack
 
+![OpenAI Asset Pack example thumbnail](openai-asset-pack.thumbnail.jpg)
+
 This graph generates a coordinated image, voiceover audio clip, metadata JSON, and markdown campaign brief from one prompt/script pair.
 
 Before running it, add a graph-scoped secret named `OPENAI_API_KEY` in Graph Settings > Execution Profile.

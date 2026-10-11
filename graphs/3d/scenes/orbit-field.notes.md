@@ -1,5 +1,7 @@
 # Orbit Field
 
+![Orbit Field example thumbnail](orbit-field.thumbnail.jpg)
+
 Import `orbit-field.subfork.json` with recommended panels, then Run. The 3D
 Preview binds to Compose Scene's `scene` output. Rebuild API/workers/frontend
 first for the new Scene nodes and panel type.

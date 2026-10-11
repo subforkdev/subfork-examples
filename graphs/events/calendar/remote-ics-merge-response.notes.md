@@ -1,5 +1,8 @@
 # Remote ICS Merge Response
 
+![Remote ICS Merge Response example thumbnail](remote-ics-merge-response.thumbnail.jpg)
+
+
 ## What This Template Proves
 
 This is the first end-to-end calendar feed probe: public URL inputs, HTTP fetch, ICS parse, merge, sort, and `text/calendar` graph response.

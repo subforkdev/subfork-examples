@@ -1,5 +1,8 @@
 # Calendar Merge HTML View
 
+![Calendar Merge HTML View example thumbnail](calendar-merge-html-view.thumbnail.jpg)
+
+
 Purpose: extends the merge-calendars graph into an HTML calendar page.
 
 Current behavior: fetches two public ICS feeds, parses, merges, sorts, stringifies the events, and renders them with FullCalendar loaded from jsDelivr.

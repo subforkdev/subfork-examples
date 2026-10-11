@@ -1,5 +1,8 @@
 # Hello, World
 
+![Hello, World example thumbnail](hello-world.thumbnail.jpg)
+
+
 Purpose: provide the smallest polished graph a new user can import, understand,
 edit and run without credentials, network access or generative AI.
 

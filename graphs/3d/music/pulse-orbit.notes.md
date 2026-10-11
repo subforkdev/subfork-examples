@@ -1,5 +1,7 @@
 # Pulse Orbit
 
+![Pulse Orbit example thumbnail](pulse-orbit.thumbnail.jpg)
+
 [Download graph](pulse-orbit.subfork.json)
 
 Upload an audio file and run the graph. The graph analyzes at most the first 30 seconds and 50 MB. Music Analysis runs on a `media-worker`; the shaping and scene nodes use ordinary worker capacity. There are no network calls, credentials, paid providers, generated media, or externally visible side effects.

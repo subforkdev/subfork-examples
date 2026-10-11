@@ -1,5 +1,8 @@
 # Earthquake Map
 
+![Earthquake Map example thumbnail](earthquake-map.thumbnail.jpg)
+
+
 ## What This Template Proves
 
 This probes whether Subfork should treat map output as a panel contract over typed values rather than a special graph response.

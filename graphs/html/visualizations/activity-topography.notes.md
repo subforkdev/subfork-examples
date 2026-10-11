@@ -1,5 +1,8 @@
 # Activity Topography
 
+![Activity Topography example thumbnail](activity-topography.thumbnail.jpg)
+
+
 A public GitHub repository becomes a landscape of weekly SVG ridges. Daily
 sampled commit counts set the heights; select a summit to inspect its commits.
 The default repository is `psf/requests`. No API key, AI service, or Three.js is

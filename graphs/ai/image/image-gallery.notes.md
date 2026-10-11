@@ -1,5 +1,7 @@
 # AI Image Gallery
 
+![AI Image Gallery example thumbnail](image-gallery.thumbnail.jpg)
+
 ## What This Template Proves
 
 This probes capability-oriented AI nodes and graph-scoped execution profiles for provider credentials.

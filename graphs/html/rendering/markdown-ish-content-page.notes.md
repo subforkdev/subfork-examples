@@ -1,5 +1,8 @@
 # Markdown-ish Content Page
 
+![Markdown-ish Content Page example thumbnail](markdown-ish-content-page.thumbnail.jpg)
+
+
 Purpose: tests authoring longer text content and wrapping it in a readable HTML page.
 
 Current behavior: a multiline text value is escaped by the template renderer and displayed in a `<pre>` block.

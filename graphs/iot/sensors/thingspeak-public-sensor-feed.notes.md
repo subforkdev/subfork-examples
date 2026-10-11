@@ -1,5 +1,8 @@
 # ThingSpeak Public Sensor Feed
 
+![ThingSpeak Public Sensor Feed example thumbnail](thingspeak-public-sensor-feed.thumbnail.jpg)
+
+
 <a href="thingspeak-public-sensor-feed.subfork.json" download="thingspeak-public-sensor-feed.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 
 Reads ten entries from ThingSpeak channel `9`, the public home-environment sensor

@@ -1,5 +1,8 @@
 # JSON To HTML Renderer
 
+![JSON To HTML Renderer example thumbnail](json-to-html-renderer.thumbnail.jpg)
+
+
 Purpose: baseline proof that a graph can render structured JSON into HTML and return it through an HTML response node.
 
 Current behavior: static JSON feeds the HTML Template node, which emits both raw HTML and an HTTP-style HTML response.

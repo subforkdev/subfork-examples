@@ -1,5 +1,7 @@
 # Seismic Depth Field
 
+![Seismic Depth Field example thumbnail](seismic-depth-field.thumbnail.jpg)
+
 Import `seismic-depth-field.subfork.json` with its recommended panels and Run.
 No API key or application rebuild is needed. The graph uses existing built-in
 nodes only; there is no new renderer, embedded JavaScript, or HTML template.

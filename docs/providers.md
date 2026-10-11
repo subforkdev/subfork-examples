@@ -22,6 +22,15 @@ may change or be retired. PDF narration sends the prompt and a temporary signed
 file URL to OpenAI. Consult the individual example's notes and current provider
 documentation before use.
 
+## Runway
+
+[Runway Video HTTP](../graphs/ai/video/runway-video-http.notes.md) requires the
+executing graph's `RUNWAYML_API_SECRET` secret and a funded Runway developer
+account. Each execution submits one paid Gen-4.5 video task. The adapter returns
+a task reference; polling and video preview belong in the parent graph.
+Prompt-only and first-frame-image generation use different HTTP endpoints.
+Do not retry an uncertain submission without inspecting the existing task.
+
 ## Airtable
 
 [Airtable Record Browser](../graphs/connectors/airtable/record-browser.notes.md)

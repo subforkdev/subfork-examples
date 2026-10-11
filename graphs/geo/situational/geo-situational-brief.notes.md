@@ -1,5 +1,8 @@
 # Geo Situational Brief
 
+![Geo Situational Brief example thumbnail](geo-situational-brief.thumbnail.jpg)
+
+
 This is a deliberately meaty graph template for exercising branching, filters, cross-referencing, and multiple panels.
 
 The default graph fetches live USGS earthquake GeoJSON, uses configured literal inputs for a reference location and bounds, filters significant events, finds the nearest earthquake to the reference location, cross-references a small static city list, produces chart buckets, and renders a Markdown brief.

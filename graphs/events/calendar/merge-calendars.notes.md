@@ -1,5 +1,8 @@
 # Merge Calendars
 
+![Merge Calendars example thumbnail](merge-calendars.thumbnail.jpg)
+
+
 ## What This Template Proves
 
 This probes the basic calendar pipeline shape: parse separate iCalendar sources, merge event lists, sort chronologically, and return table-ready JSON.

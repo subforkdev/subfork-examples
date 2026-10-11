@@ -1,5 +1,8 @@
 # Client Dynamic HTML Shell
 
+![Client Dynamic HTML Shell example thumbnail](client-dynamic-html-shell.thumbnail.jpg)
+
+
 Purpose: demonstrates a graph returning a lightweight app shell that can call other graph APIs from browser JavaScript.
 
 Current behavior: returns a static HTML page with placeholder client-side behavior.

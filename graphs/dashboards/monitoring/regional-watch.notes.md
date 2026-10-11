@@ -1,5 +1,8 @@
 # Regional Watch
 
+![Regional Watch example thumbnail](regional-watch.thumbnail.jpg)
+
+
 Import `regional-watch.subfork.json` **with recommended panels** and Run.
 No new runtime node, API rebuild, or API key is needed. Existing imports are not
 automatically updated.

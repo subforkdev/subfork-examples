@@ -1,5 +1,8 @@
 # Planet Pulse
 
+![Planet Pulse example thumbnail](planet-pulse.thumbnail.jpg)
+
+
 An importable, keyless USGS earthquake observatory. This first version uses real
 public earthquake data, not simulated weather or invented telemetry. It does not
 require Three.js, published composite dependencies, or a paid service.

@@ -1,5 +1,8 @@
 # Weather Loom
 
+![Weather Loom example thumbnail](weather-loom.thumbnail.jpg)
+
+
 A year of daily station weather rendered as an interactive SVG textile. Months
 run downward and days of the month run left to right. The default is NOAA's
 San Francisco International Airport station, year 2024, including February 29.

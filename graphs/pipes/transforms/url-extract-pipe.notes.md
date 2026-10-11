@@ -1,5 +1,8 @@
 # URL Extract Pipe
 
+![URL Extract Pipe example thumbnail](url-extract-pipe.thumbnail.jpg)
+
+
 ## What This Template Proves
 
 This validates text transformation with regex extraction and shows how a generic grep-like node can support Yahoo Pipes-style workflows.

@@ -1,5 +1,8 @@
 # Signal Garden
 
+![Signal Garden example thumbnail](signal-garden.thumbnail.jpg)
+
+
 A 2D botanical interpretation of real data. Each record becomes an interactive
 SVG flower, with mapped stem height, bloom size, and petal color. This prototype
 uses the same normalized USGS earthquake dataset as Planet Pulse, demonstrating

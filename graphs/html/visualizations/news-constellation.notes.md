@@ -1,5 +1,8 @@
 # News Constellation
 
+![News Constellation example thumbnail](news-constellation.thumbnail.jpg)
+
+
 Three tech-related RSS feeds become a selectable SVG star atlas. Articles are
 grouped by source, not AI-inferred topic. This prototype remains in the SVG
 gallery track and requires neither an AI service nor an API key.

@@ -1,5 +1,8 @@
 # Other Worlds / Exoplanet Portrait
 
+![Other Worlds / Exoplanet Portrait example thumbnail](exoplanet-portrait.thumbnail.jpg)
+
+
 A Dataset Portrait prototype using NASA's Exoplanet Archive rather than the
 earthquake dataset. Each planet is a selectable radial mark with remappable
 spoke length, mark size, color, and clockwise ordering. No Three.js or API key.

@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
 import json
 from pathlib import Path
 import re
@@ -188,6 +190,18 @@ def validate(path: Path, node_types: set[str] | None = None, node_manifests: dic
         return errors + [f"{relative}: document root must be an object"]
     if document.get("format") != "subfork.graph/1":
         errors.append(f"{relative}: format must be subfork.graph/1")
+    thumbnail = document.get("thumbnail")
+    if thumbnail is not None:
+        match = re.fullmatch(r"data:(image/(?:jpeg|png|webp));base64,([A-Za-z0-9+/]+={0,2})", thumbnail) if isinstance(thumbnail, str) else None
+        if not match:
+            errors.append(f"{relative}: thumbnail must be a JPEG, PNG, or WebP base64 data URL")
+        else:
+            try:
+                thumbnail_bytes = base64.b64decode(match.group(2), validate=True)
+                if len(thumbnail_bytes) > 512 * 1024:
+                    errors.append(f"{relative}: embedded thumbnail exceeds 512 KiB")
+            except (binascii.Error, ValueError):
+                errors.append(f"{relative}: thumbnail is not valid base64")
     tags = document.get("tags")
     if not isinstance(tags, list):
         errors.append(f"{relative}: tags must be a list")

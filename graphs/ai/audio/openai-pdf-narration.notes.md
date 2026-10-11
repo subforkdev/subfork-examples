@@ -1,5 +1,7 @@
 # OpenAI PDF Narration
 
+![OpenAI PDF Narration example thumbnail](openai-pdf-narration.thumbnail.jpg)
+
 [Download graph](openai-pdf-narration.subfork.json)
 
 Provide a public PDF URL and a prompt to generate a short narration transcript and one MP3 with an AI-generated voice. This is a short-document example, not an audiobook system or verbatim PDF reader.

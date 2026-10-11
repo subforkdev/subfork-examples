@@ -1,5 +1,7 @@
 # USD Pyramid
 
+![USD Pyramid example thumbnail](usd-pyramid.thumbnail.jpg)
+
 Import `usd-pyramid.subfork.json` with recommended panels and Run. Text Value
 contains a tiny self-contained ASCII USD mesh. USD ASCII Asset turns it into a
 scene object, Transform / Motion supplies rotation, and Camera / Compose Scene

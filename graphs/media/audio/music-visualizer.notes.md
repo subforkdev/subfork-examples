@@ -1,5 +1,8 @@
 # Music Visualizer
 
+![Music Visualizer example thumbnail](music-visualizer.thumbnail.jpg)
+
+
 <a href="music-visualizer.subfork.json" download="music-visualizer.subfork.json" aria-label="Download graph" title="Download graph"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v5h14v-5"/></svg></a>
 
 Upload an audio file, inspect it with **Media Probe** on a capability-routed media worker, and open a beat-reactive browser visualization. Graph nodes configure the initial visualization, beat sensitivity, accent color, and secondary color. The responsive HTML preview fills its panel and offers six live styles: radial spectrum, block equalizer, dot spectrum, layered ribbons, waveform field, and console.

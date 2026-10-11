@@ -1,5 +1,8 @@
 # Live USGS Earthquake Map
 
+![Live USGS Earthquake Map example thumbnail](live-usgs-earthquake-map.thumbnail.jpg)
+
+
 This graph fetches public GeoJSON from the USGS earthquake feed and returns it directly for Map Preview, Table, and JSON panels.
 
 The graph shape is:

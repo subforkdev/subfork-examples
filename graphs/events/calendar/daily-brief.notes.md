@@ -1,5 +1,8 @@
 # Daily Calendar Brief
 
+![Daily Calendar Brief example thumbnail](daily-brief.thumbnail.jpg)
+
+
 ## What This Template Proves
 
 This probes ICS parsing, event merging, date filtering, sorting, and future calendar visualization.

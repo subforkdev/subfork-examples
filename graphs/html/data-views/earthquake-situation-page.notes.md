@@ -1,5 +1,8 @@
 # Earthquake Situation Page
 
+![Earthquake Situation Page example thumbnail](earthquake-situation-page.thumbnail.jpg)
+
+
 Purpose: turns a public USGS GeoJSON feed into a request-time HTML dashboard.
 
 Current behavior: fetches the feed, stringifies the JSON, embeds it into the page, and renders the visible cards in browser JavaScript.
